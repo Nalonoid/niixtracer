@@ -7,7 +7,7 @@
 
 using Vec3d = Vector<double>;
 
-class Sphere : Object
+class Sphere : public Object
 {
 public:
     Sphere();
@@ -22,8 +22,8 @@ public:
     double& radius();
 
     // Methods
-    double intersection(Ray r);
-    const Vec3d& normal_at(Vec3d point);
+    bool intersect(Ray &r, double &dist) override;
+    const Vec3d normal_at(const Vec3d& point) override;
 
 private:
     Vec3d _position;

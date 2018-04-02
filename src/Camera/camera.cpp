@@ -2,23 +2,23 @@
 
 Camera::Camera()
 {
-    _position = Vec3d(0, 3, -3);
+    _position = Vec3d(960, 540, 0);
     look_at(Vec3d(0, 0, 0));
+    compute_camera_basis();
+}
+
+Camera::Camera(const Vec3d& pos, const Vec3d& la) :
+    _position(pos)
+{
+    look_at(la);
     compute_camera_basis();
 }
 
 void Camera::compute_camera_basis()
 {
-    _right  = Space::ORTHONORMAL_BASIS.yaxis.cross(_direction);
+    _right  = Space::YAXIS.cross(_direction);
     _down   = _right.cross(_direction);
 }
-
-Camera::Camera(const Vec3d& dir,  const Vec3d& pos, const Vec3d& look_at) :
-    _direction(dir), _position(pos), _look_at(look_at)
-{
-    compute_camera_basis();
-}
-
 
 const Vec3d& Camera::direction() const
 {

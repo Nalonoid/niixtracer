@@ -77,6 +77,12 @@ Vector<T> operator*(const double scalar, const Vector<T> &v)
     return v.mult(scalar);
 }
 
+template <typename T>
+std::ostream& operator<<(std::ostream &os, const Vector<T> &v)
+{
+    return os << "(" << v.x << "," << v.y << "," << v.z << ")";
+}
+
 // Space
 namespace Space
 {

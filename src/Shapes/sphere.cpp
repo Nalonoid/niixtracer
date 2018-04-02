@@ -30,12 +30,29 @@ double& Sphere::radius()
 }
 
 // Methods
-double Sphere::intersection(Ray)
+bool Sphere::intersect(Ray &r, double &t)
 {
-    return 0.0;
+    Vec3d  oc    = r.origin() - _position;
+    double b     = 2*(oc.dot(r.direction()));
+    double c     = (oc.dot(oc)) - (_radius*_radius);
+    double discr = b*b - 4*c;
+
+    if (discr < 0)
+        return false;
+    else
+    {
+        discr = sqrt(discr);
+        double t0 = (-b - discr)/2 - 0.0000001;
+        double t1 = (-b + discr)/2 - 0.0000001;
+
+        t = (t0 < t1 && t0 > 0) ? t0 :
+            (t1 < t0 && t1 > 0) ? t1 : -1;
+
+        return true;
+    }
 }
 
-const Vec3d& Sphere::normal_at(Vec3d)
+const Vec3d Sphere::normal_at(const Vec3d &p)
 {
-    return Space::YAXIS;
+    return (_position.negative() + p).normalized();
 }

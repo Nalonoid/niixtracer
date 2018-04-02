@@ -29,6 +29,7 @@ public:
     unsigned width() const;
     const std::vector<std::vector<Pixel>>& pixels() const;
     std::vector<std::vector<Pixel>>& pixels();
+    double aspect_ratio() const;
 
     // Operators
     std::vector<Pixel>& operator[](int index);

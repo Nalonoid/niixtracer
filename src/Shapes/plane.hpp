@@ -7,7 +7,7 @@
 
 using Vec3d = Vector<double>;
 
-class Plane : Object
+class Plane : public Object
 {
 public:
     Plane(const Vec3d &normal = Space::YAXIS, double distance = 0.0);
@@ -21,8 +21,8 @@ public:
     double& distance();
 
     // Methods
-    double intersection(Ray r) override;
-    const Vec3d& normal_at(Vec3d point) override;
+    bool intersect(Ray &r, double &dist) override;
+    const Vec3d normal_at(const Vec3d& point) override;
 
 private:
     Vec3d   _normal;

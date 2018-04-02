@@ -14,12 +14,12 @@ Color &Object::color()
 
 // Methods
 
-double Object::intersection(Ray)
+bool Object::intersect(Ray&, double&)
 {
     return 0.0;
 }
 
-const Vec3d& Object::normal_at(Vec3d)
+const Vec3d Object::normal_at(const Vec3d&)
 {
     return Space::YAXIS;
 }

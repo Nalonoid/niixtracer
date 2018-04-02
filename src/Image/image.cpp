@@ -35,6 +35,11 @@ std::vector<std::vector<Pixel>>& Image::pixels()
     return _pixels;
 }
 
+double Image::aspect_ratio() const
+{
+    return _width/_height;
+}
+
 std::vector<Pixel>& Image::operator[](int index)
 {
     return _pixels[index];

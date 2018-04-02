@@ -1,10 +1,7 @@
 #include "ray.hpp"
 
-Ray::Ray() :
-    _direction(Vec3d(0, 0, -1)), _origin(Vec3d(0, 0, 1)) {}
-
-Ray::Ray(const Vec3d& dir, const Vec3d& ori) :
-    _direction(dir), _origin(ori) {}
+Ray::Ray(const Vec3d& ori, const Vec3d& dir) :
+    _origin(ori), _direction(dir), _dist_max(20000) {}
 
 const Vec3d& Ray::direction() const
 {
@@ -16,6 +13,11 @@ const Vec3d& Ray::origin() const
     return _origin;
 }
 
+double Ray::dist_max() const
+{
+    return _dist_max;
+}
+
 Vec3d& Ray::direction()
 {
     return _direction;
@@ -24,4 +26,9 @@ Vec3d& Ray::direction()
 Vec3d& Ray::origin()
 {
     return _origin;
+}
+
+double& Ray::dist_max()
+{
+    return _dist_max;
 }

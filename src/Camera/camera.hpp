@@ -10,7 +10,7 @@ class Camera
 
 public:
     Camera();
-    Camera(const Vec3d& dir, const Vec3d& pos, const Vec3d& look_at);
+    Camera(const Vec3d& pos, const Vec3d& la);
 
     // Getters
     const Vec3d& direction() const;
