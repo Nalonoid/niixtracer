@@ -15,7 +15,7 @@ public:
     // Getters
     const Vec3d& direction() const;
     const Vec3d& position() const;
-    const Vec3d& down() const;
+    const Vec3d& up() const;
     const Vec3d& right() const;
     const Vec3d& look_at() const;
 
@@ -23,7 +23,7 @@ public:
      * c.direction() = Vector(12, -3, 5); */
     Vec3d& direction();
     Vec3d& position();
-    Vec3d& down();
+    Vec3d& up();
     Vec3d& right();
 
     // Methods
@@ -38,7 +38,7 @@ private:
     Vec3d _position;
     Vec3d _look_at;
     Vec3d _right;
-    Vec3d _down;
+    Vec3d _up;
 };
 
 #endif

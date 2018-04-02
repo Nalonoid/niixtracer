@@ -16,8 +16,8 @@ Camera::Camera(const Vec3d& pos, const Vec3d& la) :
 
 void Camera::compute_camera_basis()
 {
-    _right  = Space::YAXIS.cross(_direction);
-    _down   = _right.cross(_direction);
+    _right      = cross(_direction, Space::YAXIS).normalized();
+    _up         = cross(_right, _direction);
 }
 
 const Vec3d& Camera::direction() const
@@ -40,14 +40,14 @@ Vec3d& Camera::position()
     return _position;
 }
 
-const Vec3d& Camera::down() const
+const Vec3d& Camera::up() const
 {
-    return _down;
+    return _up;
 }
 
-Vec3d& Camera::down()
+Vec3d& Camera::up()
 {
-    return _down;
+    return _up;
 }
 
 const Vec3d& Camera::right() const

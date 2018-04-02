@@ -23,10 +23,13 @@ struct Vector
 
     Vector<T> normalized() const;
     Vector<T> negative() const;
-    Vector<T> cross(const Vector<T> &v) const;
     Vector<T> add(const Vector<T> &v) const;
     Vector<T> mult(const double scalar) const;
 };
+
+// Methods
+template <typename T>
+Vector<T> cross(const Vector<T> &v1, const Vector<T> &v2);
 
 // Operators
 template <typename T>

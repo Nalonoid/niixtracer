@@ -3,7 +3,7 @@
 
 #include "image.hpp"
 
-Image::Image(unsigned width, unsigned height) :
+Image::Image(int width, int height) :
     _width(width), _height(height)
 {
     /* Initialize an image of width*height pixels.
@@ -11,12 +11,12 @@ Image::Image(unsigned width, unsigned height) :
     _pixels.resize(width, std::vector<Pixel>(height, Pixel(192, 0, 255)));
 }
 
-unsigned Image::height() const
+int Image::height() const
 {
     return _height;
 }
 
-unsigned Image::width() const
+int Image::width() const
 {
     return _width;
 }
@@ -37,7 +37,7 @@ std::vector<std::vector<Pixel>>& Image::pixels()
 
 double Image::aspect_ratio() const
 {
-    return _width/_height;
+    return (double)_width/(double)_height;
 }
 
 std::vector<Pixel>& Image::operator[](int index)

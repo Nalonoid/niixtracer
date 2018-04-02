@@ -22,11 +22,11 @@ struct Pixel
 class Image
 {
 public:
-    Image(unsigned width, unsigned height);
+    Image(int width, int height);
 
     // Getters
-    unsigned height() const;
-    unsigned width() const;
+    int height() const;
+    int width() const;
     const std::vector<std::vector<Pixel>>& pixels() const;
     std::vector<std::vector<Pixel>>& pixels();
     double aspect_ratio() const;
@@ -39,8 +39,8 @@ public:
     void paint(Color c);
 
 private:
-    unsigned _width;
-    unsigned _height;
+    int _width;
+    int _height;
     std::vector<std::vector<Pixel>> _pixels;
 };
 
