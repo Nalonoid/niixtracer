@@ -3,13 +3,13 @@
 unsigned Light::_index = 0;
 
 Light::Light() :
-    Object(Space::ORIGIN, Colors::WHITE)
+    Object(Space::ORIGIN), _color(Colors::WHITE)
 {
     _index++;
 }
 
 Light::Light(const Vec3d &p, const Color& c) :
-    Object(p, c)
+    Object(p), _color(c)
 {
     _index++;
 }

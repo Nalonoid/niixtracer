@@ -1,7 +1,8 @@
 #include "ray.hpp"
+#include "intersection.hpp"
 
 Ray::Ray(const Vec3d& ori, const Vec3d& dir) :
-    _origin(ori), _direction(dir), _dist_max(20000) {}
+    _origin(ori), _direction(dir), _dist_max(20000), _bounces(0) {}
 
 const Vec3d& Ray::direction() const
 {
@@ -18,6 +19,16 @@ double Ray::dist_max() const
     return _dist_max;
 }
 
+unsigned Ray::bounces() const
+{
+    return _bounces;
+}
+
+const Intersection Ray::intersection() const
+{
+    return _intersection;
+}
+
 Vec3d& Ray::direction()
 {
     return _direction;
@@ -31,4 +42,9 @@ Vec3d& Ray::origin()
 double& Ray::dist_max()
 {
     return _dist_max;
+}
+
+Intersection Ray::intersection()
+{
+    return _intersection;
 }

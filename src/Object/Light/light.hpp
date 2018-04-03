@@ -16,6 +16,7 @@ public:
 
 private:
     static unsigned _index;
+    Color _color;
 };
 
 #endif

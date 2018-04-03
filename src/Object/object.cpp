@@ -1,8 +1,8 @@
 #include "object.hpp"
 #include "Raytracer/ray.hpp"
 
-Object::Object(const Vec3d &position, const Color &color) :
-    _position(position), _color(color) {}
+Object::Object(const Vec3d &position) :
+    _position(position) {}
 
 Object::~Object() {}
 
@@ -15,14 +15,4 @@ const Vec3d& Object::position() const
 Vec3d& Object::position()
 {
     return _position;
-}
-
-const Color& Object::color() const
-{
-    return _color;
-}
-
-Color &Object::color()
-{
-    return _color;
 }

@@ -9,8 +9,7 @@ class Ray;
 class Object
 {
 public:
-    Object(const Vec3d &position = Space::ORIGIN,
-           const Color &color = Colors::YELLOW);
+    Object(const Vec3d &position = Space::ORIGIN);
 
     virtual ~Object();
 
@@ -18,12 +17,9 @@ public:
     virtual unsigned index() const = 0;
     const Vec3d& position() const;
     Vec3d& position();
-    const Color& color() const;
-    Color& color();
 
 protected:
     Vec3d _position;
-    Color _color;
 };
 
 #endif

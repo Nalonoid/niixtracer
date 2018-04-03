@@ -45,7 +45,8 @@ int main(int argc, char **argv)
     Vec3d xray = c.right();
     Vec3d yray = -1/img.aspect_ratio() * c.up();
     Vec3d zray = 1/tanf(M_PI * -120.0/360.0) * c.direction();
-    Vec3d d;
+
+    bool collides = false;
 
     for (int j = 0; j < img.height(); ++j)
     {
@@ -61,7 +62,9 @@ int main(int argc, char **argv)
             for (auto it = scene.shapes().begin(), st = scene.shapes().end();
                  it != st; ++it)
             {
-                if ((*it)->intersect(r, t) && t < tmax)
+                collides = ((*it)->intersect(r, t) && t < tmax) || collides;
+
+                if (collides)
                 {
                     img[i][j] = (*it)->color();
                     tmax = t;
