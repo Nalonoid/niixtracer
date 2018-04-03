@@ -3,23 +3,19 @@
 
 #include "Math/math.hpp"
 #include "Image/color.inl"
+#include "../object.hpp"
 
-using Vec3d = Vector<double>;
-
-class Light
+class Light : public Object
 {
 public:
     Light();
     Light(const Vec3d &p, const Color &c = Colors::WHITE);
 
     // Getters
-    const Vec3d& position() const;
-    const Color& color() const;
+    unsigned index() const override;
 
 private:
-    Vec3d _position;
-    Color _color;
-
+    static unsigned _index;
 };
 
 #endif

@@ -1,24 +1,14 @@
 #include "sphere.hpp"
 
-Sphere::Sphere() : Object(), _position(Space::ORIGIN), _radius(1.0) {}
+Sphere::Sphere() : Shape(), _radius(1.0) {}
 
 Sphere::Sphere(const Vec3d &position, double radius) :
-    _position(position), _radius(radius) {}
+    Shape(position), _radius(radius) {}
 
 Sphere::Sphere(const Vec3d &position, double radius, const Color &color) :
-    Object(color), _position(position), _radius(radius) {}
+    Shape(position, color), _radius(radius) {}
 
 // Getters
-const Vec3d &Sphere::position() const
-{
-    return _position;
-}
-
-Vec3d &Sphere::position()
-{
-    return _position;
-}
-
 double Sphere::radius() const
 {
     return _radius;

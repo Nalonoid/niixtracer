@@ -47,6 +47,10 @@ Vector<T> operator*(const double scalar, const Vector<T> &v);
 template <typename T>
 std::ostream& operator<<(std::ostream &os, const Vector<T> &v);
 
+// Using...
+using Vec3d = Vector<double>;
+
+// Space
 namespace Space
 {
 

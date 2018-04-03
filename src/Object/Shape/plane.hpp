@@ -3,11 +3,9 @@
 
 #include "Math/math.hpp"
 #include "Image/color.inl"
-#include "object.hpp"
+#include "shape.hpp"
 
-using Vec3d = Vector<double>;
-
-class Plane : public Object
+class Plane : public Shape
 {
 public:
     Plane(const Vec3d &normal = Space::YAXIS, double distance = 0.0);

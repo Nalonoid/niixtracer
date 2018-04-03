@@ -1,15 +1,18 @@
 #include "camera.hpp"
 
-Camera::Camera()
+unsigned Camera::_index = 0;
+
+Camera::Camera() : Object(Vec3d(960, 540, 0))
 {
-    _position = Vec3d(960, 540, 0);
+    _index++;
     look_at(Vec3d(0, 0, 0));
     compute_camera_basis();
 }
 
 Camera::Camera(const Vec3d& pos, const Vec3d& la) :
-    _position(pos)
+    Object(pos)
 {
+    _index++;
     look_at(la);
     compute_camera_basis();
 }
@@ -20,6 +23,12 @@ void Camera::compute_camera_basis()
     _up         = cross(_right, _direction);
 }
 
+// Getters
+unsigned Camera::index() const
+{
+    return _index;
+}
+
 const Vec3d& Camera::direction() const
 {
     return _direction;
@@ -28,16 +37,6 @@ const Vec3d& Camera::direction() const
 Vec3d& Camera::direction()
 {
     return _direction;
-}
-
-const Vec3d& Camera::position() const
-{
-    return _position;
-}
-
-Vec3d& Camera::position()
-{
-    return _position;
 }
 
 const Vec3d& Camera::up() const

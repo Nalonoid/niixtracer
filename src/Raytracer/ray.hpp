@@ -3,8 +3,6 @@
 
 #include "Math/math.hpp"
 
-using Vec3d = Vector<double>;
-
 class Ray
 {
 

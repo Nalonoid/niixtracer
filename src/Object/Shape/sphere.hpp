@@ -3,11 +3,11 @@
 
 #include "Math/math.hpp"
 #include "Image/color.inl"
-#include "object.hpp"
+#include "shape.hpp"
 
 using Vec3d = Vector<double>;
 
-class Sphere : public Object
+class Sphere : public Shape
 {
 public:
     Sphere();
@@ -15,9 +15,6 @@ public:
     Sphere(const Vec3d &position, double radius, const Color &color);
 
     // Getters
-    const Vec3d& position() const;
-    Vec3d& position();
-
     double radius() const;
     double& radius();
 
@@ -26,7 +23,6 @@ public:
     const Vec3d normal_at(const Vec3d& point) override;
 
 private:
-    Vec3d _position;
     double _radius;
 };
 

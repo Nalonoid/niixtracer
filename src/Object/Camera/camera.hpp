@@ -2,10 +2,9 @@
 #define __CAMERA_HPP__
 
 #include "Math/math.hpp"
+#include "../object.hpp"
 
-using Vec3d = Vector<double>;
-
-class Camera
+class Camera : public Object
 {
 
 public:
@@ -13,8 +12,9 @@ public:
     Camera(const Vec3d& pos, const Vec3d& la);
 
     // Getters
+    unsigned index() const override;
+
     const Vec3d& direction() const;
-    const Vec3d& position() const;
     const Vec3d& up() const;
     const Vec3d& right() const;
     const Vec3d& look_at() const;
@@ -22,7 +22,6 @@ public:
     /* This second set of getters is useful to allow this kind of statement :
      * c.direction() = Vector(12, -3, 5); */
     Vec3d& direction();
-    Vec3d& position();
     Vec3d& up();
     Vec3d& right();
 
@@ -34,8 +33,9 @@ private:
     void compute_camera_basis();
 
 private:
+    static unsigned _index;
+
     Vec3d _direction;
-    Vec3d _position;
     Vec3d _look_at;
     Vec3d _right;
     Vec3d _up;

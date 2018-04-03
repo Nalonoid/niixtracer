@@ -1,11 +1,12 @@
 #include <iostream>
 
 #include "Image/image.hpp"
+#include "Scene/scene.hpp"
 #include "Raytracer/ray.hpp"
-#include "Camera/camera.hpp"
-#include "Light/light.hpp"
-#include "Shapes/sphere.hpp"
-#include "Shapes/plane.hpp"
+#include "Object/Camera/camera.hpp"
+#include "Object/Light/light.hpp"
+#include "Object/Shape/sphere.hpp"
+#include "Object/Shape/plane.hpp"
 #include "Utils/save.hpp"
 
 int main(int argc, char **argv)
@@ -21,19 +22,25 @@ int main(int argc, char **argv)
     std::cout << "{o}---{-C-U-S-T-O-M---R-A-Y-T-R-A-C-E-R-}--->/"  << std::endl;
     std::cout << "{o}----------------------------------------->|"  << std::endl
                                                                    << std::endl;
-    Image img(1920, 1080);
+    Image img(1600, 900);
+    img.paint(Colors::BLACK);
 
     std::cout << "- Input scene: None" << std::endl;
     std::cout << "- Output file: " << argv[1] << std::endl;
     std::cout << "- Image aspect ratio : " << img.aspect_ratio() << std::endl;
 
-    img.paint(Colors::BLACK);
+    // Defining the scene objects
+    Scene scene;
 
     Camera  c(Vec3d(0, 0, -4), Space::ORIGIN);
-    //Light   l1(Vec3d(-7, 10, -10), Colors::RED);
+    Light   l1(Vec3d(-7, 10, -10), Colors::RED);
     Sphere  s1(Vec3d(0, 0, 1.25), 1.0, Colors::YELLOW);
     Sphere  s2(Vec3d(1.75, 0, 3.25), 1.0, Colors::PURPLE);
     Plane   p(Vec3d(0, 1, 0), 1.0, Colors::MAROON);
+
+    scene.add(dynamic_cast<Object*>(&c),  dynamic_cast<Object*>(&l1),
+              dynamic_cast<Object*>(&s1), dynamic_cast<Object*>(&s2),
+              dynamic_cast<Object*>(&p));
 
     Vec3d xray = c.right();
     Vec3d yray = -1/img.aspect_ratio() * c.up();
@@ -50,24 +57,24 @@ int main(int argc, char **argv)
 
             Ray r(c.position(), pixel_position.normalized());
 
-            double t = 20000;
-
-            if (p.intersect(r, t))
-                img[i][j] = p.color();
-
-            if (s2.intersect(r, t))
-                img[i][j] = s2.color();
-
-            if (s1.intersect(r, t))
-                img[i][j] = s1.color();
+            double t, tmax = 20000;
+            for (auto it = scene.shapes().begin(), st = scene.shapes().end();
+                 it != st; ++it)
+            {
+                if ((*it)->intersect(r, t) && t < tmax)
+                {
+                    img[i][j] = (*it)->color();
+                    tmax = t;
+                }
+            }
         }
     }
 
     save2bmp(argv[1], img, 72);
 
     std::cout << std::endl
-              << "{o}----------------------------------------->\\" << std::endl;
-    std::cout << "{o}----------------{-E-N-D-}---------------->|"  << std::endl;
+              << "{o}----------------------------------------->|" << std::endl;
+    std::cout << "{o}----------------{-E-N-D-}---------------->\\"  << std::endl;
     std::cout << "{o}----------------------------------------->/"  << std::endl;
 
     return 0;

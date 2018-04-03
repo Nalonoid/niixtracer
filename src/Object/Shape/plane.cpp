@@ -4,7 +4,7 @@ Plane::Plane(const Vec3d &normal, double distance) :
     _normal(normal), _distance(distance) {}
 
 Plane::Plane(const Vec3d &normal, double distance, const Color &color) :
-    Object(color), _normal(normal), _distance(distance) {}
+    Shape(color), _normal(normal), _distance(distance) {}
 
 const Vec3d& Plane::normal() const
 {
