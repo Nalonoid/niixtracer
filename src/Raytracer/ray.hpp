@@ -2,8 +2,7 @@
 #define __RAY_HPP__
 
 #include "Math/math.hpp"
-
-class Intersection;
+#include "intersection.hpp"
 
 class Ray
 {
@@ -17,14 +16,14 @@ public:
     const Vec3d& direction() const;
     double dist_max() const;
     unsigned bounces() const;
-    const Intersection intersection() const;
-    Intersection intersection();
+    const Intersection& intersection() const;
 
     /* This second set of getters is useful to allow this kind of statement :
      * r.origin() = Vector(12, -3, 5); */
     Vec3d& origin();
     Vec3d& direction();
     double& dist_max();
+    Intersection& intersection();
 
     // Methods
 

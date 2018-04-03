@@ -1,4 +1,5 @@
 #include "plane.hpp"
+#include "Raytracer/ray.hpp"
 
 Plane::Plane(const Vec3d &normal, double distance) :
     _normal(normal), _distance(distance) {}
@@ -29,20 +30,17 @@ double& Plane::distance()
 bool Plane::intersect(Ray &r, double &t)
 {
     double rd_n = r.direction().dot(_normal);
-    double dist = -1;
+    t = -1;
 
     /* The ray is parallel to the plane if rd_n == 0. */
     if (rd_n != 0)
     {
-        dist = (1/rd_n) * _normal.dot(_distance*_normal - r.origin());
+        t = (1/rd_n) * _normal.dot(_distance*_normal - r.origin());
 
         /* We return the distance from the origin of
         * the ray to the intersection point on the plane in t. */
-        if (dist >= 0 && dist < r.dist_max())
-        {
-            r.dist_max() = t = dist;
-            return true;
-        }
+        Shape::intersect(r, t);
+        return true;
     }
 
     return false;

@@ -1,7 +1,6 @@
 #ifndef __INTERSECTION_HPP__
 #define __INTERSECTION_HPP__
 
-#include "Math/math.hpp"
 #include "Object/object.hpp"
 
 class Color;
@@ -13,8 +12,12 @@ public:
     Intersection();
 
     // Getters
+    unsigned index() const override;
     const Color& ks() const;
     const Color& kd() const;
+
+    Color& ks();
+    Color& kd();
 
 private:
     Color _ks;

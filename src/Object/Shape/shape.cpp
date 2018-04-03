@@ -35,12 +35,13 @@ Color &Shape::color()
 
 
 // Methods
-bool Shape::intersect(Ray &r, double &)
+bool Shape::intersect(Ray &r, double &t)
 {
     if (t >= 0 && t < r.dist_max())
     {
         r.dist_max() = t;
         r.intersection().position() = r.origin() + (t * r.direction());
+        r.intersection().ks() = _color;
         return true;
     }
 

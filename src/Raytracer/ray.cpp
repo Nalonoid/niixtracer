@@ -24,7 +24,7 @@ unsigned Ray::bounces() const
     return _bounces;
 }
 
-const Intersection Ray::intersection() const
+const Intersection& Ray::intersection() const
 {
     return _intersection;
 }
@@ -44,7 +44,7 @@ double& Ray::dist_max()
     return _dist_max;
 }
 
-Intersection Ray::intersection()
+Intersection& Ray::intersection()
 {
     return _intersection;
 }

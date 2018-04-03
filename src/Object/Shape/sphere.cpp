@@ -1,4 +1,5 @@
 #include "sphere.hpp"
+#include "Raytracer/ray.hpp"
 
 Sphere::Sphere() : Shape(), _radius(1.0) {}
 
@@ -34,7 +35,11 @@ bool Sphere::intersect(Ray &r, double &t)
         float t2 = ((-1)*b + sqrt(discr))/2*a;
         t = t1 < t2 ? t1 : t2;
         t -= 0.0000001;
+        t *= -1;
 
+        std::cout << "BLBLBLBL " << t << std::endl;
+
+        Shape::intersect(r, t);
         return true;
     }
 

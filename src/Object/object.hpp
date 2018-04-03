@@ -4,8 +4,6 @@
 #include "Math/math.hpp"
 #include "Image/color.inl"
 
-class Ray;
-
 class Object
 {
 public:
