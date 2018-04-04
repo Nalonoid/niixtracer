@@ -1,8 +1,26 @@
 #include "ray.hpp"
 #include "intersection.hpp"
 
+unsigned Ray::_number = 0;
+
 Ray::Ray(const Vec3d& ori, const Vec3d& dir) :
-    _origin(ori), _direction(dir), _dist_max(20000), _bounces(0) {}
+    _origin(ori), _direction(dir), _dist_max(20000), _bounces(0)
+{
+    _number++;
+}
+
+// Methods
+void Ray::init(const Vec3d& ori, const Vec3d& dir)
+{
+    _origin = ori;
+    _direction = dir;
+}
+
+// Getters
+unsigned Ray::number()
+{
+    return _number;
+}
 
 const Vec3d& Ray::direction() const
 {

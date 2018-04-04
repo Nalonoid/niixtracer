@@ -2,7 +2,7 @@
 
 unsigned Camera::_index = 0;
 
-Camera::Camera() : Object(Vec3d(960, 540, 0))
+Camera::Camera() : Object(Vec3d(0, 2, -5))
 {
     _index++;
     look_at(Vec3d(0, 0, 0));
@@ -19,8 +19,8 @@ Camera::Camera(const Vec3d& pos, const Vec3d& la) :
 
 void Camera::compute_camera_basis()
 {
-    _right      = cross(_direction, Space::YAXIS).normalized();
-    _up         = cross(_right, _direction);
+    _up     = cross(_direction, Space::XAXIS).normalized();
+    _left  = cross(_up, _direction).normalized();
 }
 
 // Getters
@@ -49,14 +49,14 @@ Vec3d& Camera::up()
     return _up;
 }
 
-const Vec3d& Camera::right() const
+const Vec3d& Camera::left() const
 {
-    return _right;
+    return _left;
 }
 
-Vec3d& Camera::right()
+Vec3d& Camera::left()
 {
-    return _right;
+    return _left;
 }
 
 const Vec3d& Camera::look_at() const

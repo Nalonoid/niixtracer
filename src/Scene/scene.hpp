@@ -10,11 +10,14 @@ class Object;
 class Shape;
 class Light;
 class Camera;
+class Color;
 
 class Scene
 {
 public:
     Scene();
+
+    enum class SCENE_OBJECTS { SHAPE, LIGHT, CAMERA };
 
     // Getters
     const std::vector<Shape*>&  shapes() const;
@@ -28,8 +31,8 @@ public:
     // Methods
     template<typename... Args>
     void add(Object *o, Args... objs);
-
     void del(unsigned index);
+    const Color& compute_color() const;
 
 private:
     void add(Object *o);

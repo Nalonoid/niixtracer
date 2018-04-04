@@ -42,6 +42,7 @@ bool Shape::intersect(Ray &r, double &t)
         r.dist_max() = t;
         r.intersection().position() = r.origin() + (t * r.direction());
         r.intersection().ks() = _color;
+        r.intersection().kd() = _color;
         return true;
     }
 

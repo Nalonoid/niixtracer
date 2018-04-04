@@ -69,3 +69,8 @@ void Scene::del(unsigned index)
 //    if (it != _shapes.end())
 //        _shapes.erase(it);
 }
+
+const Color& Scene::compute_color() const
+{
+
+}

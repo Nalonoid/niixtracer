@@ -12,6 +12,8 @@ public:
         const Vec3d& dir = Space::ZAXIS);
 
     // Getters
+    static unsigned number();
+
     const Vec3d& origin() const;
     const Vec3d& direction() const;
     double dist_max() const;
@@ -26,8 +28,11 @@ public:
     Intersection& intersection();
 
     // Methods
+    void init(const Vec3d& ori, const Vec3d& dir);
 
 private:
+    static unsigned _number;
+
     Vec3d         _origin;
     Vec3d         _direction;
     double        _dist_max;

@@ -25,28 +25,34 @@ int main(int argc, char **argv)
     Image img(1600, 900);
     img.paint(Colors::BLACK);
 
-    std::cout << "- Input scene: None" << std::endl;
-    std::cout << "- Output file: " << argv[1] << std::endl;
-    std::cout << "- Image aspect ratio : " << img.aspect_ratio() << std::endl;
+    std::cout << "- Input scene:\t" << "None" << std::endl;
+    std::cout << "- Output file:\t" << argv[1] << std::endl;
+    std::cout << "- Resolution:\t" << img.width()
+              << "x" << img.height() << std::endl;
+
+    std::cout << "- Aspect ratio:\t" << img.aspect_ratio() << std::endl;
 
     // Defining the scene objects
     Scene scene;
 
-    Camera  c(Vec3d(0, 0, -4), Space::ORIGIN);
+    Camera  c(Vec3d(0, 3, -10), Space::ORIGIN);
     Light   l1(Vec3d(-7, 10, -10), Colors::RED);
-    Sphere  s1(Vec3d(0, 0, 1.25), 1.0, Colors::YELLOW);
-    Sphere  s2(Vec3d(1.75, 0, 3.25), 1.0, Colors::PURPLE);
-    Plane   p(Vec3d(0, 1, 0), 1.0, Colors::MAROON);
+    Sphere  s1(Vec3d(0, 2, 1), 2.0, Colors::YELLOW);
+    Sphere  s2(Vec3d(2, 1, -1.25), 1.0, Colors::PURPLE);
+    Plane   p(Vec3d(0, 1, 0), 0.0, Colors::MAROON);
 
     scene.add(dynamic_cast<Object*>(&c),  dynamic_cast<Object*>(&l1),
               dynamic_cast<Object*>(&s1), dynamic_cast<Object*>(&s2),
               dynamic_cast<Object*>(&p));
 
-    Vec3d xray = c.right();
-    Vec3d yray = -1/img.aspect_ratio() * c.up();
-    Vec3d zray = 1/tanf(M_PI * -120.0/360.0) * c.direction();
+    Vec3d left = c.left();
+    Vec3d up = 1/img.aspect_ratio() * c.up();
+    Vec3d front = 1/tanf(M_PI * 120.0/360.0) * c.direction();
 
     bool collides;
+
+    std::cout << std::endl
+              << "{o}------------R-E-N-D-E-R-I-N-G------------>|" << std::endl;
 
     for (int j = 0; j < img.height(); ++j)
     {
@@ -54,7 +60,7 @@ int main(int argc, char **argv)
         {
             double  norm_i = (i+0.5)/img.width() - 0.5;
             double  norm_j = (j+0.5)/img.height() - 0.5;
-            Vec3d   pixel_position = norm_i * xray + norm_j * yray + zray;
+            Vec3d   pixel_position = (norm_i * left) + (norm_j * up) + front;
 
             Ray r(c.position(), pixel_position.normalized());
             collides = false;
@@ -64,9 +70,11 @@ int main(int argc, char **argv)
                 collides = (*it)->intersect(r, t) || collides;
 
             if (collides)
-                img[i][j] = r.intersection().ks();
+                img[i][j] = r.intersection().kd();
         }
     }
+
+    std::cout << std::endl << "- Rays count:\t" << Ray::number() << std::endl;
 
     save2bmp(argv[1], img, 72);
 

@@ -23,6 +23,8 @@ double& Sphere::radius()
 // Methods
 bool Sphere::intersect(Ray &r, double &t)
 {
+    //r.direction() = r.direction().negative();
+
     Vec3d  oc    = r.origin() - _position;
     double a     = r.direction().dot(r.direction());
     double b     = 2*(oc.dot(r.direction()));
@@ -35,9 +37,6 @@ bool Sphere::intersect(Ray &r, double &t)
         float t2 = ((-1)*b + sqrt(discr))/2*a;
         t = t1 < t2 ? t1 : t2;
         t -= 0.0000001;
-        t *= -1;
-
-        std::cout << "BLBLBLBL " << t << std::endl;
 
         Shape::intersect(r, t);
         return true;
