@@ -1,12 +1,15 @@
 #include <algorithm>
 
 #include "scene.hpp"
-#include "Object/object.hpp"
 #include "Object/Shape/shape.hpp"
 #include "Object/Light/light.hpp"
 #include "Object/Camera/camera.hpp"
 
+#include "Raytracer/ray.hpp"
+
 Scene::Scene() {}
+
+Scene::~Scene() {}
 
 // Getters
 const std::vector<Shape*>& Scene::shapes() const
@@ -25,17 +28,17 @@ const std::vector<Camera*>& Scene::cameras() const
 }
 
 
-const Shape& Scene::shape(unsigned i) const
+Shape& Scene::shape(unsigned i) const
 {
     return *_shapes[i];
 }
 
-const Light& Scene::light(unsigned i) const
+Light& Scene::light(unsigned i) const
 {
     return *_lights[i];
 }
 
-const Camera& Scene::camera(unsigned i) const
+Camera& Scene::camera(unsigned i) const
 {
     return *_cameras[i];
 }
@@ -50,16 +53,23 @@ void Scene::add(Object* o)
     if (shape)
     {
         _shapes.push_back(shape);
-        if (light)
-        {
-            _lights.push_back(light);
-            if (camera)
-                _cameras.push_back(camera);
-        }
+        return;
+    }
+
+    if (light)
+    {
+        _lights.push_back(light);
+        return;
+    }
+
+    if (camera)
+    {
+        _cameras.push_back(camera);
+        return;
     }
 }
 
-void Scene::del(unsigned index)
+void Scene::del(Object::OBJECT_TYPE obj_type, unsigned index)
 {
 //    auto it = std::find_if(_objects.begin(), _objects.end(),
 //                            [&] (const Object *o) {
@@ -70,7 +80,37 @@ void Scene::del(unsigned index)
 //        _shapes.erase(it);
 }
 
-const Color& Scene::compute_color() const
+const Color Scene::compute_color(const Ray& r) const
 {
+    float ambiant_light = 0.2;
+    Intersection i = r.intersection();
 
+    Color light_contribution = i.kd();
+    light_contribution.scale(ambiant_light);
+
+    Vec3d towards_light = _lights.at(0)->position() - i.position();
+    double source_distance = towards_light.magnitude();
+    towards_light = towards_light.normalized();
+
+    double cosine_n_l = i.normal().dot(towards_light);
+
+    /* We need to compute the light contribution only if the normal points
+     * towards the light */
+    if (cosine_n_l > 0.0)
+    {
+        Ray light_ray(i.position() + EPSILON*towards_light, towards_light);
+        double t;
+
+        auto light_intersection =
+                std::find_if(_shapes.begin(), _shapes.end(), [&] (Shape *shp) {
+                    return shp->intersect(light_ray, t) && t < source_distance;
+                });
+
+        /* If the shadow ray does not intersect an object of the scene, we
+         * compute the light contribution */
+        if (light_intersection == _shapes.end())
+            return i.kd();
+    }
+
+    return light_contribution;
 }

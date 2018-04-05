@@ -3,6 +3,7 @@
 
 #include "Math/math.hpp"
 #include "../object.hpp"
+#include "Image/color.hpp"
 
 class Ray;
 class Color;

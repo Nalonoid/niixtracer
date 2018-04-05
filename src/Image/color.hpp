@@ -1,14 +1,28 @@
-#ifndef __COLOR_INL__
-#define __COLOR_INL__
+#ifndef __COLOR_HPP__
+#define __COLOR_HPP__
 
 #include "Math/math.hpp"
 
-struct Color : Vector<int>
+struct Color
 {
     Color(int r, int g, int b, double alpha = 1) :
-        Vector<int>(r, g, b), a(alpha) {}
+        rgb(Vec3i(r, g, b)), a(alpha) {}
 
+    Vec3i rgb;
     double a;
+
+    // Getters
+    int r() const { return rgb.x; }
+    int g() const { return rgb.y; }
+    int b() const { return rgb.z; }
+
+    int& r() { return rgb.x; }
+    int& g() { return rgb.y; }
+    int& b() { return rgb.z; }
+
+    // Methods
+    double  brightness() const;
+    const Color& scale(float p);
 };
 
 namespace Colors
@@ -26,6 +40,9 @@ const struct Color ORANGE   = { 255, 165,   0, 1. };
 const struct Color PURPLE   = { 128,   0, 225, 1. };
 const struct Color LIME     = { 160, 255,  60, 1. };
 const struct Color MAROON   = { 128,  64,  64, 1. };
+
+Color average(const Color &c1, const Color &c2);
+
 }
 
 #endif

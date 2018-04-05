@@ -62,9 +62,9 @@ void save2bmp(const char *path, Image img, unsigned dpi)
             c = img.pixels()[i][j].color;
 
             // Using the bmp format pixel values must be stored upside-down
-            unsigned char color[3] = { (unsigned char) c.z,
-                                       (unsigned char) c.y,
-                                       (unsigned char) c.x };
+            unsigned char color[3] = { (unsigned char) c.b(),
+                                       (unsigned char) c.g(),
+                                       (unsigned char) c.r() };
 
             fwrite(color, 1, 3, file);
         }

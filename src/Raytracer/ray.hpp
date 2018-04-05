@@ -27,9 +27,6 @@ public:
     double& dist_max();
     Intersection& intersection();
 
-    // Methods
-    void init(const Vec3d& ori, const Vec3d& dir);
-
 private:
     static unsigned _number;
 

@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include "color.inl"
+#include "color.hpp"
 
 struct Pixel
 {

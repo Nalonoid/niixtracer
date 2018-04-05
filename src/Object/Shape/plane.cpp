@@ -29,6 +29,7 @@ double& Plane::distance()
 
 bool Plane::intersect(Ray &r, double &t)
 {
+    bool intersect = false;
     double rd_n = r.direction().dot(_normal);
     t = -1;
 
@@ -39,11 +40,11 @@ bool Plane::intersect(Ray &r, double &t)
 
         /* We return the distance from the origin of
         * the ray to the intersection point on the plane in t. */
-        Shape::intersect(r, t);
-        return true;
+        intersect = Shape::intersect(r, t);
+        r.intersection().normal() = _normal;
     }
 
-    return false;
+    return intersect;
 }
 
 

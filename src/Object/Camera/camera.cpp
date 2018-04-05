@@ -20,7 +20,7 @@ Camera::Camera(const Vec3d& pos, const Vec3d& la) :
 void Camera::compute_camera_basis()
 {
     _up     = cross(_direction, Space::XAXIS).normalized();
-    _left  = cross(_up, _direction).normalized();
+    _left   = cross(_up, _direction).normalized();
 }
 
 // Getters

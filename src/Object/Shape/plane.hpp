@@ -2,7 +2,7 @@
 #define __PLANE_HPP__
 
 #include "Math/math.hpp"
-#include "Image/color.inl"
+#include "Image/color.hpp"
 #include "shape.hpp"
 
 class Plane : public Shape

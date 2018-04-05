@@ -2,7 +2,7 @@
 #define __LIGHT_HPP__
 
 #include "Math/math.hpp"
-#include "Image/color.inl"
+#include "Image/color.hpp"
 #include "../object.hpp"
 
 class Light : public Object

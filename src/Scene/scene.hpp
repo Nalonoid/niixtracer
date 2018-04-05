@@ -5,37 +5,36 @@
 #include <memory>
 
 #include "Math/math.hpp"
+#include "Object/object.hpp"
 
-class Object;
 class Shape;
 class Light;
 class Camera;
 class Color;
+class Ray;
 
 class Scene
 {
 public:
     Scene();
-
-    enum class SCENE_OBJECTS { SHAPE, LIGHT, CAMERA };
+    ~Scene();
 
     // Getters
     const std::vector<Shape*>&  shapes() const;
     const std::vector<Light*>&  lights() const;
     const std::vector<Camera*>& cameras() const;
 
-    const Shape&  shape(unsigned i) const;
-    const Light&  light(unsigned i) const;
-    const Camera& camera(unsigned i) const;
+    Shape&  shape(unsigned i) const;
+    Light&  light(unsigned i) const;
+    Camera& camera(unsigned i) const;
 
     // Methods
     template<typename... Args>
     void add(Object *o, Args... objs);
-    void del(unsigned index);
-    const Color& compute_color() const;
 
-private:
-    void add(Object *o);
+    void del(Object::OBJECT_TYPE obj_type, unsigned index);
+    void add(Object *o);    // Terminate the recursion of add(Object *o, Args... objs)
+    const Color compute_color(const Ray& r) const;
 
     // Members
 private:

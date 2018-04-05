@@ -2,11 +2,12 @@
 #define __OBJECT_HPP__
 
 #include "Math/math.hpp"
-#include "Image/color.inl"
 
 class Object
 {
 public:
+    enum class OBJECT_TYPE { SHAPE, LIGHT, CAMERA };
+
     Object(const Vec3d &position = Space::ORIGIN);
 
     virtual ~Object();
@@ -17,6 +18,7 @@ public:
     Vec3d& position();
 
 protected:
+    OBJECT_TYPE _type;
     Vec3d _position;
 };
 

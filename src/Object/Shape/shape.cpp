@@ -1,7 +1,6 @@
 #include "shape.hpp"
 #include "Raytracer/ray.hpp"
 #include "Raytracer/intersection.hpp"
-#include "Image/color.inl"
 
 unsigned Shape::_index = 0;
 
@@ -33,20 +32,19 @@ Color &Shape::color()
     return _color;
 }
 
-
 // Methods
 bool Shape::intersect(Ray &r, double &t)
 {
     if (t >= 0 && t < r.dist_max())
     {
+        r.intersection().exists() = true;
         r.dist_max() = t;
         r.intersection().position() = r.origin() + (t * r.direction());
         r.intersection().ks() = _color;
         r.intersection().kd() = _color;
-        return true;
     }
 
-    return false;
+    return r.intersection().exists();
 }
 
 const Vec3d Shape::normal_at(const Vec3d&)

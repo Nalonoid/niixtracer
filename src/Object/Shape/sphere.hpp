@@ -2,7 +2,7 @@
 #define __SPHERE_HPP__
 
 #include "Math/math.hpp"
-#include "Image/color.inl"
+#include "Image/color.hpp"
 #include "shape.hpp"
 
 using Vec3d = Vector<double>;

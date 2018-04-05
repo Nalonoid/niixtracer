@@ -2,6 +2,7 @@
 
 #include "Image/image.hpp"
 #include "Scene/scene.hpp"
+#include "Scene/scene_examples.inl"
 #include "Raytracer/ray.hpp"
 #include "Object/Camera/camera.hpp"
 #include "Object/Light/light.hpp"
@@ -21,10 +22,11 @@ int main(int argc, char **argv)
     std::cout << "{o}----------------------------------------->\\" << std::endl;
     std::cout << "{o}---{-C-U-S-T-O-M---R-A-Y-T-R-A-C-E-R-}--->/"  << std::endl;
     std::cout << "{o}----------------------------------------->|"  << std::endl
-                                                                   << std::endl;
+              << std::endl;
     Image img(1600, 900);
     img.paint(Colors::BLACK);
 
+    // Display image characteristics
     std::cout << "- Input scene:\t" << "None" << std::endl;
     std::cout << "- Output file:\t" << argv[1] << std::endl;
     std::cout << "- Resolution:\t" << img.width()
@@ -33,21 +35,12 @@ int main(int argc, char **argv)
     std::cout << "- Aspect ratio:\t" << img.aspect_ratio() << std::endl;
 
     // Defining the scene objects
-    Scene scene;
-
-    Camera  c(Vec3d(0, 3, -10), Space::ORIGIN);
-    Light   l1(Vec3d(-7, 10, -10), Colors::RED);
-    Sphere  s1(Vec3d(0, 2, 1), 2.0, Colors::YELLOW);
-    Sphere  s2(Vec3d(2, 1, -1.25), 1.0, Colors::PURPLE);
-    Plane   p(Vec3d(0, 1, 0), 0.0, Colors::MAROON);
-
-    scene.add(dynamic_cast<Object*>(&c),  dynamic_cast<Object*>(&l1),
-              dynamic_cast<Object*>(&s1), dynamic_cast<Object*>(&s2),
-              dynamic_cast<Object*>(&p));
+    const Scene &scene = populate_scene(0);
+    Camera &c = scene.camera(0);
 
     Vec3d left = c.left();
     Vec3d up = 1/img.aspect_ratio() * c.up();
-    Vec3d front = 1/tanf(M_PI * 120.0/360.0) * c.direction();
+    Vec3d front = 1/tanf(PI * 120.0/360.0) * c.direction();
 
     bool collides;
 
@@ -58,19 +51,19 @@ int main(int argc, char **argv)
     {
         for (int i = 0; i < img.width(); ++i)
         {
+            collides = false;
+            double t = 20000;
+
             double  norm_i = (i+0.5)/img.width() - 0.5;
             double  norm_j = (j+0.5)/img.height() - 0.5;
             Vec3d   pixel_position = (norm_i * left) + (norm_j * up) + front;
-
-            Ray r(c.position(), pixel_position.normalized());
-            collides = false;
-            double t = 20000;
+            Ray     r(c.position(), pixel_position.normalized());
 
             for (auto it = scene.shapes().begin(), st = scene.shapes().end(); it != st; ++it)
                 collides = (*it)->intersect(r, t) || collides;
 
             if (collides)
-                img[i][j] = r.intersection().kd();
+                img[i][j] = scene.compute_color(r);
         }
     }
 

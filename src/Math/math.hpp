@@ -3,6 +3,11 @@
 
 #include <ostream>
 
+namespace {
+    float const EPSILON = 0.0011;
+    float const PI      = 3.141592653589;
+}
+
 template <typename T>
 struct Vector
 {
@@ -49,6 +54,8 @@ std::ostream& operator<<(std::ostream &os, const Vector<T> &v);
 
 // Using...
 using Vec3d = Vector<double>;
+using Vec3f = Vector<float>;
+using Vec3i = Vector<int>;
 
 // Space
 namespace Space
