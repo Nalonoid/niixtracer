@@ -82,23 +82,24 @@ void Scene::del(Object::OBJECT_TYPE obj_type, unsigned index)
 
 const Color Scene::compute_color(const Ray& r) const
 {
-    float ambiant_light = 0.2;
-    Intersection i = r.intersection();
+    Intersection intersection = r.intersection();
 
-    Color light_contribution = i.kd();
-    light_contribution.scale(ambiant_light);
+    Vec3d towards_light =
+            (_lights.at(0)->position() - intersection.position()).normalized();
 
-    Vec3d towards_light = _lights.at(0)->position() - i.position();
     double source_distance = towards_light.magnitude();
-    towards_light = towards_light.normalized();
+    double cosine_n_l = intersection.normal().dot(towards_light);
+    double ambiant_light = 0.2;
 
-    double cosine_n_l = i.normal().dot(towards_light);
+    Color obj_color = intersection.kd();
+    Color light_contribution = obj_color * ambiant_light;
 
     /* We need to compute the light contribution only if the normal points
      * towards the light */
     if (cosine_n_l > 0.0)
     {
-        Ray light_ray(i.position() + EPSILON*towards_light, towards_light);
+        Ray light_ray(intersection.position() + EPSILON*towards_light, towards_light);
+        bool in_shadow = false;
         double t;
 
         auto light_intersection =
@@ -106,10 +107,13 @@ const Color Scene::compute_color(const Ray& r) const
                     return shp->intersect(light_ray, t) && t < source_distance;
                 });
 
-        /* If the shadow ray does not intersect an object of the scene, we
-         * compute the light contribution */
-        if (light_intersection == _shapes.end())
-            return i.kd();
+        /* If the shadow ray intersects an object in the scene, we don't compute
+         * the light contribution, because it's in the shadow */
+        in_shadow = light_intersection != _shapes.end();
+
+        if (!in_shadow)
+            light_contribution = (((obj_color * light(0).color()) * cosine_n_l)
+                                 + light_contribution).clamp();
     }
 
     return light_contribution;

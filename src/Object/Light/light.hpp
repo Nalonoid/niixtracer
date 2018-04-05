@@ -13,6 +13,7 @@ public:
 
     // Getters
     unsigned index() const override;
+    const Color& color() const;
 
 private:
     static unsigned _index;

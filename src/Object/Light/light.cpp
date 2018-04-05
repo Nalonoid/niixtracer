@@ -19,3 +19,8 @@ unsigned Light::index() const
 {
     return _index;
 }
+
+const Color& Light::color() const
+{
+    return _color;
+}

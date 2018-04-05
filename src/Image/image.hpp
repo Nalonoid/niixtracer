@@ -12,6 +12,9 @@ struct Pixel
     Pixel(Color c) :
         color(c) {}
 
+    Pixel(double red, double green, double blue) :
+        color(Color(red, green, blue)) {}
+
     Pixel(int red, int green, int blue) :
         color(Color(red, green, blue)) {}
 

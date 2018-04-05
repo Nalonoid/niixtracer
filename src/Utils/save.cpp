@@ -53,7 +53,7 @@ void save2bmp(const char *path, Image img, unsigned dpi)
     fwrite(file_header, 1, 14, file);
     fwrite(info_header, 1, 40, file);
 
-    Color c(0, 0, 0);
+    Color c = Colors::BLACK;
 
     for (unsigned j = 0; j < height; ++j)
     {
@@ -62,9 +62,9 @@ void save2bmp(const char *path, Image img, unsigned dpi)
             c = img.pixels()[i][j].color;
 
             // Using the bmp format pixel values must be stored upside-down
-            unsigned char color[3] = { (unsigned char) c.b(),
-                                       (unsigned char) c.g(),
-                                       (unsigned char) c.r() };
+            unsigned char color[3] = { (unsigned char) (int)(c.b()*255.0),
+                                       (unsigned char) (int)(c.g()*255.0),
+                                       (unsigned char) (int)(c.r()*255.0) };
 
             fwrite(color, 1, 3, file);
         }
