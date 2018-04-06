@@ -3,6 +3,7 @@
 
 #include "Object/object.hpp"
 #include "Image/color.hpp"
+#include "Object/Material/material.hpp"
 
 class Intersection : public Object
 {
@@ -15,19 +16,17 @@ public:
     bool exists() const;
     bool& exists();
 
-    const Color& ks()     const;
-    const Color& kd()     const;
+    const Material* material() const;
+    void set_material(Material *mat);
+
     const Vec3d& normal() const;
 
-    Color& ks();
-    Color& kd();
     Vec3d& normal();
 
 private:
     bool  _exists;
 
-    Color _ks;
-    Color _kd;
+    const Material* _material;
     Vec3d _normal;
 };
 

@@ -69,7 +69,7 @@ void Scene::add(Object* o)
     }
 }
 
-void Scene::del(Object::OBJECT_TYPE obj_type, unsigned index)
+void Scene::del(Object::OBJECT_TYPE, unsigned)
 {
 //    auto it = std::find_if(_objects.begin(), _objects.end(),
 //                            [&] (const Object *o) {
@@ -82,29 +82,42 @@ void Scene::del(Object::OBJECT_TYPE obj_type, unsigned index)
 
 const Color Scene::compute_color(const Ray& r) const
 {
-    Intersection intersection = r.intersection();
-
-    Vec3d towards_light =
-            (_lights.at(0)->position() - intersection.position()).normalized();
-
-    double source_distance = towards_light.magnitude();
-    double cosine_n_l = intersection.normal().dot(towards_light);
     double ambiant_light = 0.2;
 
-    Color obj_color = intersection.kd();
-    Color light_contribution = obj_color * ambiant_light;
+    Color obj_color          = r.intersection().material()->color();
+    Color ambiant_color      = obj_color * ambiant_light;
+    Color diffuse_specular   = compute_blinn_phong(r, obj_color);
+    Color reflect_color      = compute_reflective(r);
+
+    return (ambiant_color + diffuse_specular + reflect_color).clamp();
+}
+
+const Color Scene::compute_blinn_phong(const Ray &ray,
+                                       const Color &obj_color) const
+{
+    Color diffuse   = Colors::BLACK;
+    Color specular  = Colors::BLACK;
+
+    const Intersection &i = ray.intersection();
+    //const Material *mat = i.material();
+
+    Vec3d towards_light =
+            (_lights.at(0)->position() - i.position()).normalized();
+
+    double source_distance = towards_light.magnitude();
+    double cosine_n_l = i.normal().dot(towards_light);
 
     /* We need to compute the light contribution only if the normal points
      * towards the light */
     if (cosine_n_l > 0.0)
     {
-        Ray light_ray(intersection.position() + EPSILON*towards_light, towards_light);
+        Ray shadow_ray(i.position() + EPSILON*towards_light, towards_light);
         bool in_shadow = false;
         double t;
 
         auto light_intersection =
                 std::find_if(_shapes.begin(), _shapes.end(), [&] (Shape *shp) {
-                    return shp->intersect(light_ray, t) && t < source_distance;
+                    return shp->intersect(shadow_ray, t) && t < source_distance;
                 });
 
         /* If the shadow ray intersects an object in the scene, we don't compute
@@ -112,9 +125,39 @@ const Color Scene::compute_color(const Ray& r) const
         in_shadow = light_intersection != _shapes.end();
 
         if (!in_shadow)
-            light_contribution = (((obj_color * light(0).color()) * cosine_n_l)
-                                 + light_contribution).clamp();
+        {
+            diffuse  = (((obj_color * light(0).color()) * cosine_n_l)
+                        + diffuse).clamp();
+            specular = specular + compute_specular(ray, light(0));
+        }
     }
 
-    return light_contribution;
+    return diffuse + specular;
+}
+
+const Color Scene::compute_specular(const Ray &ray,
+                             const Light &light) const
+{
+    Intersection i = ray.intersection();
+    double shininess = i.material()->shininess();
+
+    if (shininess <= 0.0)
+        return Colors::BLACK;
+
+    Vec3d view_vect  = (ray.origin() - i.position()).normalized();
+    Vec3d light_vect = (light.position() - i.position()).normalized();
+    Vec3d light_reflected = light_vect.reflect(i.normal());
+
+    // Angle between the view vector and the reflected light
+    double cosine_v_r = view_vect.dot(light_reflected);
+
+    if (cosine_v_r <= 0.0)
+        return Colors::BLACK;
+
+    return pow(cosine_v_r, 5) * Colors::WHITE * light.color().a;
+}
+
+const Color Scene::compute_reflective(const Ray &ray) const
+{
+    return Colors::BLACK;
 }

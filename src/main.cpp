@@ -38,8 +38,8 @@ int main(int argc, char **argv)
     const Scene &scene = populate_scene(0);
     Camera &c = scene.camera(0);
 
-    Vec3d left = c.left();
-    Vec3d up = 1/img.aspect_ratio() * c.up();
+    Vec3d left  = c.left();
+    Vec3d up    = 1/img.aspect_ratio() * c.up();
     Vec3d front = 1/tanf(PI * 120.0/360.0) * c.direction();
 
     bool collides;

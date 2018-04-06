@@ -4,14 +4,14 @@
 
 unsigned Shape::_index = 0;
 
-Shape::Shape(const Vec3d &position, const Color &color) :
-    Object(position), _color(color)
+Shape::Shape(const Vec3d &position, const Material &material) :
+    Object(position), _material(material)
 {
     _index++;
 }
 
-Shape::Shape(const Color &color) :
-    Object(Space::ORIGIN), _color(color)
+Shape::Shape(const Material &material) :
+    Object(Space::ORIGIN), _material(material)
 {
     _index++;
 }
@@ -22,14 +22,14 @@ unsigned Shape::index() const
     return _index;
 }
 
-const Color& Shape::color() const
+const Material& Shape::material() const
 {
-    return _color;
+    return _material;
 }
 
-Color &Shape::color()
+Material &Shape::material()
 {
-    return _color;
+    return _material;
 }
 
 // Methods
@@ -40,8 +40,7 @@ bool Shape::intersect(Ray &r, double &t)
         r.intersection().exists() = true;
         r.dist_max() = t;
         r.intersection().position() = r.origin() + (t * r.direction());
-        r.intersection().ks() = _color;
-        r.intersection().kd() = _color;
+        r.intersection().set_material(&_material);
     }
 
     return r.intersection().exists();

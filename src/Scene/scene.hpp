@@ -12,6 +12,7 @@ class Light;
 class Camera;
 class Color;
 class Ray;
+class Intersection;
 
 class Scene
 {
@@ -34,7 +35,12 @@ public:
 
     void del(Object::OBJECT_TYPE obj_type, unsigned index);
     void add(Object *o);    // Terminate the recursion of add(Object *o, Args... objs)
-    const Color compute_color(const Ray& r) const;
+
+
+    const Color compute_color(const Ray &r) const;
+    const Color compute_blinn_phong(const Ray &ray, const Color &color) const;
+    const Color compute_specular(const Ray &ray, const Light &light) const;
+    const Color compute_reflective(const Ray &ray) const;
 
     // Members
 private:

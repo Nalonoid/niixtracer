@@ -2,10 +2,13 @@
 #include "Raytracer/ray.hpp"
 
 Plane::Plane(const Vec3d &normal, double distance) :
-    _normal(normal), _distance(distance) {}
+    Shape(Materials::DEFAULT), _normal(normal), _distance(distance) {}
 
 Plane::Plane(const Vec3d &normal, double distance, const Color &color) :
-    Shape(color), _normal(normal), _distance(distance) {}
+    Shape(Material(color)), _normal(normal), _distance(distance) {}
+
+Plane::Plane(const Vec3d &normal, double distance, const Material &mat) :
+    Shape(mat), _normal(normal), _distance(distance) {}
 
 const Vec3d& Plane::normal() const
 {

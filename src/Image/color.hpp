@@ -34,11 +34,9 @@ struct Color
 
 // Operators
 Color operator+(const Color &c1, const Color &c2);
-
 Color operator-(const Color &c1, const Color &c2);
-
 Color operator*(const Color &c, const double scalar);
-
+Color operator*(const double scalar, const Color &c);
 Color operator*(const Color &c1, const Color &c2);
 
 namespace Colors

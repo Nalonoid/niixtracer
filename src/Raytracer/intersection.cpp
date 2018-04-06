@@ -1,6 +1,6 @@
 #include "intersection.hpp"
 
-Intersection::Intersection() : _exists(false), _ks(Colors::BLACK), _kd(Colors::BLACK) {}
+Intersection::Intersection() : _exists(false), _material(&Materials::DEFAULT) {}
 
 unsigned Intersection::index() const
 {
@@ -17,25 +17,16 @@ bool& Intersection::exists()
     return _exists;
 }
 
-const Color& Intersection::ks() const
+const Material* Intersection::material() const
 {
-    return _ks;
+    return _material;
 }
 
-const Color& Intersection::kd() const
+void Intersection::set_material(Material *mat)
 {
-    return _kd;
+    _material = mat;
 }
 
-Color& Intersection::ks()
-{
-    return _ks;
-}
-
-Color& Intersection::kd()
-{
-    return _kd;
-}
 
 const Vec3d& Intersection::normal() const
 {

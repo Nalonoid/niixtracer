@@ -7,7 +7,7 @@ Sphere::Sphere(const Vec3d &position, double radius) :
     Shape(position), _radius(radius) {}
 
 Sphere::Sphere(const Vec3d &position, double radius, const Color &color) :
-    Shape(position, color), _radius(radius) {}
+    Shape(position, Material(color)), _radius(radius) {}
 
 // Getters
 double Sphere::radius() const

@@ -30,6 +30,7 @@ struct Vector
     Vector<T> negative() const;
     Vector<T> add(const Vector<T> &v) const;
     Vector<T> mult(const double scalar) const;
+    Vector<T> reflect(const Vector<T> &normal) const;
 };
 
 // Methods

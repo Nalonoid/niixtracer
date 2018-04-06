@@ -3,23 +3,22 @@
 
 #include "Math/math.hpp"
 #include "../object.hpp"
-#include "Image/color.hpp"
+#include "../Material/material.hpp"
 
 class Ray;
-class Color;
 
 class Shape : public Object
 {
 public:   
-    Shape(const Vec3d &position = Space::ORIGIN,
-          const Color &color = Colors::YELLOW);
+    Shape(const Vec3d &position     = Space::ORIGIN,
+          const Material &material  = Materials::DEFAULT);
 
-    Shape(const Color &color);
+    Shape(const Material &material);
 
     // Getters
     unsigned index() const override;
-    const Color& color() const;
-    Color& color();
+    const Material& material() const;
+    Material& material();
 
     // Methods
     virtual bool intersect(Ray &r, double &dist) = 0;
@@ -27,7 +26,7 @@ public:
 
 private:
     static unsigned _index;
-    Color _color;
+    Material _material;
 };
 
 #endif
