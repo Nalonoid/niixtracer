@@ -18,7 +18,7 @@ struct Material
     double  _refraction;
 
     Material(Color c) :
-        _color(c), _shininess(0.2), _reflection(0.2), _refraction(0.0) {}
+        _color(c), _shininess(0.25), _reflection(0.2), _refraction(0.0) {}
 
     Material(Color c, double sh, double refl, double refr) :
         _color(c), _shininess(sh), _reflection(refl), _refraction(refr) {}

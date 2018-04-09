@@ -4,7 +4,7 @@
 unsigned Ray::_number = 0;
 
 Ray::Ray(const Vec3d& ori, const Vec3d& dir) :
-    _origin(ori), _direction(dir), _dist_max(2000), _bounces(0)
+    _origin(ori), _direction(dir), _dist_max(20000), _bounces(0)
 {
     _number++;
 }

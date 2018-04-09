@@ -2,6 +2,8 @@
 
 #include "scene.hpp"
 #include "Object/Shape/shape.hpp"
+#include "Object/Shape/sphere.hpp"
+#include "Object/Shape/plane.hpp"
 #include "Object/Light/light.hpp"
 #include "Object/Camera/camera.hpp"
 
@@ -30,17 +32,17 @@ const std::vector<Camera*>& Scene::cameras() const
 
 Shape& Scene::shape(unsigned i) const
 {
-    return *_shapes[i];
+    return *(_shapes[i]);
 }
 
 Light& Scene::light(unsigned i) const
 {
-    return *_lights[i];
+    return *(_lights[i]);
 }
 
 Camera& Scene::camera(unsigned i) const
 {
-    return *_cameras[i];
+    return *(_cameras[i]);
 }
 
 // Methods
@@ -52,18 +54,31 @@ void Scene::add(Object* o)
 
     if (shape)
     {
+        std::cout << "SHAPE" << std::endl;
+        Sphere *s = dynamic_cast<Sphere*>(shape);
+        if (s)
+            std::cout << "SPHERE!" << std::endl;
+
+        Plane *p = dynamic_cast<Plane*>(shape);
+        if (p)
+            std::cout << "PLANE!" << std::endl;
+
         _shapes.push_back(shape);
         return;
     }
 
     if (light)
     {
+        std::cout << "LIGHT" << std::endl;
+
         _lights.push_back(light);
         return;
     }
 
     if (camera)
     {
+        std::cout << "CAMERA" << std::endl;
+
         _cameras.push_back(camera);
         return;
     }
@@ -95,16 +110,15 @@ const Color Scene::compute_color(const Ray& r) const
 const Color Scene::compute_blinn_phong(const Ray &ray,
                                        const Color &obj_color) const
 {
-    Color diffuse   = Colors::BLACK;
-    Color specular  = Colors::BLACK;
+    Color diffuse  = Colors::BLACK;
+    Color specular = Colors::BLACK;
 
     const Intersection &i = ray.intersection();
-    //const Material *mat = i.material();
 
-    Vec3d towards_light =
-            (_lights.at(0)->position() - i.position()).normalized();
-
+    Vec3d towards_light = light(0).position() - i.position();
     double source_distance = towards_light.magnitude();
+    towards_light = towards_light.normalized();
+
     double cosine_n_l = i.normal().dot(towards_light);
 
     /* We need to compute the light contribution only if the normal points
@@ -113,22 +127,21 @@ const Color Scene::compute_blinn_phong(const Ray &ray,
     {
         Ray shadow_ray(i.position() + EPSILON*towards_light, towards_light);
         bool in_shadow = false;
-        double t;
 
         auto light_intersection =
                 std::find_if(_shapes.begin(), _shapes.end(), [&] (Shape *shp) {
-                    return shp->intersect(shadow_ray, t) && t < source_distance;
+                    return shp->intersect(shadow_ray)
+                           && shadow_ray.dist_max() < source_distance;
                 });
 
-        /* If the shadow ray intersects an object in the scene, we don't compute
-         * the light contribution, because it's in the shadow */
         in_shadow = light_intersection != _shapes.end();
 
         if (!in_shadow)
         {
-            diffuse  = (((obj_color * light(0).color()) * cosine_n_l)
-                        + diffuse).clamp();
-            specular = specular + compute_specular(ray, light(0));
+            diffuse  = ((obj_color * cosine_n_l) + diffuse) * light(0).color().brightness();
+
+            if (i.material()->shininess() > 0)
+                specular = specular + compute_specular(ray, light(0));
         }
     }
 
@@ -138,23 +151,21 @@ const Color Scene::compute_blinn_phong(const Ray &ray,
 const Color Scene::compute_specular(const Ray &ray,
                              const Light &light) const
 {
+    Color specular = Colors::BLACK;
     Intersection i = ray.intersection();
     double shininess = i.material()->shininess();
 
-    if (shininess <= 0.0)
-        return Colors::BLACK;
-
     Vec3d view_vect  = (ray.origin() - i.position()).normalized();
-    Vec3d light_vect = (light.position() - i.position()).normalized();
-    Vec3d light_reflected = light_vect.reflect(i.normal());
+    Vec3d light_vect = (i.position() - light.position()).normalized();
+    Vec3d light_reflected = light_vect.reflect(i.normal().normalized());
 
     // Angle between the view vector and the reflected light
     double cosine_v_r = view_vect.dot(light_reflected);
 
-    if (cosine_v_r <= 0.0)
-        return Colors::BLACK;
+    if (cosine_v_r > 0.0)
+        specular = pow(cosine_v_r, 10) * light.color() * shininess;
 
-    return pow(cosine_v_r, 5) * Colors::WHITE * light.color().a;
+    return specular;
 }
 
 const Color Scene::compute_reflective(const Ray &ray) const

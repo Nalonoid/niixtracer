@@ -52,15 +52,14 @@ int main(int argc, char **argv)
         for (int i = 0; i < img.width(); ++i)
         {
             collides = false;
-            double t = 20000;
 
             double  norm_i = (i+0.5)/img.width() - 0.5;
             double  norm_j = (j+0.5)/img.height() - 0.5;
-            Vec3d   pixel_position = (norm_i * left) + (norm_j * up) + front;
-            Ray     r(c.position(), pixel_position.normalized());
+            Vec3d   towards_pixel = (norm_i * left) + (norm_j * up) + front;
+            Ray     r(c.position(), towards_pixel.normalized());
 
-            for (auto it = scene.shapes().begin(), st = scene.shapes().end(); it != st; ++it)
-                collides = (*it)->intersect(r, t) || collides;
+            for (auto it = scene.shapes().begin(); it < scene.shapes().end(); it++)
+                collides = (*it)->intersect(r) || collides;
 
             if (collides)
                 img[i][j] = scene.compute_color(r);

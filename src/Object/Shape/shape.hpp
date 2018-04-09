@@ -21,8 +21,10 @@ public:
     Material& material();
 
     // Methods
-    virtual bool intersect(Ray &r, double &dist) = 0;
+    virtual bool intersect(Ray &r) = 0;
     virtual const Vec3d normal_at(const Vec3d& point) = 0;
+
+    bool intersect(Ray &r, double dist);
 
 private:
     static unsigned _index;

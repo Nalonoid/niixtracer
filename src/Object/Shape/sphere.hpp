@@ -19,7 +19,7 @@ public:
     double& radius();
 
     // Methods
-    bool intersect(Ray &r, double &dist) override;
+    bool intersect(Ray &r) override;
     const Vec3d normal_at(const Vec3d& point) override;
 
 private:

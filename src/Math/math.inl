@@ -54,7 +54,7 @@ Vector<T> Vector<T>::mult(const double scalar) const
 template <typename T>
 Vector<T> Vector<T>::reflect(const Vector<T> &normal) const
 {
-    return 2 * normal * (*this).dot(normal) - (*this);
+    return (*this) - 2 * normal * (*this).dot(normal);
 }
 
 // Function overloading operators

@@ -33,7 +33,7 @@ Material &Shape::material()
 }
 
 // Methods
-bool Shape::intersect(Ray &r, double &t)
+bool Shape::intersect(Ray &r, double t)
 {
     if (t >= 0 && t < r.dist_max())
     {
@@ -41,9 +41,11 @@ bool Shape::intersect(Ray &r, double &t)
         r.dist_max() = t;
         r.intersection().position() = r.origin() + (t * r.direction());
         r.intersection().set_material(&_material);
+
+        return true;
     }
 
-    return r.intersection().exists();
+    return false;
 }
 
 const Vec3d Shape::normal_at(const Vec3d&)
