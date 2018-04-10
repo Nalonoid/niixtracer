@@ -32,21 +32,24 @@ public:
     // Methods
     template<typename... Args>
     void add(Object *o, Args... objs);
-
-    void del(Object::OBJECT_TYPE obj_type, unsigned index);
     void add(Object *o);    // Terminate the recursion of add(Object *o, Args... objs)
+    void del(Object::OBJECT_TYPE obj_type, unsigned index);
 
+    Color launch(Ray &ray) const;
 
-    const Color compute_color(const Ray &r) const;
-    const Color compute_blinn_phong(const Ray &ray, const Color &color) const;
-    const Color compute_specular(const Ray &ray, const Light &light) const;
-    const Color compute_reflective(const Ray &ray) const;
+    const Color compute_color(Ray &r) const;
+    const Color compute_blinn_phong(Ray &ray, const Color &color) const;
+    const Color compute_specular(Ray &ray, const Light &light) const;
+    const Color compute_reflective(Ray &ray) const;
+    const Color compute_refractive(Ray &ray) const;
 
     // Members
 private:
-    std::vector<Shape*>     _shapes;
-    std::vector<Light*>     _lights;
-    std::vector<Camera*>    _cameras;
+    std::vector<Shape*>  _shapes;
+    std::vector<Light*>  _lights;
+    std::vector<Camera*> _cameras;
+
+    unsigned _max_depth;
 };
 
 // Templated methods implementation must be in the .hpp file in order to compile

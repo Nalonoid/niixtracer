@@ -24,3 +24,8 @@ const Color& Light::color() const
 {
     return _color;
 }
+
+double Light::brightness() const
+{
+    return _color.brightness();
+}

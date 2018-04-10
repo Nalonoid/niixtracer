@@ -5,6 +5,11 @@ const Color& Material::color() const
     return _color;
 }
 
+Color& Material::color()
+{
+    return _color;
+}
+
 double Material::shininess() const
 {
     return _shininess;

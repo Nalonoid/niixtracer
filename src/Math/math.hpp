@@ -4,8 +4,8 @@
 #include <ostream>
 
 namespace {
-    float const EPSILON = 0.0011;
-    float const PI      = 3.141592653589;
+    float const EPSILON { 0.001          };
+    float const PI      { 3.141592653589 };
 }
 
 template <typename T>

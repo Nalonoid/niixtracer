@@ -1,19 +1,19 @@
 #ifndef __UTILS_HPP__
 #define __UTILS_HPP__
 
-inline float clamp(float value, float min, float max)
+inline double clamp(double value, double min, double max)
 {
     return value < min ?
                 min : value > max ?
                     max : value;
 }
 
-inline float max(float a, float b)
+inline double max(double a, double b)
 {
     return a > b ? a : b;
 }
 
-inline float min(float a, float b)
+inline double min(double a, double b)
 {
     return a < b ? a : b;
 }

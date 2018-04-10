@@ -10,6 +10,13 @@ Plane::Plane(const Vec3d &normal, double distance, const Color &color) :
 Plane::Plane(const Vec3d &normal, double distance, const Material &mat) :
     Shape(mat), _normal(normal), _distance(distance) {}
 
+Plane::Plane(const Vec3d &normal, double distance, const Color &color,
+      const Material &mat) :
+    Shape(mat), _normal(normal), _distance(distance)
+{
+    material().color() = color;
+}
+
 const Vec3d& Plane::normal() const
 {
     return _normal;
@@ -32,8 +39,10 @@ double& Plane::distance()
 
 bool Plane::intersect(Ray &r)
 {
-    double rd_n = r.direction().dot(_normal);
-    double dist = -1;
+    double  dist        { -1 };
+    bool    intersects  { false };
+
+    double rd_n { r.direction().dot(_normal) };
 
     /* The ray is parallel to the plane if rd_n == 0. */
     if (rd_n != 0)
@@ -42,14 +51,12 @@ bool Plane::intersect(Ray &r)
 
         /* We return the distance from the origin of
         * the ray to the intersection point on the plane in t. */
-        if (Shape::intersect(r, dist))
-        {
+        if ((intersects = Shape::intersect(r, dist)))
             r.intersection().normal() = _normal;
-            return true;
-        }
+
     }
 
-    return false;
+    return intersects;
 }
 
 

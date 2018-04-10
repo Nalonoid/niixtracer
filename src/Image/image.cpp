@@ -11,12 +11,12 @@ Image::Image(int width, int height) :
     _pixels.resize(width, std::vector<Pixel>(height, Pixel(192, 0, 255)));
 }
 
-int Image::height() const
+unsigned Image::height() const
 {
     return _height;
 }
 
-int Image::width() const
+unsigned Image::width() const
 {
     return _width;
 }

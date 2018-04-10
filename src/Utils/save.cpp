@@ -6,14 +6,14 @@
 
 void save2bmp(const char *path, Image img, unsigned dpi)
 {
-    unsigned width      = img.width();
-    unsigned height     = img.height();
-    unsigned data_size  = 4 * width * height;
-    unsigned file_size  = 54 + data_size;
+    unsigned width      { img.width()        };
+    unsigned height     { img.height()       };
+    unsigned data_size  { 4 * width * height };
+    unsigned file_size  { 54 + data_size     };
 
-    double factor = 39.375;
-    int m         = static_cast<int>(factor);
-    int ppm       = dpi * m;
+    double factor { 39.375                        };
+    unsigned m    { static_cast<unsigned>(factor) };
+    unsigned ppm  { dpi * m                       };
 
     unsigned char file_header[14] = { 'B', 'M', 0,0,0,0, 0,0, 0,0, 54,0,0,0 };
     unsigned char info_header[40] = { 40,0,0,0, 0,0,0,0, 0,0, 0,0, 1,0,24,0 };
@@ -48,23 +48,23 @@ void save2bmp(const char *path, Image img, unsigned dpi)
     info_header[31] = (unsigned char) (ppm >> 16);
     info_header[32] = (unsigned char) (ppm >> 24);
 
-    FILE *file = fopen(path, "wb");
+    FILE *file { fopen(path, "wb") };
 
     fwrite(file_header, 1, 14, file);
     fwrite(info_header, 1, 40, file);
 
-    Color c = Colors::BLACK;
+    Color c { Colors::BLACK };
 
-    for (unsigned j = 0; j < height; ++j)
+    for (unsigned j {0}; j < height; ++j)
     {
-        for (unsigned i = 0; i < width; ++i)
+        for (unsigned i {0}; i < width; ++i)
         {
             c = img.pixels()[i][j].color;
 
             // Using the bmp format pixel values must be stored upside-down
-            unsigned char color[3] = { (unsigned char) (int)(c.b()*255.0),
-                                       (unsigned char) (int)(c.g()*255.0),
-                                       (unsigned char) (int)(c.r()*255.0) };
+            unsigned char color[3] { (unsigned char) (int)(c.b()*255.0)
+                                    ,(unsigned char) (int)(c.g()*255.0)
+                                    ,(unsigned char) (int)(c.r()*255.0) };
 
             fwrite(color, 1, 3, file);
         }

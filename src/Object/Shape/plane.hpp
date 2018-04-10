@@ -11,6 +11,8 @@ public:
     Plane(const Vec3d &normal = Space::YAXIS, double distance = 0.0);
     Plane(const Vec3d &normal, double distance, const Color &color);
     Plane(const Vec3d &normal, double distance, const Material &mat);
+    Plane(const Vec3d &normal, double distance, const Color &color,
+          const Material &mat);
 
     // Getters
     const Vec3d& normal() const;

@@ -34,7 +34,7 @@ Material &Shape::material()
 
 // Methods
 bool Shape::intersect(Ray &r, double t)
-{
+{   
     if (t >= 0 && t < r.dist_max())
     {
         r.intersection().exists() = true;

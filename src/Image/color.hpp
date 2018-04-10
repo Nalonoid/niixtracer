@@ -41,19 +41,19 @@ Color operator*(const Color &c1, const Color &c2);
 
 namespace Colors
 {
-const struct Color BLACK    = { 0.0 , 0.0 , 0.0 , 1. };
-const struct Color WHITE    = { 1.0 , 1.0 , 1.0 , 1. };
-const struct Color GRAY     = { 0.5 , 0.5 , 0.5 , 1. };
-const struct Color RED      = { 1.0 , 0.0 , 0.0 , 1. };
-const struct Color GREEN    = { 0.0 , 1.0 , 0.0 , 1. };
-const struct Color BLUE     = { 0.0 , 0.0 , 1.0 , 1. };
-const struct Color MAGENTA  = { 1.0 , 0.0 , 1.0 , 1. };
-const struct Color YELLOW   = { 1.0 , 1.0 , 0.0 , 1. };
-const struct Color CYAN     = { 0.0 , 1.0 , 1.0 , 1. };
-const struct Color ORANGE   = { 1.0 , 0.65, 0.0 , 1. };
-const struct Color PURPLE   = { 0.5 , 0.0,  1.0 , 1. };
-const struct Color LIME     = { 0.63, 1.0 , 0.23, 1. };
-const struct Color MAROON   = { 0.5 , 0.25, 0.25, 1. };
+const struct Color BLACK    { 0.0 , 0.0 , 0.0 , 1. };
+const struct Color WHITE    { 1.0 , 1.0 , 1.0 , 1. };
+const struct Color GRAY     { 0.5 , 0.5 , 0.5 , 1. };
+const struct Color RED      { 1.0 , 0.0 , 0.0 , 1. };
+const struct Color GREEN    { 0.0 , 1.0 , 0.0 , 1. };
+const struct Color BLUE     { 0.0 , 0.0 , 1.0 , 1. };
+const struct Color MAGENTA  { 1.0 , 0.0 , 1.0 , 1. };
+const struct Color YELLOW   { 1.0 , 1.0 , 0.0 , 1. };
+const struct Color CYAN     { 0.0 , 1.0 , 1.0 , 1. };
+const struct Color ORANGE   { 1.0 , 0.65, 0.0 , 1. };
+const struct Color PURPLE   { 0.5 , 0.0,  1.0 , 1. };
+const struct Color LIME     { 0.63, 1.0 , 0.23, 1. };
+const struct Color MAROON   { 0.5 , 0.25, 0.25, 1. };
 
 Color average(const Color &c1, const Color &c2);
 

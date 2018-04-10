@@ -21,7 +21,8 @@ double Vector<T>::dot(const Vector<T> &v) const
 template <typename T>
 Vector<T> Vector<T>::normalized() const
 {
-    double m = magnitude();
+    double m { magnitude() };
+
     return Vector<T>(x/m, y/m, z/m);
 }
 
@@ -54,7 +55,7 @@ Vector<T> Vector<T>::mult(const double scalar) const
 template <typename T>
 Vector<T> Vector<T>::reflect(const Vector<T> &normal) const
 {
-    return (*this) - 2 * normal * (*this).dot(normal);
+    return (*this) - 2 * (*this).dot(normal) * normal;
 }
 
 // Function overloading operators
@@ -93,9 +94,9 @@ namespace Space
 {
 
 const struct Space<> ORTHONORMAL_BASIS;
-const Vector<double> ORIGIN = { 0, 0, 0 };
-const Vector<double> XAXIS  = { 1, 0, 0 };
-const Vector<double> YAXIS  = { 0, 1, 0 };
-const Vector<double> ZAXIS  = { 0, 0, 1 };
+const Vector<double> ORIGIN { 0, 0, 0 };
+const Vector<double> XAXIS  { 1, 0, 0 };
+const Vector<double> YAXIS  { 0, 1, 0 };
+const Vector<double> ZAXIS  { 0, 0, 1 };
 
 }

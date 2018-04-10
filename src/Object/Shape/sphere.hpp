@@ -13,6 +13,8 @@ public:
     Sphere();
     Sphere(const Vec3d &position, double radius = 1.0);
     Sphere(const Vec3d &position, double radius, const Color &color);
+    Sphere(const Vec3d &position, double radius, const Color &color,
+           const Material &mat);
 
     // Getters
     double radius() const;

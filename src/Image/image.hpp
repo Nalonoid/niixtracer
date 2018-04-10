@@ -28,10 +28,12 @@ public:
     Image(int width, int height);
 
     // Getters
-    int height() const;
-    int width() const;
+    unsigned height() const;
+    unsigned width()  const;
+
     const std::vector<std::vector<Pixel>>& pixels() const;
     std::vector<std::vector<Pixel>>& pixels();
+
     double aspect_ratio() const;
 
     // Operators
@@ -42,8 +44,8 @@ public:
     void paint(Color c);
 
 private:
-    int _width;
-    int _height;
+    unsigned _width;
+    unsigned _height;
     std::vector<std::vector<Pixel>> _pixels;
 };
 

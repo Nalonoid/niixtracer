@@ -9,6 +9,13 @@ Sphere::Sphere(const Vec3d &position, double radius) :
 Sphere::Sphere(const Vec3d &position, double radius, const Color &color) :
     Shape(position, Material(color)), _radius(radius) {}
 
+Sphere::Sphere(const Vec3d &position, double radius, const Color &color,
+       const Material &mat) :
+    Shape(position, mat), _radius(radius)
+{
+    material().color() = color;
+}
+
 // Getters
 double Sphere::radius() const
 {
@@ -23,28 +30,27 @@ double& Sphere::radius()
 // Methods
 bool Sphere::intersect(Ray &r)
 {
-    Vec3d  oc    = r.origin() - _position;
-    double b     = 2*(oc.dot(r.direction()));
-    double c     = (oc.dot(oc)) - (_radius*_radius);
-    double discr = b*b - 4*c;
+    Vec3d  oc    { r.origin() - _position           };
+    double b     { 2*(oc.dot(r.direction()))        };
+    double c     { (oc.dot(oc)) - (_radius*_radius) };
+    double discr { b*b - 4*c                        };
 
-    double dist = -1;
+    bool   intersects  { false };
+    double dist        { -1    };
 
     if (discr > 0)
     {   
-        float t1 = ((-1)*b - sqrt(discr))*0.5;
-        float t2 = ((-1)*b + sqrt(discr))*0.5;
+        double t1 { ((-1)*b - sqrt(discr))*0.5 };
+        double t2 { ((-1)*b + sqrt(discr))*0.5 };
+
         dist = t1 < t2 ? t1 : t2;
 
-        if (Shape::intersect(r, dist))
-        {
+        if ((intersects = Shape::intersect(r, dist)))
             r.intersection().normal() =
                     (r.intersection().position() - _position).normalized();
-            return true;
-        }
     }
 
-    return false;
+    return intersects;
 }
 
 const Vec3d Sphere::normal_at(const Vec3d &p)

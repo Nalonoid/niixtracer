@@ -25,6 +25,7 @@ public:
     Vec3d& origin();
     Vec3d& direction();
     double& dist_max();
+    unsigned& bounces();
     Intersection& intersection();
 
 private:

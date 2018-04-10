@@ -14,6 +14,7 @@ public:
     // Getters
     unsigned index() const override;
     const Color& color() const;
+    double brightness() const;
 
 private:
     static unsigned _index;
