@@ -1,6 +1,8 @@
 #include <iostream>
 #include <chrono>
 
+#include <omp.h>
+
 #include "Image/image.hpp"
 #include "Scene/scene.hpp"
 #include "Scene/scene_examples.inl"
@@ -48,17 +50,14 @@ int main(int argc, char **argv)
     Vec3d up    { 1/img.aspect_ratio() * c.up()             };
     Vec3d front { 1/tanf(PI * 120.0/360.0) * c.direction()  };
 
-    bool collides;
-
     std::cout << std::endl
               << "{o}------------R-E-N-D-E-R-I-N-G------------>|" << std::endl;
 
-    for (unsigned j {0}; j < img.height(); ++j)
+    #pragma omp parallel for
+    for (unsigned j = 0; j < img.height(); ++j)
     {
-        for (unsigned i {0}; i < img.width(); ++i)
+        for (unsigned i = 0; i < img.width(); ++i)
         {
-            collides = false;
-
             double  norm_i        { (i+0.5)/img.width() - 0.5               };
             double  norm_j        { (j+0.5)/img.height() - 0.5              };
             Vec3d   towards_pixel { (norm_i * left) + (norm_j * up) + front };

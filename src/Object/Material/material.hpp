@@ -20,7 +20,7 @@ struct Material
     double  _refraction;
 
     Material(Color c) :
-        _color(c), _shininess(250), _reflection(0.2), _refraction(0.0) {}
+        _color(c), _shininess(250), _reflection(0.2), _refraction(1.5) {}
 
     Material(Color c, double sh, double refl, double refr) :
         _color(c), _shininess(sh), _reflection(refl), _refraction(refr) {}
@@ -29,12 +29,11 @@ struct Material
 namespace Materials
 {
 
-const struct Material DEFAULT { Colors::MAROON,   1.0, 0.2, 1.3 };
-const struct Material PLASTIC { Colors::CYAN,   100.0, 0.2, 1.6 };
-const struct Material GLASS   { Colors::CYAN,    50.0, 0.2, 1.5 };
+const struct Material DEFAULT { Colors::MAROON,   1.0, 0.5, 1.3 };
+const struct Material PLASTIC { Colors::CYAN,   100.0, 0.5, 1.6 };
+const struct Material GLASS   { Colors::CYAN,    50.0, 0.5, 1.5 };
 const struct Material DIFFUSE { Colors::BLUE,     0.0, 0.0, 0.0 };
-
-
+const struct Material GLOSSY  { Colors::WHITE,   25.0, 0.0, 2.4 };
 }
 
 #endif

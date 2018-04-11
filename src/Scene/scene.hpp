@@ -43,6 +43,9 @@ public:
     const Color compute_reflective(Ray &ray) const;
     const Color compute_refractive(Ray &ray) const;
 
+    double schlick_approx(double n1, double n2,
+                          Vec3d incident, Vec3d normal) const;
+
     // Members
 private:
     std::vector<Shape*>  _shapes;
