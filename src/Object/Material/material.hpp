@@ -29,11 +29,14 @@ struct Material
 namespace Materials
 {
 
-const struct Material DEFAULT { Colors::MAROON,   1.0, 0.5, 1.3 };
-const struct Material PLASTIC { Colors::CYAN,   100.0, 0.5, 1.6 };
-const struct Material GLASS   { Colors::CYAN,    50.0, 0.5, 1.5 };
-const struct Material DIFFUSE { Colors::BLUE,     0.0, 0.0, 0.0 };
-const struct Material GLOSSY  { Colors::WHITE,   25.0, 0.0, 2.4 };
+const struct Material DEFAULT       { Colors::MAROON,  50.0, 0.01, 0.000 };
+const struct Material PLASTIC       { Colors::CYAN,   100.0, 0.50, 1.600 };
+const struct Material METAL         { Colors::CYAN,    50.0, 0.10, 0.000 };
+const struct Material GLASS         { Colors::CYAN,    50.0, 0.50, 1.500 };
+const struct Material DIFFUSE       { Colors::BLUE,     0.0, 0.00, 0.000 };
+const struct Material GLOSSY        { Colors::WHITE,   25.0, 0.90, 2.417 };
+const struct Material TRANSLUCENT   { Colors::WHITE,   100.0, 0.90, 1.020 };
+
 }
 
 #endif

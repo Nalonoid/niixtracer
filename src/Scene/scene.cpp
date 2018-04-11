@@ -61,16 +61,12 @@ void Scene::add(Object* o)
 
     if (light)
     {
-        std::cout << "LIGHT" << std::endl;
-
         _lights.push_back(light);
         return;
     }
 
     if (camera)
     {
-        std::cout << "CAMERA" << std::endl;
-
         _cameras.push_back(camera);
         return;
     }
@@ -103,12 +99,12 @@ Color Scene::launch(Ray &ray) const
 
 const Color Scene::compute_color(Ray &r) const
 {
-    double ambiant_light   { 0.2 };
+    double ambiant_light   { 0.1 };
 
     Color obj_color        { r.intersection().material()->color() };
     Color ambiant_color    { obj_color * ambiant_light };
     Color diffuse_specular { compute_blinn_phong(r, obj_color) };
-    Color reflect_color    { compute_reflective(r) };
+    Color reflect_color    { compute_refl_refractive(r) };
 
     return (ambiant_color + diffuse_specular + reflect_color).clamp();
 }
@@ -189,7 +185,7 @@ const Color Scene::compute_specular(Ray &ray, const Light &light) const
     return specular;
 }
 
-const Color Scene::compute_reflective(Ray &ray) const
+const Color Scene::compute_refl_refractive(Ray &ray) const
 {
     Color refractive { Colors::BLACK };
     Color reflective { Colors::BLACK };
@@ -202,13 +198,8 @@ const Color Scene::compute_reflective(Ray &ray) const
     if (i.material()->reflection() <= 0.0 && i.material()->refraction() <= 0.0)
         return reflective + refractive;
 
-    Vec3d reflect_vect  { ray.direction().reflect(i.normal()) };
-    Ray reflect_ray(i.position() + EPSILON*reflect_vect, reflect_vect);
-
     // If we reached the maximum number of recursive reflections/refractions
-    reflect_ray.bounces() = ray.bounces() + 1;
-
-    if (reflect_ray.bounces() > _max_depth)
+    if (ray.bounces() == _max_depth)
         return reflective + refractive;
 
     // If there is no refraction, we just take the reflection ratio of the material into account
@@ -217,40 +208,56 @@ const Color Scene::compute_reflective(Ray &ray) const
     else
     {
         /* For now we only consider reflection and refraction happening from air to
-         * a second medium. Hence n1 = 1 as an approximation and n1 always <= n2. */
-        double n1 { 1.0                        };
-        double n2 { i.material()->refraction() };
+         * a second medium. Hence n1 = 1 as an approximation. */
+        double n1       { 1.0                               };
+        double n2       { i.material()->refraction()        };
+        double cos_R    { -ray.direction().dot(i.normal())  };
+        double sin2_T   { (n1/n2)*(n1/n2)*(1 - cos_R*cos_R) };
 
-        R = schlick_approx(n1, n2, ray.direction(), i.normal());
+        R = schlick_approx(n1, n2, cos_R, sin2_T);
+        T = 1 - R;
+
+        if (T > 0.0)
+        {
+            double n = n1/n2;
+            Vec3d refract_vect { n * ray.direction() +
+                        (n * cos_R - sqrt(1 - sin2_T))*i.normal() };
+            Ray refract_ray(i.position() + EPSILON*refract_vect, refract_vect);
+
+            refract_ray.bounces() = ray.bounces() + 1;
+
+            refractive = T * launch(refract_ray);
+        }
     }
 
-    T = 1 - R;
-
     if (R > 0.0)
-        reflective = R * launch(reflect_ray);
+    {
+        Vec3d reflect_vect { ray.direction().reflect(i.normal()) };
+        Ray reflect_ray(i.position() + EPSILON*reflect_vect, reflect_vect);
 
-    if (T > 0.0)
-        refractive = T * Colors::BLACK;
+        reflect_ray.bounces() = ray.bounces() + 1;
+
+        reflective = R * launch(reflect_ray);
+    }
 
     return reflective + refractive;
 }
 
-double Scene::schlick_approx(double n1, double n2,
-                             Vec3d incident, Vec3d normal) const
+double Scene::schlick_approx(double n1, double n2, double cos_R, double sin2_T) const
 {
     double R { 0 };
 
-    double cos_R    { -incident.dot(normal)             };
-    double sin2_T   { (n1/n2)*(n1/n2)*(1 - cos_R*cos_R) };
-
     // If sin2(thetaT) > 1 we're in the case of Total Internal Reflection
-    if (sin2_T > 1.0)
+    if (n1 > n2 && sin2_T > 1.0)
         R = 1.0;
     else
     {
-        double R0 { (n1 - n2)/(n1 + n2) };
+        // Cosine of : reflected vector with n or transmitted vector with n
+        double used_cos { n1 > n2 ? sqrt(1 - sin2_T) : cos_R };
+        double R0       { (n1 - n2)/(n1 + n2)                };
         R0 *= R0;
-        R = R0 + (1 - R0) * pow(1 - cos_R, 5);
+
+        R = R0 + (1 - R0) * pow(1 - used_cos, 5);
     }
 
     return R;

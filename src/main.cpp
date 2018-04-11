@@ -74,8 +74,9 @@ int main(int argc, char **argv)
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>
             (chrono_stop - chrono_start).count();
 
-    std::cout << std::endl << "- Rays count:\t" << Ray::number() << std::endl;
-    std::cout << std::endl << "- Execution time:\t" << duration << std::endl;
+    std::cout << std::endl << "- Rays count:\t" << Ray::number() << std::endl
+                           << "- Elapsed time:\t" << duration/1000000.0
+                           << "s" << std::endl;
 
     save2bmp(argv[1], img, 72);
 

@@ -40,11 +40,9 @@ public:
     const Color compute_color(Ray &r) const;
     const Color compute_blinn_phong(Ray &ray, const Color &color) const;
     const Color compute_specular(Ray &ray, const Light &light) const;
-    const Color compute_reflective(Ray &ray) const;
-    const Color compute_refractive(Ray &ray) const;
+    const Color compute_refl_refractive(Ray &ray) const;
 
-    double schlick_approx(double n1, double n2,
-                          Vec3d incident, Vec3d normal) const;
+    double schlick_approx(double n1, double n2, double cos_R, double sin2_T) const;
 
     // Members
 private:
