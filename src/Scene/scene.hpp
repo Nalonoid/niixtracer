@@ -18,6 +18,8 @@ class Scene
 {
 public:
     Scene();
+    Scene(unsigned depth);
+
     ~Scene();
 
     // Getters
@@ -25,9 +27,13 @@ public:
     const std::vector<Light*>&  lights() const;
     const std::vector<Camera*>& cameras() const;
 
+    unsigned max_depth() const;
+
     Shape&  shape(unsigned i) const;
     Light&  light(unsigned i) const;
     Camera& camera(unsigned i) const;
+
+    unsigned& max_depth();
 
     // Methods
     template<typename... Args>

@@ -16,11 +16,20 @@
 int main(int argc, char **argv)
 {
     // Checking input arguments
-    if (argc != 2)
+    if (argc < 2)
     {
-        std::cerr << "usage: " << argv[0] << " output_img" << std::endl;
+        std::cerr << "usage: " << argv[0]
+                  << " output_img [scene_number] [ref{le,ra}ction_depth]"
+                  << std::endl;
         exit(1);
     }
+
+    // Initialize arguments
+    const char *output_path     = argv[1];
+    unsigned scene_number       = static_cast<unsigned>(argc == 3 ?
+                                                            atoi(argv[2]) : 0);
+    unsigned scene_max_depth    = static_cast<unsigned>(argc == 4 ?
+                                                            atoi(argv[3]) : 0);
 
     std::cout << "{o}----------------------------------------->\\" << std::endl;
     std::cout << "{o}---{-C-U-S-T-O-M---R-A-Y-T-R-A-C-E-R-}--->/"  << std::endl;
@@ -43,7 +52,7 @@ int main(int argc, char **argv)
             std::chrono::high_resolution_clock::now();
 
     // Defining the scene objects
-    const Scene &scene  { populate_scene(0) };
+    const Scene &scene  { populate_scene(scene_number, scene_max_depth) };
     Camera &c           { scene.camera(0)   };
 
     Vec3d left  { c.left()                                  };
@@ -78,7 +87,7 @@ int main(int argc, char **argv)
                            << "- Elapsed time:\t" << duration/1000000.0
                            << "s" << std::endl;
 
-    save2bmp(argv[1], img, 72);
+    save2bmp(output_path, img, 72);
 
     std::cout << std::endl
               << "{o}----------------------------------------->|" << std::endl;

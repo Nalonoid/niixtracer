@@ -10,7 +10,9 @@
 
 #include "Raytracer/ray.hpp"
 
-Scene::Scene() : _max_depth(1) {}
+Scene::Scene() : _max_depth(0) {}
+
+Scene::Scene(unsigned depth) : _max_depth(depth) {}
 
 Scene::~Scene() {}
 
@@ -30,6 +32,10 @@ const std::vector<Camera*>& Scene::cameras() const
     return _cameras;
 }
 
+unsigned Scene::max_depth() const
+{
+    return _max_depth;
+}
 
 Shape& Scene::shape(unsigned i) const
 {
@@ -44,6 +50,11 @@ Light& Scene::light(unsigned i) const
 Camera& Scene::camera(unsigned i) const
 {
     return *(_cameras[i]);
+}
+
+unsigned& Scene::max_depth()
+{
+    return _max_depth;
 }
 
 // Methods
@@ -99,14 +110,14 @@ Color Scene::launch(Ray &ray) const
 
 const Color Scene::compute_color(Ray &r) const
 {
-    double ambiant_light   { 0.1 };
+    double ambient_light   { 0.1 };
 
-    Color obj_color        { r.intersection().material()->color() };
-    Color ambiant_color    { obj_color * ambiant_light };
-    Color diffuse_specular { compute_blinn_phong(r, obj_color) };
-    Color reflect_color    { compute_refl_refractive(r) };
+    Color obj_color        { r.intersection().material()->color()   };
+    Color ambient_color    { obj_color * ambient_light              };
+    Color diffuse_specular { compute_blinn_phong(r, obj_color)      };
+    Color reflect_color    { compute_refl_refractive(r)             };
 
-    return (ambiant_color + diffuse_specular + reflect_color).clamp();
+    return (ambient_color + diffuse_specular + reflect_color).clamp();
 }
 
 const Color Scene::compute_blinn_phong(Ray &ray, const Color &obj_color) const
@@ -180,7 +191,7 @@ const Color Scene::compute_specular(Ray &ray, const Light &light) const
     double cosine_v_r { view_vect.dot(refl_vect) };
 
     if (cosine_v_r > 0.0)
-        specular = pow(cosine_v_r, shininess) * light.color();
+        specular = pow(cosine_v_r, shininess*0.25) * light.color();
 
     return specular;
 }
