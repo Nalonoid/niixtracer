@@ -36,6 +36,11 @@ Color average(const Color &c1, const Color &c2)
                  (c1.b() + c2.b())/2);
 }
 
+Color average(const Color &c, unsigned d)
+{
+    return Color(c.r()/(double)d, c.g()/(double)d, c.b()/(double)d);
+}
+
 }
 
 // Operators
@@ -64,4 +69,10 @@ Color operator*(const Color &c1, const Color &c2)
     return Color(c1.r() * c2.r(),
                  c1.g() * c2.g(),
                  c1.b() * c2.b());
+}
+
+Color Color::operator+=(const Color &c)
+{
+    this->rgb = this->rgb + c.rgb;
+    return *this;
 }

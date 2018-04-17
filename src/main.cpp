@@ -16,25 +16,32 @@
 int main(int argc, char **argv)
 {
     // Checking input arguments
-    if (argc < 2)
+    if (argc < 3)
     {
         std::cerr << "usage: " << argv[0]
-                  << " output_img [scene_number] [ref{le,ra}ction_depth]"
+                  << " output_img"                      // Path to the output image
+                     " scene_number"                    // ID of the scene to render
+                     " [mode]"                          // Ray Tracer: rt / Monte Carlo Path Tracing : mcpt
+                     " [super_sampling: 2, 4, 16,..]"   // Anti-aliasing: 4x, 16x, 256x,...
+                     " [ref{le,ra}ction_depth]"         // Maximum number of bounces for ref{le,ra}ction
                   << std::endl;
         exit(1);
     }
 
     // Initialize arguments
-    const char *output_path     = argv[1];
-    unsigned scene_number       = static_cast<unsigned>(argc == 3 ?
-                                                            atoi(argv[2]) : 0);
-    unsigned scene_max_depth    = static_cast<unsigned>(argc == 4 ?
-                                                            atoi(argv[3]) : 0);
+    const char *output_path     { argv[1] };
+    unsigned scene_number       { static_cast<unsigned>(atoi(argv[2])) };
+    std::string mode            { argc >= 4 ? argv[3] : "rt" };
+    unsigned nb_samples_row_col { static_cast<unsigned>(argc >= 5 ?
+                                                           atoi(argv[4]) : 0) };
+    unsigned scene_max_depth    { static_cast<unsigned>(argc >= 6 ?
+                                                           atoi(argv[5]) : 0) };
 
     std::cout << "{o}----------------------------------------->\\" << std::endl;
     std::cout << "{o}---{-C-U-S-T-O-M---R-A-Y-T-R-A-C-E-R-}--->/"  << std::endl;
     std::cout << "{o}----------------------------------------->|"  << std::endl
               << std::endl;
+
     Image img(1600, 900);
     img.paint(Colors::BLACK);
 
@@ -47,34 +54,26 @@ int main(int argc, char **argv)
     std::cout << "- Aspect ratio:\t" << img.aspect_ratio() << std::endl;
 
     // Start the chrono!
-
     std::chrono::high_resolution_clock::time_point chrono_start =
             std::chrono::high_resolution_clock::now();
 
     // Defining the scene objects
-    const Scene &scene  { populate_scene(scene_number, scene_max_depth) };
-    Camera &c           { scene.camera(0)   };
-
-    Vec3d left  { c.left()                                  };
-    Vec3d up    { 1/img.aspect_ratio() * c.up()             };
-    Vec3d front { 1/tanf(PI * 120.0/360.0) * c.direction()  };
+    const Scene &scene  {
+        init_scene(scene_number,
+                   &img,
+                   mode,
+                   nb_samples_row_col,
+                   scene_max_depth)
+    };
 
     std::cout << std::endl
               << "{o}------------R-E-N-D-E-R-I-N-G------------>|" << std::endl;
 
+    // Render the scene
     #pragma omp parallel for
     for (unsigned j = 0; j < img.height(); ++j)
-    {
         for (unsigned i = 0; i < img.width(); ++i)
-        {
-            double  norm_i        { (i+0.5)/img.width() - 0.5               };
-            double  norm_j        { (j+0.5)/img.height() - 0.5              };
-            Vec3d   towards_pixel { (norm_i * left) + (norm_j * up) + front };
-
-            Ray r(c.position(), towards_pixel.normalized());
-            img[i][j] = scene.launch(r);
-        }
-    }
+            scene.render(i, j);
 
     // Stop the chrono!
     std::chrono::high_resolution_clock::time_point chrono_stop =

@@ -12,7 +12,8 @@ Scene SCENE_1(2);
 
 }
 
-const Scene& populate_scene(unsigned index, unsigned max_depth)
+const Scene& init_scene(unsigned index, Image *output_img, std::string& mode,
+                        unsigned samples_per_row_col, unsigned max_depth)
 {
     Scene *s;
 
@@ -61,6 +62,16 @@ const Scene& populate_scene(unsigned index, unsigned max_depth)
         break;
     }
 
-    s->max_depth() = max_depth;
+    s->max_depth()          = max_depth;
+    s->mode()               = mode;
+    s->nb_samples()         = samples_per_row_col;
+    *(s->output_image_p())  = output_img;
+
+    s->camera(0).up()
+            = 1/output_img->aspect_ratio() * s->camera(0).up();
+
+    s->camera(0).direction()
+            = 1/tanf(PI * 120.0/360.0) * s->camera(0).direction();
+
     return *s;
 }

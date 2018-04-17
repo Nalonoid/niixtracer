@@ -13,6 +13,7 @@ class Camera;
 class Color;
 class Ray;
 class Intersection;
+class Image;
 
 class Scene
 {
@@ -28,20 +29,26 @@ public:
     const std::vector<Camera*>& cameras() const;
 
     unsigned max_depth() const;
+    const std::string& mode() const;
+    unsigned nb_samples() const;
+    const Image* output_image_p() const;
 
     Shape&  shape(unsigned i) const;
     Light&  light(unsigned i) const;
     Camera& camera(unsigned i) const;
 
+    Image** output_image_p();
     unsigned& max_depth();
+    std::string& mode();
+    unsigned& nb_samples();
 
     // Methods
     template<typename... Args>
     void add(Object *o, Args... objs);
     void add(Object *o);    // Terminate the recursion of add(Object *o, Args... objs)
-    void del(Object::OBJECT_TYPE obj_type, unsigned index);
 
     Color launch(Ray &ray) const;
+    void render(unsigned i, unsigned j) const;
 
     const Color compute_color(Ray &r) const;
     const Color compute_blinn_phong(Ray &ray, const Color &color) const;
@@ -56,7 +63,10 @@ private:
     std::vector<Light*>  _lights;
     std::vector<Camera*> _cameras;
 
-    unsigned _max_depth;
+    Image*      _output_img;
+    unsigned    _max_depth;
+    std::string _mode;
+    unsigned    _nb_samples;
 };
 
 // Templated methods implementation must be in the .hpp file in order to compile

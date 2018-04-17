@@ -30,6 +30,9 @@ struct Color
     const Color& scale(float p);
     const Color& clamp();
     double       brightness() const;
+
+    // Operators
+    Color operator+=(const Color &c);
 };
 
 // Operators
@@ -56,6 +59,7 @@ const struct Color LIME     { 0.63, 1.0 , 0.23, 1. };
 const struct Color MAROON   { 0.5 , 0.25, 0.25, 1. };
 
 Color average(const Color &c1, const Color &c2);
+Color average(const Color &c1, unsigned d);
 
 }
 

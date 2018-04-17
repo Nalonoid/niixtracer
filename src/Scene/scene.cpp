@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <random>
 
 #include "scene.hpp"
 #include "Object/Shape/shape.hpp"
@@ -7,6 +8,7 @@
 #include "Object/Light/light.hpp"
 #include "Object/Camera/camera.hpp"
 #include "Utils/utils.hpp"
+#include "Image/image.hpp"
 
 #include "Raytracer/ray.hpp"
 
@@ -14,7 +16,17 @@ Scene::Scene() : _max_depth(0) {}
 
 Scene::Scene(unsigned depth) : _max_depth(depth) {}
 
-Scene::~Scene() {}
+Scene::~Scene() {
+
+    for (Shape* s : _shapes)
+        delete s;
+
+    for (Light* l : _lights)
+        delete l;
+
+    for (Camera* c : _cameras)
+        delete c;
+}
 
 // Getters
 const std::vector<Shape*>& Scene::shapes() const
@@ -37,6 +49,16 @@ unsigned Scene::max_depth() const
     return _max_depth;
 }
 
+const std::string& Scene::mode() const
+{
+    return _mode;
+}
+
+unsigned Scene::nb_samples() const
+{
+    return _nb_samples;
+}
+
 Shape& Scene::shape(unsigned i) const
 {
     return *(_shapes[i]);
@@ -52,9 +74,29 @@ Camera& Scene::camera(unsigned i) const
     return *(_cameras[i]);
 }
 
+const Image* Scene::output_image_p() const
+{
+    return _output_img;
+}
+
 unsigned& Scene::max_depth()
 {
     return _max_depth;
+}
+
+std::string& Scene::mode()
+{
+    return _mode;
+}
+
+unsigned& Scene::nb_samples()
+{
+    return _nb_samples;
+}
+
+Image** Scene::output_image_p()
+{
+    return &_output_img;
 }
 
 // Methods
@@ -83,29 +125,57 @@ void Scene::add(Object* o)
     }
 }
 
-void Scene::del(Object::OBJECT_TYPE, unsigned)
-{
-//    auto it = std::find_if(_objects.begin(), _objects.end(),
-//                            [&] (const Object *o) {
-//                                return o->index() == index;
-//                          });
-
-//    if (it != _shapes.end())
-//        _shapes.erase(it);
-}
-
 Color Scene::launch(Ray &ray) const
 {
-    Color contrib { Colors::BLACK };
     bool collides { false };
+
+    if (ray.bounces() > _max_depth)
+        return Colors::BLACK;
 
     for (auto itr = _shapes.begin(); itr < _shapes.end(); itr++)
         collides = (*itr)->intersect(ray) || collides;
 
-    if (collides)
-        return compute_color(ray);
+    if (!collides)
+        return Colors::BLACK;
 
-    return contrib;
+    return compute_color(ray);
+}
+
+void Scene::render(unsigned i, unsigned j) const
+{
+    const Camera &c { camera(0) };
+
+    double norm_i, norm_j;
+    Vec3d towards_pixel;
+
+    Color avg_color = Colors::BLACK;
+
+    for (unsigned y = 0; y < _nb_samples; ++y)
+    {
+        for (unsigned x = 0; x < _nb_samples; ++x)
+        {
+            std::random_device rnd_dv;
+            std::mt19937 gen(rnd_dv());
+            std::uniform_real_distribution<double> distrib(0.0, 1.0);
+
+            /* Randomly shoots a ray through the pixel (uniform distribution)
+             * TO-DO: use Poisson-disk / Sobol sequence instead ?
+             * See: Low-discrepancy sequence */
+
+            double u { nb_samples() > 1 ? distrib(gen) : 0.5 };
+            double v { nb_samples() > 1 ? distrib(gen) : 0.5 };
+
+            norm_i        = (i+u)/_output_img->width()  - 0.5;
+            norm_j        = (j+v)/_output_img->height() - 0.5;
+            towards_pixel = (norm_i * c.left()) + (norm_j * c.up())
+                                                            + c.direction();
+            Ray r(c.position(), towards_pixel.normalized());
+            avg_color += launch(r);
+        }
+    }
+
+    (*_output_img)[i][j] =
+            Colors::average(avg_color, _nb_samples*_nb_samples).clamp();
 }
 
 const Color Scene::compute_color(Ray &r) const
@@ -146,7 +216,8 @@ const Color Scene::compute_blinn_phong(Ray &ray, const Color &obj_color) const
             /* Intersected objects must be between the light source and the
              * first intersection in order to cast a shadow. */
             auto light_intersection =
-                    std::find_if(_shapes.begin(), _shapes.end(), [&] (Shape *shp) {
+                    std::find_if(_shapes.begin(), _shapes.end(), [&](Shape *shp)
+                    {
                         return shp->intersect(shadow_ray)
                                && shadow_ray.dist_max() < source_distance;
                     });
@@ -161,7 +232,7 @@ const Color Scene::compute_blinn_phong(Ray &ray, const Color &obj_color) const
                 /* In case of a glossy material we need to compute the specular
                  * color. We add this contribution to the diffuse color. */
                 if (i.material()->shininess() > 0)
-                    specular = specular + compute_specular(ray, light(light_id));
+                    specular += compute_specular(ray, light(light_id));
             }
         }
     }
@@ -209,10 +280,6 @@ const Color Scene::compute_refl_refractive(Ray &ray) const
     if (i.material()->reflection() <= 0.0 && i.material()->refraction() <= 0.0)
         return reflective + refractive;
 
-    // If we reached the maximum number of recursive reflections/refractions
-    if (ray.bounces() == _max_depth)
-        return reflective + refractive;
-
     // If there is no refraction, we just take the reflection ratio of the material into account
     if (i.material()->refraction() <= 0.0)
         R = i.material()->reflection();
@@ -230,7 +297,7 @@ const Color Scene::compute_refl_refractive(Ray &ray) const
 
         if (T > 0.0)
         {
-            double n = n1/n2;
+            double n { n1/n2 };
             Vec3d refract_vect { n * ray.direction() +
                         (n * cos_R - sqrt(1 - sin2_T))*i.normal() };
             Ray refract_ray(i.position() + EPSILON*refract_vect, refract_vect);
@@ -243,7 +310,35 @@ const Color Scene::compute_refl_refractive(Ray &ray) const
 
     if (R > 0.0)
     {
-        Vec3d reflect_vect { ray.direction().reflect(i.normal()) };
+        Vec3d reflect_vect;
+
+        // TO-DO: Importance-sampling + reflective/transmitive materials properties
+        if (_mode == "mcpt")
+        {
+            std::random_device rnd_dv;
+            std::mt19937 gen(rnd_dv());
+            std::uniform_real_distribution<double> distrib(0.0, 1.0);
+
+            // Compute a random ray over the hemisphere at the intersection point
+            double u { distrib(gen) };
+            double v { distrib(gen) };
+
+            double theta { cos(2 * PI * u)   };
+            double w     { 2 * v - 1         };
+
+            double x { sqrt(1 - w*w) * cos(theta) };
+            double y { sqrt(1 - w*w) * sin(theta) };
+
+            reflect_vect = Vec3d(x, y, w) - ray.intersection().position();
+
+            // The ray direction picked is in the wrong hemisphere
+            if (reflect_vect.dot(ray.intersection().normal()) < 0.0)
+                reflect_vect = reflect_vect.negative();
+        }
+        else
+            if (_mode == "rt")
+                reflect_vect = ray.direction().reflect(i.normal());
+
         Ray reflect_ray(i.position() + EPSILON*reflect_vect, reflect_vect);
 
         reflect_ray.bounces() = ray.bounces() + 1;
@@ -266,9 +361,11 @@ double Scene::schlick_approx(double n1, double n2, double cos_R, double sin2_T) 
         // Cosine of : reflected vector with n or transmitted vector with n
         double used_cos { n1 > n2 ? sqrt(1 - sin2_T) : cos_R };
         double R0       { (n1 - n2)/(n1 + n2)                };
+        double c        { 1 - used_cos };
+
         R0 *= R0;
 
-        R = R0 + (1 - R0) * pow(1 - used_cos, 5);
+        R = R0 + (1 - R0) * c * c * c * c * c;
     }
 
     return R;
