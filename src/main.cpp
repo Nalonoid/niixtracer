@@ -12,6 +12,7 @@
 #include "Object/Shape/sphere.hpp"
 #include "Object/Shape/plane.hpp"
 #include "Utils/save.hpp"
+#include "Utils/serializer.hpp"
 
 int main(int argc, char **argv)
 {
@@ -58,7 +59,7 @@ int main(int argc, char **argv)
             std::chrono::high_resolution_clock::now();
 
     // Defining the scene objects
-    const Scene &scene  {
+    Scene &scene {
         init_scene(scene_number,
                    &img,
                    mode,

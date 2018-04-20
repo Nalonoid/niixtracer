@@ -14,7 +14,7 @@
 
 Scene::Scene() : _max_depth(0) {}
 
-Scene::Scene(unsigned depth) : _max_depth(depth) {}
+Scene::Scene(unsigned depth) : _max_depth(depth), _russian_roulette_coeff(1.0) {}
 
 Scene::~Scene() {
 
@@ -125,11 +125,37 @@ void Scene::add(Object* o)
     }
 }
 
-Color Scene::launch(Ray &ray) const
+bool Scene::depth_recursion_over(Ray &ray)
+{
+    unsigned curr_depth { ray.bounces() };
+
+    if (_mode == "rt")
+        return curr_depth > _max_depth;
+
+    _russian_roulette_coeff = 1.0;
+
+    if (_mode == "mcpt")    // Russian Roulette to terminate the path
+        if (curr_depth > _max_depth)
+        {
+            std::random_device rnd_dv;
+            std::mt19937 gen(rnd_dv());
+            std::uniform_real_distribution<double> distrib(0.0, 1.0);
+
+            double u { distrib(gen) };
+
+            double rr_stop_proba { std::min(0.0625 * curr_depth, 1.0) };
+            if (u > rr_stop_proba)
+                _russian_roulette_coeff /= (1.0 - rr_stop_proba);
+        }
+
+    return _russian_roulette_coeff == 1.0;
+}
+
+Color Scene::launch(Ray &ray)
 {
     bool collides { false };
 
-    if (ray.bounces() > _max_depth)
+    if (depth_recursion_over(ray))
         return Colors::BLACK;
 
     for (auto itr = _shapes.begin(); itr < _shapes.end(); itr++)
@@ -141,7 +167,7 @@ Color Scene::launch(Ray &ray) const
     return compute_color(ray);
 }
 
-void Scene::render(unsigned i, unsigned j) const
+void Scene::render(unsigned i, unsigned j)
 {
     const Camera &c { camera(0) };
 
@@ -150,35 +176,32 @@ void Scene::render(unsigned i, unsigned j) const
 
     Color avg_color = Colors::BLACK;
 
-    for (unsigned y = 0; y < _nb_samples; ++y)
+    for (unsigned x = 0; x < _nb_samples; ++x)
     {
-        for (unsigned x = 0; x < _nb_samples; ++x)
-        {
-            std::random_device rnd_dv;
-            std::mt19937 gen(rnd_dv());
-            std::uniform_real_distribution<double> distrib(0.0, 1.0);
+        std::random_device rnd_dv;
+        std::mt19937 gen(rnd_dv());
+        std::uniform_real_distribution<double> distrib(0.0, 1.0);
 
-            /* Randomly shoots a ray through the pixel (uniform distribution)
-             * TO-DO: use Poisson-disk / Sobol sequence instead ?
-             * See: Low-discrepancy sequence */
+        /* Randomly shoots a ray through the pixel (uniform distribution)
+         * TO-DO: use Poisson-disk / Sobol sequence instead ?
+         * See: Low-discrepancy sequence */
 
-            double u { nb_samples() > 1 ? distrib(gen) : 0.5 };
-            double v { nb_samples() > 1 ? distrib(gen) : 0.5 };
+        double u { nb_samples() > 1 ? distrib(gen) : 0.5 };
+        double v { nb_samples() > 1 ? distrib(gen) : 0.5 };
 
-            norm_i        = (i+u)/_output_img->width()  - 0.5;
-            norm_j        = (j+v)/_output_img->height() - 0.5;
-            towards_pixel = (norm_i * c.left()) + (norm_j * c.up())
-                                                            + c.direction();
-            Ray r(c.position(), towards_pixel.normalized());
-            avg_color += launch(r);
-        }
+        norm_i        = (i+u)/_output_img->width()  - 0.5;
+        norm_j        = (j+v)/_output_img->height() - 0.5;
+        towards_pixel = (norm_i * c.left()) + (norm_j * c.up())
+                                                        + c.direction();
+        Ray r(c.position(), towards_pixel);
+        avg_color += launch(r);
     }
 
     (*_output_img)[i][j] =
-            Colors::average(avg_color, _nb_samples*_nb_samples).clamp();
+            Colors::average(avg_color, _nb_samples).clamp();
 }
 
-const Color Scene::compute_color(Ray &r) const
+const Color Scene::compute_color(Ray &r)
 {
     double ambient_light   { 0.1 };
 
@@ -187,7 +210,8 @@ const Color Scene::compute_color(Ray &r) const
     Color diffuse_specular { compute_blinn_phong(r, obj_color)      };
     Color reflect_color    { compute_refl_refractive(r)             };
 
-    return (ambient_color + diffuse_specular + reflect_color).clamp();
+    return _russian_roulette_coeff *
+            (ambient_color + diffuse_specular + reflect_color).clamp();
 }
 
 const Color Scene::compute_blinn_phong(Ray &ray, const Color &obj_color) const
@@ -267,7 +291,7 @@ const Color Scene::compute_specular(Ray &ray, const Light &light) const
     return specular;
 }
 
-const Color Scene::compute_refl_refractive(Ray &ray) const
+const Color Scene::compute_refl_refractive(Ray &ray)
 {
     Color refractive { Colors::BLACK };
     Color reflective { Colors::BLACK };
@@ -312,32 +336,31 @@ const Color Scene::compute_refl_refractive(Ray &ray) const
     {
         Vec3d reflect_vect;
 
-        // TO-DO: Importance-sampling + reflective/transmitive materials properties
-        if (_mode == "mcpt")
-        {
-            std::random_device rnd_dv;
-            std::mt19937 gen(rnd_dv());
-            std::uniform_real_distribution<double> distrib(0.0, 1.0);
+        std::random_device rnd_dv;
+        std::mt19937 gen(rnd_dv());
+        std::uniform_real_distribution<double> distrib(0.0, 1.0);
 
-            // Compute a random ray over the hemisphere at the intersection point
-            double u { distrib(gen) };
+        double u { distrib(gen) };
+
+        if (u <= R || _mode == "rt")  // Reflection is in the specular direction
+            reflect_vect = ray.direction().reflect(i.normal());
+        else // Reflection occurs in a random diffuse direction
+        {
             double v { distrib(gen) };
 
-            double theta { cos(2 * PI * u)   };
-            double w     { 2 * v - 1         };
+            // Compute a random ray over the hemisphere at the intersection point
+            double r    { sqrt(1 - u*u) };
+            double phi  { 2 * PI * v    };
 
-            double x { sqrt(1 - w*w) * cos(theta) };
-            double y { sqrt(1 - w*w) * sin(theta) };
+            double x { cos(phi) * r };
+            double y { sin(phi) * r };
 
-            reflect_vect = Vec3d(x, y, w) - ray.intersection().position();
+            reflect_vect = Vec3d(x, y, u) - ray.intersection().position();
 
             // The ray direction picked is in the wrong hemisphere
             if (reflect_vect.dot(ray.intersection().normal()) < 0.0)
                 reflect_vect = reflect_vect.negative();
         }
-        else
-            if (_mode == "rt")
-                reflect_vect = ray.direction().reflect(i.normal());
 
         Ray reflect_ray(i.position() + EPSILON*reflect_vect, reflect_vect);
 
@@ -358,10 +381,10 @@ double Scene::schlick_approx(double n1, double n2, double cos_R, double sin2_T) 
         R = 1.0;
     else
     {
-        // Cosine of : reflected vector with n or transmitted vector with n
+        // Cosine of :  transmitted vector with n or reflected vector with n
         double used_cos { n1 > n2 ? sqrt(1 - sin2_T) : cos_R };
-        double R0       { (n1 - n2)/(n1 + n2)                };
-        double c        { 1 - used_cos };
+        double R0       { (n1 - n2) / (n1 + n2)              };
+        double c        { 1 - used_cos                       };
 
         R0 *= R0;
 

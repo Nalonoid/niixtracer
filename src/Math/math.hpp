@@ -31,7 +31,14 @@ struct Vector
     Vector<T> add(const Vector<T> &v) const;
     Vector<T> mult(const double scalar) const;
     Vector<T> reflect(const Vector<T> &normal) const;
+
+    std::string to_string() const;
 };
+
+// Using...
+using Vec3d = Vector<double>;
+using Vec3f = Vector<float>;
+using Vec3i = Vector<int>;
 
 // Methods
 template <typename T>
@@ -51,12 +58,10 @@ template <typename T>
 Vector<T> operator*(const double scalar, const Vector<T> &v);
 
 template <typename T>
-std::ostream& operator<<(std::ostream &os, const Vector<T> &v);
+Vector<T> operator/(const Vector<T> &v,const double scalar);
 
-// Using...
-using Vec3d = Vector<double>;
-using Vec3f = Vector<float>;
-using Vec3i = Vector<int>;
+template <typename T>
+std::ostream& operator<<(std::ostream &os, const Vector<T> &v);
 
 // Space
 namespace Space

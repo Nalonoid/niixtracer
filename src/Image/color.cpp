@@ -26,6 +26,11 @@ const Color& Color::clamp()
     return *this;
 }
 
+std::string Color::to_string() const
+{
+    return rgb.to_string() + ", " + std::to_string(a);
+}
+
 namespace Colors
 {
 

@@ -31,8 +31,8 @@ double& Sphere::radius()
 bool Sphere::intersect(Ray &r)
 {
     Vec3d  oc    { r.origin() - _position           };
-    double b     { 2*(oc.dot(r.direction()))        };
-    double c     { (oc.dot(oc)) - (_radius*_radius) };
+    double b     { 2 * (oc.dot(r.direction()))      };
+    double c     { oc.dot(oc) - _radius*_radius     };
     double discr { b*b - 4*c                        };
 
     bool   intersects  { false };
@@ -40,14 +40,19 @@ bool Sphere::intersect(Ray &r)
 
     if (discr > 0)
     {   
-        double t1 { ((-1)*b - sqrt(discr))*0.5 };
-        double t2 { ((-1)*b + sqrt(discr))*0.5 };
+        discr = sqrt(discr);
 
-        dist = t1 < t2 ? t1 : t2;
+        double t1 { -b - discr };
+        double t2 { -b + discr };
+
+        dist = t1 < t2 ? t1/2 : t2/2;
 
         if ((intersects = Shape::intersect(r, dist)))
             r.intersection().normal() =
-                    (r.intersection().position() - _position).normalized();
+                    (r.intersection().position() - _position)/_radius;
+        /* Here, the center-to-intersection point has a length of r, so we do
+         * not need the call to .normalized() to normalize it. Doing so avoids
+         * the square root in the magnitude computation. */
     }
 
     return intersects;

@@ -26,6 +26,8 @@ struct Color
     double& g() { return rgb.y; }
     double& b() { return rgb.z; }
 
+    std::string to_string() const;
+
     // Methods
     const Color& scale(float p);
     const Color& clamp();

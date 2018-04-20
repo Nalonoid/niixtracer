@@ -24,3 +24,8 @@ double Material::refraction() const
 {
     return _refraction;
 }
+
+std::string Material::name() const
+{
+    return _name;
+}

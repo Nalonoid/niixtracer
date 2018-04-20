@@ -12,8 +12,8 @@ Scene SCENE_1(2);
 
 }
 
-const Scene& init_scene(unsigned index, Image *output_img, std::string& mode,
-                        unsigned samples_per_row_col, unsigned max_depth)
+Scene& init_scene(unsigned index, Image *output_img, std::string& mode,
+                  unsigned samples_per_row_col, unsigned max_depth)
 {
     Scene *s;
 
@@ -24,8 +24,8 @@ const Scene& init_scene(unsigned index, Image *output_img, std::string& mode,
 
                 ,dynamic_cast<Object*>(new Light(Vec3d(6, 5, -6), Colors::WHITE))
 
-                ,dynamic_cast<Object*>(new Plane(Vec3d(0, 0, -1), -10.0, Colors::BLUE, Materials::DEFAULT))
-                ,dynamic_cast<Object*>(new Plane(Vec3d(0, 1,  0),   0.0, Colors::MAROON, Materials::DEFAULT))
+                ,dynamic_cast<Object*>(new Plane(Vec3d(0, 0, -1), -10.0, Colors::BLUE, Materials::DIFFUSE))
+                ,dynamic_cast<Object*>(new Plane(Vec3d(0, 1,  0),   0.0, Colors::MAROON, Materials::METAL))
 
                 ,dynamic_cast<Object*>(new Sphere(Vec3d(  2.0, 1.0, -1.25), 1.00, Colors::PURPLE, Materials::METAL))
                 ,dynamic_cast<Object*>(new Sphere(Vec3d( -5.0, 2.0, -1.25), 2.00, Colors::GREEN,  Materials::PLASTIC))

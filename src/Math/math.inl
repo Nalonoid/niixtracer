@@ -84,9 +84,23 @@ Vector<T> operator*(const double scalar, const Vector<T> &v)
 }
 
 template <typename T>
+Vector<T> operator/(const Vector<T> &v,const double scalar)
+{
+    return Vector<T>(v.x / scalar, v.y / scalar, v.z / scalar);
+}
+
+template <typename T>
 std::ostream& operator<<(std::ostream &os, const Vector<T> &v)
 {
     return os << "(" << v.x << "," << v.y << "," << v.z << ")";
+}
+
+template <typename T>
+std::string Vector<T>::to_string() const
+{
+    return std::to_string(x) + ", " +
+           std::to_string(y) + ", " +
+           std::to_string(z);
 }
 
 // Space

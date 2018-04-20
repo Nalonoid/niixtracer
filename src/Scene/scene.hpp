@@ -47,13 +47,14 @@ public:
     void add(Object *o, Args... objs);
     void add(Object *o);    // Terminate the recursion of add(Object *o, Args... objs)
 
-    Color launch(Ray &ray) const;
-    void render(unsigned i, unsigned j) const;
+    Color launch(Ray &ray);
+    void render(unsigned i, unsigned j);
+    bool depth_recursion_over(Ray &ray);
 
-    const Color compute_color(Ray &r) const;
+    const Color compute_color(Ray &r);
     const Color compute_blinn_phong(Ray &ray, const Color &color) const;
     const Color compute_specular(Ray &ray, const Light &light) const;
-    const Color compute_refl_refractive(Ray &ray) const;
+    const Color compute_refl_refractive(Ray &ray);
 
     double schlick_approx(double n1, double n2, double cos_R, double sin2_T) const;
 
@@ -63,10 +64,13 @@ private:
     std::vector<Light*>  _lights;
     std::vector<Camera*> _cameras;
 
+    // Scene configuration infornation
+    std::string _output_img_path;
     Image*      _output_img;
     unsigned    _max_depth;
     std::string _mode;
     unsigned    _nb_samples;
+    double      _russian_roulette_coeff;
 };
 
 // Templated methods implementation must be in the .hpp file in order to compile
