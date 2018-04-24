@@ -29,3 +29,32 @@ std::string Material::name() const
 {
     return _name;
 }
+
+namespace Materials {
+
+    const Material& material(std::string name)
+    {
+        if (name == "default")
+            return Materials::DEFAULT;
+
+        if (name == "plastic")
+            return Materials::PLASTIC;
+
+        if (name == "metal")
+            return Materials::METAL;
+
+        if (name == "glass")
+            return Materials::GLASS;
+
+        if (name == "diffuse")
+            return Materials::DIFFUSE;
+
+        if (name == "glossy")
+            return Materials::GLOSSY;
+
+        if (name == "translucent")
+            return Materials::TRANSLUCENT;
+
+        return Materials::DEFAULT;
+    }
+}

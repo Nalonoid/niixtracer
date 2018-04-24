@@ -6,10 +6,10 @@
 
 #include "Image/image.hpp"
 
-void save2bmp(const char *path, Image img, unsigned dpi)
+void save2bmp(const char *path, Image *img, unsigned dpi)
 {
-    unsigned width      { img.width()        };
-    unsigned height     { img.height()       };
+    unsigned width      { img->width()        };
+    unsigned height     { img->height()       };
     unsigned data_size  { 4 * width * height };
     unsigned file_size  { 54 + data_size     };
 
@@ -61,7 +61,7 @@ void save2bmp(const char *path, Image img, unsigned dpi)
     {
         for (unsigned i {0}; i < width; ++i)
         {
-            c = img.pixels()[i][j].color;
+            c = img->pixels()[i][j].color;
 
             // Using the bmp format pixel values must be stored upside-down
             unsigned char color[3] { (unsigned char) (int)(c.b()*255.0)

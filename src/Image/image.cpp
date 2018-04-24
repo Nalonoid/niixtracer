@@ -21,6 +21,16 @@ unsigned Image::width() const
     return _width;
 }
 
+unsigned& Image::height()
+{
+    return _height;
+}
+
+unsigned& Image::width()
+{
+    return _width;
+}
+
 const std::vector<std::vector<Pixel>>& Image::pixels() const
 {
     return _pixels;

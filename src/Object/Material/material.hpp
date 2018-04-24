@@ -42,6 +42,8 @@ const struct Material DIFFUSE       { "diffuse",     Colors::BLUE,     0.0, 0.00
 const struct Material GLOSSY        { "glossy",      Colors::WHITE,   25.0, 0.90, 2.417 };
 const struct Material TRANSLUCENT   { "translucent", Colors::WHITE,  100.0, 0.90, 1.020 };
 
+const Material& material(std::string name);
+
 }
 
 #endif

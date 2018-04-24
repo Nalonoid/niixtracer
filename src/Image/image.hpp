@@ -31,6 +31,9 @@ public:
     unsigned height() const;
     unsigned width()  const;
 
+    unsigned& height();
+    unsigned& width();
+
     const std::vector<std::vector<Pixel>>& pixels() const;
     std::vector<std::vector<Pixel>>& pixels();
 

@@ -12,9 +12,11 @@
 
 #include "Raytracer/ray.hpp"
 
-Scene::Scene() : _max_depth(0) {}
+Scene::Scene(Image* img) : _max_depth(0), _russian_roulette_coeff(1.0),
+    _output_img(img) {}
 
-Scene::Scene(unsigned depth) : _max_depth(depth), _russian_roulette_coeff(1.0) {}
+Scene::Scene(unsigned depth, Image* img) : _max_depth(depth),
+    _russian_roulette_coeff(1.0), _output_img(img) {}
 
 Scene::~Scene() {
 
@@ -42,6 +44,11 @@ const std::vector<Light*>& Scene::lights() const
 const std::vector<Camera*>& Scene::cameras() const
 {
     return _cameras;
+}
+
+std::string Scene::output_path() const
+{
+    return _output_img_path;
 }
 
 unsigned Scene::max_depth() const
@@ -74,11 +81,6 @@ Camera& Scene::camera(unsigned i) const
     return *(_cameras[i]);
 }
 
-const Image* Scene::output_image_p() const
-{
-    return _output_img;
-}
-
 unsigned& Scene::max_depth()
 {
     return _max_depth;
@@ -92,11 +94,6 @@ std::string& Scene::mode()
 unsigned& Scene::nb_samples()
 {
     return _nb_samples;
-}
-
-Image** Scene::output_image_p()
-{
-    return &_output_img;
 }
 
 // Methods
@@ -135,6 +132,7 @@ bool Scene::depth_recursion_over(Ray &ray)
     _russian_roulette_coeff = 1.0;
 
     if (_mode == "mcpt")    // Russian Roulette to terminate the path
+    {
         if (curr_depth > _max_depth)
         {
             std::random_device rnd_dv;
@@ -144,11 +142,13 @@ bool Scene::depth_recursion_over(Ray &ray)
             double u { distrib(gen) };
 
             double rr_stop_proba { std::min(0.0625 * curr_depth, 1.0) };
+
             if (u > rr_stop_proba)
                 _russian_roulette_coeff /= (1.0 - rr_stop_proba);
         }
+    }
 
-    return _russian_roulette_coeff == 1.0;
+    return curr_depth > _max_depth && _russian_roulette_coeff == 1.0;
 }
 
 Color Scene::launch(Ray &ray)

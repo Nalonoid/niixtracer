@@ -10,6 +10,7 @@ class Camera : public Object
 public:
     Camera();
     Camera(const Vec3d& pos, const Vec3d& la);
+    Camera(const Vec3d& pos, const Vec3d& la, double ar);
 
     // Getters
     unsigned index() const override;
@@ -34,6 +35,7 @@ private:
 
 private:
     static unsigned _index;
+    double _aspect_ratio;
 
     Vec3d _direction;
     Vec3d _look_at;

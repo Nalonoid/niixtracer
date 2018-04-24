@@ -2,7 +2,7 @@
 
 unsigned Camera::_index = 0;
 
-Camera::Camera() : Object(Vec3d(0, 2, -5))
+Camera::Camera() : Object(Vec3d(0, 2, -5)), _aspect_ratio(16.0/9.0)
 {
     _index++;
     look_at(Vec3d(0, 0, 0));
@@ -10,7 +10,15 @@ Camera::Camera() : Object(Vec3d(0, 2, -5))
 }
 
 Camera::Camera(const Vec3d& pos, const Vec3d& la) :
-    Object(pos)
+    Object(pos), _aspect_ratio(16.0/9.0)
+{
+    _index++;
+    look_at(la);
+    compute_camera_basis();
+}
+
+Camera::Camera(const Vec3d& pos, const Vec3d& la, double ar) :
+    Object(pos), _aspect_ratio(ar)
 {
     _index++;
     look_at(la);
@@ -19,8 +27,11 @@ Camera::Camera(const Vec3d& pos, const Vec3d& la) :
 
 void Camera::compute_camera_basis()
 {
-    _up     = cross(_direction, Space::XAXIS).normalized();
-    _left   = cross(_up, _direction).normalized();
+    _up         = cross(_direction, Space::XAXIS).normalized();
+    _left       = cross(_up, _direction).normalized();
+
+    _up         = 1/_aspect_ratio * _up;
+    _direction  = 1/tanf(PI * 120.0/360.0) * _direction;
 }
 
 // Getters

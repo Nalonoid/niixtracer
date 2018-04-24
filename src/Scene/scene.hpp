@@ -18,8 +18,8 @@ class Image;
 class Scene
 {
 public:
-    Scene();
-    Scene(unsigned depth);
+    Scene(Image *img);
+    Scene(unsigned depth, Image *img);
 
     ~Scene();
 
@@ -28,16 +28,15 @@ public:
     const std::vector<Light*>&  lights() const;
     const std::vector<Camera*>& cameras() const;
 
+    std::string output_path() const;
     unsigned max_depth() const;
     const std::string& mode() const;
     unsigned nb_samples() const;
-    const Image* output_image_p() const;
 
     Shape&  shape(unsigned i) const;
     Light&  light(unsigned i) const;
     Camera& camera(unsigned i) const;
 
-    Image** output_image_p();
     unsigned& max_depth();
     std::string& mode();
     unsigned& nb_samples();
@@ -58,6 +57,12 @@ public:
 
     double schlick_approx(double n1, double n2, double cos_R, double sin2_T) const;
 
+    // Friends
+    friend class Serializer;
+
+    friend Scene* init_scene(unsigned index, Image *output_img, std::string& mode,
+                             unsigned samples_per_row_col, unsigned max_depth);
+
     // Members
 private:
     std::vector<Shape*>  _shapes;
@@ -66,11 +71,11 @@ private:
 
     // Scene configuration infornation
     std::string _output_img_path;
-    Image*      _output_img;
     unsigned    _max_depth;
     std::string _mode;
     unsigned    _nb_samples;
     double      _russian_roulette_coeff;
+    Image*      _output_img;
 };
 
 // Templated methods implementation must be in the .hpp file in order to compile
