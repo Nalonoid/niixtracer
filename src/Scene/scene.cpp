@@ -8,8 +8,8 @@
 #include "Object/Light/light.hpp"
 #include "Object/Camera/camera.hpp"
 #include "Utils/utils.hpp"
+#include "Utils/sampler.hpp"
 #include "Image/image.hpp"
-
 #include "Raytracer/ray.hpp"
 
 Scene::Scene(Image* img) : _max_depth(0), _russian_roulette_coeff(1.0),
@@ -169,36 +169,36 @@ Color Scene::launch(Ray &ray)
 
 void Scene::render(unsigned i, unsigned j)
 {
-    const Camera &c { camera(0) };
+    const Camera &c { camera(0)     };
+    Color avg_color { Colors::BLACK };
 
     double norm_i, norm_j;
     Vec3d towards_pixel;
 
-    Color avg_color = Colors::BLACK;
+    const double range { 1.0/(double)_nb_samples };
+    Uniform sampler(0.0, range);
 
-    for (unsigned x = 0; x < _nb_samples; ++x)
+    for (double x = 0; x < 1.0; x += range)
     {
-        std::random_device rnd_dv;
-        std::mt19937 gen(rnd_dv());
-        std::uniform_real_distribution<double> distrib(0.0, 1.0);
+        for (double y = 0; y < 1.0; y += range)
+        {
+            /* Using a stratified sampling instead of an uniform sampling
+             * TO-DO: use Poisson-disk / Sobol sequence instead ?
+             * See: Low-discrepancy sequence */
+            double u { nb_samples() > 1 ? sampler.sample() : 0.5 };
+            double v { nb_samples() > 1 ? sampler.sample() : 0.5 };
 
-        /* Randomly shoots a ray through the pixel (uniform distribution)
-         * TO-DO: use Poisson-disk / Sobol sequence instead ?
-         * See: Low-discrepancy sequence */
-
-        double u { nb_samples() > 1 ? distrib(gen) : 0.5 };
-        double v { nb_samples() > 1 ? distrib(gen) : 0.5 };
-
-        norm_i        = (i+u)/_output_img->width()  - 0.5;
-        norm_j        = (j+v)/_output_img->height() - 0.5;
-        towards_pixel = (norm_i * c.left()) + (norm_j * c.up())
-                                                        + c.direction();
-        Ray r(c.position(), towards_pixel);
-        avg_color += launch(r);
+            norm_i        = (i+x+u)/_output_img->width()  - 0.5;
+            norm_j        = (j+y+v)/_output_img->height() - 0.5;
+            towards_pixel = (norm_i * c.left()) + (norm_j * c.up())
+                                                            + c.direction();
+            Ray r(c.position(), towards_pixel);
+            avg_color += launch(r);
+        }
     }
 
     (*_output_img)[i][j] =
-            Colors::average(avg_color, _nb_samples).clamp();
+            Colors::average(avg_color, _nb_samples*_nb_samples).clamp();
 }
 
 const Color Scene::compute_color(Ray &r)

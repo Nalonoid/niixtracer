@@ -136,19 +136,19 @@ Scene* Serializer::read_from_XML(const std::string &input_path)
 
     QDomElement scene_elem      { xml_document.firstChildElement("scene")   };
     QDomElement settings_elem   { scene_elem.firstChildElement("settings")  };
-    QDomElement xres_elem   { settings_elem.firstChildElement("xres")   };
-    QDomElement yres_elem   { settings_elem.firstChildElement("yres")   };
-    QDomElement path_elem   { settings_elem.firstChildElement("path")   };
-    QDomElement mode_elem   { settings_elem.firstChildElement("mode")   };
-    QDomElement depth_elem  { settings_elem.firstChildElement("depth")  };
-    QDomElement sample_elem { settings_elem.firstChildElement("sampl")  };
+    QDomElement xres_elem       { settings_elem.firstChildElement("xres")   };
+    QDomElement yres_elem       { settings_elem.firstChildElement("yres")   };
+    QDomElement path_elem       { settings_elem.firstChildElement("path")   };
+    QDomElement mode_elem       { settings_elem.firstChildElement("mode")   };
+    QDomElement depth_elem      { settings_elem.firstChildElement("depth")  };
+    QDomElement sample_elem     { settings_elem.firstChildElement("sampl")  };
 
     _scene->_output_img->width()    = xres_elem.text().toUInt();
     _scene->_output_img->height()   = yres_elem.text().toUInt();
     _scene->_output_img_path        = path_elem.text().toStdString();
     _scene->mode()                  = mode_elem.text().toStdString();
     _scene->max_depth()             = depth_elem.text().toUInt();
-    _scene->nb_samples()            = sample_elem.text().toUInt();
+    _scene->nb_samples()            = sqrt(sample_elem.text().toUInt());
 
     populate_scene_from_XML(scene_elem);
 

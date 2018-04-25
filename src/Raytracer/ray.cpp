@@ -1,7 +1,7 @@
 #include "ray.hpp"
 #include "intersection.hpp"
 
-unsigned Ray::_number = 0;
+unsigned long int Ray::_number = 0;
 
 Ray::Ray(const Vec3d& ori, const Vec3d& dir) :
     _origin(ori), _direction(dir.normalized()), _dist_max(1000), _bounces(0)

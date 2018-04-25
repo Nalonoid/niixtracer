@@ -29,7 +29,7 @@ public:
     Intersection& intersection();
 
 private:
-    static unsigned _number;
+    static unsigned long int _number;
 
     Vec3d         _origin;
     Vec3d         _direction;

@@ -13,7 +13,7 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/bin)
 
 #find_package(OpenGL REQUIRED) # defines OPENGL_LIBRARIES
-find_package(Qt5Widgets REQUIRED)
+find_package(Qt5 COMPONENTS Core Widgets Xml REQUIRED)
 #find_package(Qt5OpenGL REQUIRED)
 find_package(OpenMP)
 
@@ -52,8 +52,9 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 include_directories(
-   ${Qt5Widgets_INCLUDES}
-#   ${Qt5OpenGL_INCLUDES}
+    ${Qt5Widgets_INCLUDES}
+    ${Qt5Xml_INCLUDES}
+\#   ${Qt5OpenGL_INCLUDES}
 )
 
 add_definitions(${Qt5Widgets_DEFINITIONS})
@@ -68,6 +69,6 @@ add_executable(raytracer
                ${project_headers}
                ${project_ui})
 
-qt5_use_modules(raytracer Widgets) #OpenGL)
+qt5_use_modules(raytracer Widgets Xml) #OpenGL)
 set(EXT_LIBS ${QT_LIBRARIES}) #${OPENGL_LIBRARIES})
 target_link_libraries(raytracer ${EXT_LIBS})
