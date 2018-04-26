@@ -1,18 +1,29 @@
+#include <limits>
+
 #include "ray.hpp"
 #include "intersection.hpp"
 
-unsigned long int Ray::_number = 0;
+unsigned long long int Ray::_number = 0;
+unsigned long long int Ray::_over_number = 0;
 
 Ray::Ray(const Vec3d& ori, const Vec3d& dir) :
     _origin(ori), _direction(dir.normalized()), _dist_max(1000), _bounces(0)
 {
-    _number++;
+    if (_number < std::numeric_limits<unsigned long long>::max())
+        _number++;
+    else
+        _over_number++;
 }
 
 // Getters
-unsigned Ray::number()
+unsigned long long int Ray::number()
 {
     return _number;
+}
+
+unsigned long long int Ray::over_number()
+{
+    return _over_number;
 }
 
 const Vec3d& Ray::direction() const

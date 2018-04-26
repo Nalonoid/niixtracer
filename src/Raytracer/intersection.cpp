@@ -1,20 +1,10 @@
 #include "intersection.hpp"
 
-Intersection::Intersection() : _exists(false), _material(&Materials::DEFAULT) {}
+Intersection::Intersection() : _material(&Materials::DEFAULT) {}
 
 unsigned Intersection::index() const
 {
     return 0;
-}
-
-bool Intersection::exists() const
-{
-    return _exists;
-}
-
-bool& Intersection::exists()
-{
-    return _exists;
 }
 
 const Material* Intersection::material() const

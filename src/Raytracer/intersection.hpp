@@ -13,19 +13,13 @@ public:
 
     // Getters
     unsigned index() const override;
-    bool exists() const;
-    bool& exists();
-
     const Material* material() const;
     void set_material(Material *mat);
-
     const Vec3d& normal() const;
 
     Vec3d& normal();
 
 private:
-    bool  _exists;
-
     const Material* _material;
     Vec3d _normal;
 };

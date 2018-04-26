@@ -19,7 +19,7 @@ struct Material
     std::string _name;
     Color   _color;
     double  _shininess;
-    double  _reflection;
+    double  _reflection;    // Can be think as albedo (how much light is reflected)
     double  _refraction;
 
     Material(Color c) :
@@ -36,7 +36,7 @@ namespace Materials
 
 const struct Material DEFAULT       { "default",     Colors::MAROON, 200.0, 0.01, 0.000 };
 const struct Material PLASTIC       { "plastic",     Colors::CYAN,   200.0, 0.30, 0.000 };
-const struct Material METAL         { "metal",       Colors::CYAN,    10.0, 0.70, 0.000 };
+const struct Material METAL         { "metal",       Colors::CYAN,    10.0, 1.00, 0.000 };
 const struct Material GLASS         { "glass",       Colors::CYAN,    50.0, 0.50, 1.500 };
 const struct Material DIFFUSE       { "diffuse",     Colors::BLUE,     0.0, 0.00, 0.000 };
 const struct Material GLOSSY        { "glossy",      Colors::WHITE,   25.0, 0.90, 2.417 };

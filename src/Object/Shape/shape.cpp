@@ -4,8 +4,8 @@
 
 unsigned Shape::_index = 0;
 
-Shape::Shape(const Vec3d &position, const Material &material) :
-    Object(position), _material(material)
+Shape::Shape(const Vec3d &position, const Material &material, double emission) :
+    Object(position, emission), _material(material)
 {
     _index++;
 }
@@ -35,9 +35,8 @@ Material &Shape::material()
 // Methods
 bool Shape::intersect(Ray &r, double t)
 {   
-    if (t >= 0 && t < r.dist_max())
+    if (t > 0 && t < r.dist_max())
     {
-        r.intersection().exists() = true;
         r.dist_max() = t;
         r.intersection().position() = r.origin() + (t * r.direction());
         r.intersection().set_material(&_material);

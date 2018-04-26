@@ -38,7 +38,7 @@ bool Sphere::intersect(Ray &r)
     bool   intersects  { false };
     double dist        { -1    };
 
-    if (discr > 0)
+    if (discr >= 0)
     {   
         discr = sqrt(discr);
 

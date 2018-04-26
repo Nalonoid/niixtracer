@@ -12,7 +12,8 @@ public:
         const Vec3d& dir = Space::ZAXIS);
 
     // Getters
-    static unsigned number();
+    static unsigned long long int number();
+    static unsigned long long int over_number();
 
     const Vec3d& origin() const;
     const Vec3d& direction() const;
@@ -29,7 +30,8 @@ public:
     Intersection& intersection();
 
 private:
-    static unsigned long int _number;
+    static unsigned long long int _number;
+    static unsigned long long int _over_number;
 
     Vec3d         _origin;
     Vec3d         _direction;

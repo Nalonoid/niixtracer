@@ -1,8 +1,8 @@
 #include "object.hpp"
 #include "Raytracer/ray.hpp"
 
-Object::Object(const Vec3d &position) :
-    _position(position) {}
+Object::Object(const Vec3d &position, double emission) :
+    _position(position), _emission(emission) {}
 
 Object::~Object() {}
 
@@ -15,4 +15,14 @@ const Vec3d& Object::position() const
 Vec3d& Object::position()
 {
     return _position;
+}
+
+double Object::emission() const
+{
+    return _emission;
+}
+
+double& Object::emission()
+{
+    return _emission;
 }

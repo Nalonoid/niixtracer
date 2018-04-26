@@ -11,7 +11,8 @@ class Shape : public Object
 {
 public:   
     Shape(const Vec3d &position     = Space::ORIGIN,
-          const Material &material  = Materials::DEFAULT);
+          const Material &material  = Materials::DEFAULT,
+          double emission = 0.0);
 
     Shape(const Material &material);
 

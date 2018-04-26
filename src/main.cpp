@@ -82,9 +82,9 @@ int main(int argc, char **argv)
     save2bmp(scene->output_path().data(), img, 72);
 
     // Display some information about the rendering
-    std::cout << std::endl << "- Rays count:\t" << Ray::number() << std::endl
-                           << "- Elapsed time:\t" << duration/1000000.0
-                           << "s" << std::endl;
+    std::cout << std::endl << "- Rays count:\t" << Ray::number() << "+"
+              << Ray::over_number() << std::endl << "- Elapsed time:\t"
+              << duration/1000000.0 << "s" << std::endl;
 
     std::cout << std::endl
               << "{o}----------------------------------------->|" << std::endl;

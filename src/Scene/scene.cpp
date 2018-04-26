@@ -135,11 +135,8 @@ bool Scene::depth_recursion_over(Ray &ray)
     {
         if (curr_depth > _max_depth)
         {
-            std::random_device rnd_dv;
-            std::mt19937 gen(rnd_dv());
-            std::uniform_real_distribution<double> distrib(0.0, 1.0);
-
-            double u { distrib(gen) };
+            Uniform sampler;
+            double u { sampler.sample() };
 
             double rr_stop_proba { std::min(0.0625 * curr_depth, 1.0) };
 
