@@ -46,19 +46,9 @@ public:
     void add(Object *o, Args... objs);
     void add(Object *o);    // Terminate the recursion of add(Object *o, Args... objs)
 
-    Color launch(Ray &ray);
-    void render(unsigned i, unsigned j);
-    bool depth_recursion_over(Ray &ray);
-
-    const Color compute_color(Ray &r);
-    const Color compute_blinn_phong(Ray &ray, const Color &color) const;
-    const Color compute_specular(Ray &ray, const Light &light) const;
-    const Color compute_refl_refractive(Ray &ray);
-
-    double schlick_approx(double n1, double n2, double cos_R, double sin2_T) const;
-
     // Friends
     friend class Serializer;
+    friend class Renderer;
 
     friend Scene* init_scene(unsigned index, Image *output_img, std::string& mode,
                              unsigned samples_per_row_col, unsigned max_depth);

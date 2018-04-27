@@ -7,6 +7,7 @@
 #include "Scene/scene.hpp"
 #include "Scene/scene_examples.inl"
 #include "Raytracer/ray.hpp"
+#include "Raytracer/raytracer.hpp"
 #include "Object/Camera/camera.hpp"
 #include "Object/Light/light.hpp"
 #include "Object/Shape/sphere.hpp"
@@ -25,7 +26,7 @@ int main(int argc, char **argv)
     }
 
     // Initialize arguments
-    const char *scene_path      { argv[1] };
+    const char *scene_path { argv[1] };
 
     // Check whether the scene file exists. If not, exit the program
     if (!fopen(scene_path, "r"))
@@ -40,6 +41,8 @@ int main(int argc, char **argv)
     Serializer serializer;
     serializer.init(new Scene(img));
     Scene *scene { serializer.read_from_XML(scene_path) };
+
+    Raytracer rt(scene);
 
     // Display scene settings
     std::cout << "{o}----------------------------------------->\\" << std::endl;
@@ -66,10 +69,7 @@ int main(int argc, char **argv)
             std::chrono::high_resolution_clock::now();
 
     // Render the scene
-    #pragma omp parallel for
-    for (unsigned j = 0; j < img->height(); ++j)
-        for (unsigned i = 0; i < img->width(); ++i)
-            scene->render(i, j);
+    rt.render();
 
     // Stop the chrono!
     std::chrono::high_resolution_clock::time_point chrono_stop =

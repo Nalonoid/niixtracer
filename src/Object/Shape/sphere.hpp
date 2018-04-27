@@ -22,7 +22,7 @@ public:
 
     // Methods
     bool intersect(Ray &r) override;
-    const Vec3d normal_at(const Vec3d& point) override;
+    const Vec3d normal(const Vec3d& point) const override;
 
 private:
     double _radius;

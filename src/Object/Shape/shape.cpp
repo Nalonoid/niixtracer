@@ -40,14 +40,14 @@ bool Shape::intersect(Ray &r, double t)
         r.dist_max() = t;
         r.intersection().position() = r.origin() + (t * r.direction());
         r.intersection().set_material(&_material);
-
+        r.intersection().normal() = normal(r.intersection().position());
         return true;
     }
 
     return false;
 }
 
-const Vec3d Shape::normal_at(const Vec3d&)
+const Vec3d Shape::normal(const Vec3d&) const
 {
     return Space::YAXIS;
 }

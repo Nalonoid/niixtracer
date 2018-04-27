@@ -122,271 +122,97 @@ void Scene::add(Object* o)
     }
 }
 
-bool Scene::depth_recursion_over(Ray &ray)
-{
-    unsigned curr_depth { ray.bounces() };
-
-    if (_mode == "rt")
-        return curr_depth > _max_depth;
-
-    _russian_roulette_coeff = 1.0;
-
-    if (_mode == "mcpt")    // Russian Roulette to terminate the path
-    {
-        if (curr_depth > _max_depth)
-        {
-            Uniform sampler;
-            double u { sampler.sample() };
-
-            double rr_stop_proba { std::min(0.0625 * curr_depth, 1.0) };
-
-            if (u > rr_stop_proba)
-                _russian_roulette_coeff /= (1.0 - rr_stop_proba);
-        }
-    }
-
-    return curr_depth > _max_depth && _russian_roulette_coeff == 1.0;
-}
-
-Color Scene::launch(Ray &ray)
-{
-    bool collides { false };
-
-    if (depth_recursion_over(ray))
-        return Colors::BLACK;
-
-    for (auto itr = _shapes.begin(); itr < _shapes.end(); itr++)
-        collides = (*itr)->intersect(ray) || collides;
-
-    if (!collides)
-        return Colors::BLACK;
-
-    return compute_color(ray);
-}
-
-void Scene::render(unsigned i, unsigned j)
-{
-    const Camera &c { camera(0)     };
-    Color avg_color { Colors::BLACK };
-
-    double norm_i, norm_j;
-    Vec3d towards_pixel;
-
-    const double range { 1.0/(double)_nb_samples };
-    Uniform sampler(0.0, range);
-
-    for (double x = 0; x < 1.0; x += range)
-    {
-        for (double y = 0; y < 1.0; y += range)
-        {
-            /* Using a stratified sampling instead of an uniform sampling
-             * TO-DO: use Poisson-disk / Sobol sequence instead ?
-             * See: Low-discrepancy sequence */
-            double u { nb_samples() > 1 ? sampler.sample() : 0.5 };
-            double v { nb_samples() > 1 ? sampler.sample() : 0.5 };
-
-            norm_i        = (i+x+u)/_output_img->width()  - 0.5;
-            norm_j        = (j+y+v)/_output_img->height() - 0.5;
-            towards_pixel = (norm_i * c.left()) + (norm_j * c.up())
-                                                            + c.direction();
-            Ray r(c.position(), towards_pixel);
-            avg_color += launch(r);
-        }
-    }
-
-    (*_output_img)[i][j] =
-            Colors::average(avg_color, _nb_samples*_nb_samples).clamp();
-}
-
-const Color Scene::compute_color(Ray &r)
-{
-    double ambient_light   { 0.1 };
-
-    Color obj_color        { r.intersection().material()->color()   };
-    Color ambient_color    { obj_color * ambient_light              };
-    Color diffuse_specular { compute_blinn_phong(r, obj_color)      };
-    Color reflect_color    { compute_refl_refractive(r)             };
-
-    return _russian_roulette_coeff *
-            (ambient_color + diffuse_specular + reflect_color).clamp();
-}
-
-const Color Scene::compute_blinn_phong(Ray &ray, const Color &obj_color) const
-{
-    Color diffuse  { Colors::BLACK };
-    Color specular { Colors::BLACK };
-
-    const Intersection &i { ray.intersection() };
-
-    for (unsigned light_id {0}; light_id < _lights.size(); ++light_id)
-    {
-        Vec3d towards_light     { light(light_id).position() - i.position() };
-        double source_distance  { towards_light.magnitude() };
-
-        towards_light = towards_light.normalized();
-
-        double cosine_n_l { i.normal().dot(towards_light) };
-
-        /* We need to compute the light contribution only if the normal points
-         * towards the light */
-        if (cosine_n_l > 0.0)
-        {
-            Ray shadow_ray(i.position() + EPSILON*towards_light, towards_light);
-            bool in_shadow { false };
-
-            /* Intersected objects must be between the light source and the
-             * first intersection in order to cast a shadow. */
-            auto light_intersection =
-                    std::find_if(_shapes.begin(), _shapes.end(), [&](Shape *shp)
-                    {
-                        return shp->intersect(shadow_ray)
-                               && shadow_ray.dist_max() < source_distance;
-                    });
-
-            in_shadow = light_intersection != _shapes.end();
-
-            if (!in_shadow)
-            {
-                diffuse = ((obj_color * cosine_n_l) + diffuse)
-                        * light(light_id).brightness();
-
-                /* In case of a glossy material we need to compute the specular
-                 * color. We add this contribution to the diffuse color. */
-                if (i.material()->shininess() > 0)
-                    specular += compute_specular(ray, light(light_id));
-            }
-        }
-    }
-
-    return diffuse + specular;
-}
-
-const Color Scene::compute_specular(Ray &ray, const Light &light) const
-{
-    Color specular { Colors::BLACK };
 
-    const Intersection &i { ray.intersection() };
-    double shininess { i.material()->shininess() };
+//const Color Scene::compute_color(Ray &r)
+//{
+//    double ambient_light   { 0.1 };
 
-    // The surface is not shiny, so we do not compute specular color
-    if (shininess == 0.0)
-        return specular;
+//    Color obj_color        { r.intersection().material()->color()   };
+//    Color ambient_color    { obj_color * ambient_light              };
+//    Color diffuse_specular { compute_blinn_phong(r, obj_color)      };
+//    Color reflect_color    { compute_refl_refractive(r)             };
 
-    Vec3d view_vect  { (ray.origin() - i.position()).normalized()       };
-    Vec3d light_vect { (i.position() - light.position()).normalized()   };
+//    return _russian_roulette_coeff *
+//            (ambient_color + diffuse_specular + reflect_color).clamp();
+//}
 
-    /* No need to normalize here because light_vect is normalized already and
-     * |r|^2 == |l|^2 == 1 */
-    Vec3d refl_vect  { light_vect.reflect(i.normal()) };
+//const Color Scene::compute_refl_refractive(Ray &ray)
+//{
+//    Color refractive { Colors::BLACK };
+//    Color reflective { Colors::BLACK };
 
-    // Cosine of the angle between the view vector and the reflected light
-    double cosine_v_r { view_vect.dot(refl_vect) };
-
-    if (cosine_v_r > 0.0)
-        specular = pow(cosine_v_r, shininess*0.25) * light.color();
-
-    return specular;
-}
-
-const Color Scene::compute_refl_refractive(Ray &ray)
-{
-    Color refractive { Colors::BLACK };
-    Color reflective { Colors::BLACK };
+//    Intersection i { ray.intersection() };
 
-    Intersection i { ray.intersection() };
+//    double R { 0 }, T { 0 };
 
-    double R { 0 }, T { 0 };
+//    // If the material is neither reflective nor refractive, we return black
+//    if (i.material()->reflection() <= 0.0 && i.material()->refraction() <= 0.0)
+//        return reflective + refractive;
 
-    // If the material is neither reflective nor refractive, we return black
-    if (i.material()->reflection() <= 0.0 && i.material()->refraction() <= 0.0)
-        return reflective + refractive;
+//    // If there is no refraction, we just take the reflection ratio of the material into account
+//    if (i.material()->refraction() <= 0.0)
+//        R = i.material()->reflection();
+//    else
+//    {
+//        /* For now we only consider reflection and refraction happening from air to
+//         * a second medium. Hence n1 = 1 as an approximation. */
+//        double n1       { 1.0                               };
+//        double n2       { i.material()->refraction()        };
+//        double cos_R    { -ray.direction().dot(i.normal())  };
+//        double sin2_T   { (n1/n2)*(n1/n2)*(1 - cos_R*cos_R) };
 
-    // If there is no refraction, we just take the reflection ratio of the material into account
-    if (i.material()->refraction() <= 0.0)
-        R = i.material()->reflection();
-    else
-    {
-        /* For now we only consider reflection and refraction happening from air to
-         * a second medium. Hence n1 = 1 as an approximation. */
-        double n1       { 1.0                               };
-        double n2       { i.material()->refraction()        };
-        double cos_R    { -ray.direction().dot(i.normal())  };
-        double sin2_T   { (n1/n2)*(n1/n2)*(1 - cos_R*cos_R) };
+//        R = schlick_approx(n1, n2, cos_R, sin2_T);
+//        T = 1 - R;
 
-        R = schlick_approx(n1, n2, cos_R, sin2_T);
-        T = 1 - R;
+//        if (T > 0.0)
+//        {
+//            double n { n1/n2 };
+//            Vec3d refract_vect { n * ray.direction() +
+//                        (n * cos_R - sqrt(1 - sin2_T))*i.normal() };
+//            Ray refract_ray(i.position() + EPSILON*refract_vect, refract_vect);
 
-        if (T > 0.0)
-        {
-            double n { n1/n2 };
-            Vec3d refract_vect { n * ray.direction() +
-                        (n * cos_R - sqrt(1 - sin2_T))*i.normal() };
-            Ray refract_ray(i.position() + EPSILON*refract_vect, refract_vect);
+//            refract_ray.bounces() = ray.bounces() + 1;
 
-            refract_ray.bounces() = ray.bounces() + 1;
+//            refractive = T * launch(refract_ray);
+//        }
+//    }
 
-            refractive = T * launch(refract_ray);
-        }
-    }
+//    if (R > 0.0)
+//    {
+//        Vec3d reflect_vect;
 
-    if (R > 0.0)
-    {
-        Vec3d reflect_vect;
+//        std::random_device rnd_dv;
+//        std::mt19937 gen(rnd_dv());
+//        std::uniform_real_distribution<double> distrib(0.0, 1.0);
 
-        std::random_device rnd_dv;
-        std::mt19937 gen(rnd_dv());
-        std::uniform_real_distribution<double> distrib(0.0, 1.0);
+//        double u { distrib(gen) };
 
-        double u { distrib(gen) };
+//        if (u <= R || _mode == "rt")  // Reflection is in the specular direction
+//            reflect_vect = ray.direction().reflect(i.normal());
+//        else // Reflection occurs in a random direction on the hemisphere (uniform sampling at the moment)
+//        {
+//            double v { distrib(gen) };
 
-        if (u <= R || _mode == "rt")  // Reflection is in the specular direction
-            reflect_vect = ray.direction().reflect(i.normal());
-        else // Reflection occurs in a random diffuse direction
-        {
-            double v { distrib(gen) };
+//            // Compute a random ray over the hemisphere at the intersection point
+//            double r    { sqrt(1 - u*u) };
+//            double phi  { 2 * PI * v    };
 
-            // Compute a random ray over the hemisphere at the intersection point
-            double r    { sqrt(1 - u*u) };
-            double phi  { 2 * PI * v    };
+//            double x { cos(phi) * r };
+//            double y { sin(phi) * r };
 
-            double x { cos(phi) * r };
-            double y { sin(phi) * r };
+//            reflect_vect = Vec3d(x, y, u) - ray.intersection().position();
 
-            reflect_vect = Vec3d(x, y, u) - ray.intersection().position();
+//            // The ray direction picked is in the wrong hemisphere
+//            if (reflect_vect.dot(ray.intersection().normal()) < 0.0)
+//                reflect_vect = reflect_vect.negative();
+//        }
 
-            // The ray direction picked is in the wrong hemisphere
-            if (reflect_vect.dot(ray.intersection().normal()) < 0.0)
-                reflect_vect = reflect_vect.negative();
-        }
+//        Ray reflect_ray(i.position() + EPSILON*reflect_vect, reflect_vect);
 
-        Ray reflect_ray(i.position() + EPSILON*reflect_vect, reflect_vect);
+//        reflect_ray.bounces() = ray.bounces() + 1;
 
-        reflect_ray.bounces() = ray.bounces() + 1;
+//        reflective = R * launch(reflect_ray);
+//    }
 
-        reflective = R * launch(reflect_ray);
-    }
-
-    return reflective + refractive;
-}
-
-double Scene::schlick_approx(double n1, double n2, double cos_R, double sin2_T) const
-{
-    double R { 0 };
-
-    // If sin2(thetaT) > 1 we're in the case of Total Internal Reflection
-    if (n1 > n2 && sin2_T > 1.0)
-        R = 1.0;
-    else
-    {
-        // Cosine of :  transmitted vector with n or reflected vector with n
-        double used_cos { n1 > n2 ? sqrt(1 - sin2_T) : cos_R };
-        double R0       { (n1 - n2) / (n1 + n2)              };
-        double c        { 1 - used_cos                       };
-
-        R0 *= R0;
-
-        R = R0 + (1 - R0) * c * c * c * c * c;
-    }
-
-    return R;
-}
+//    return reflective + refractive;
+//}

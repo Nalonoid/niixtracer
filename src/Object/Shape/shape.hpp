@@ -23,7 +23,7 @@ public:
 
     // Methods
     virtual bool intersect(Ray &r) = 0;
-    virtual const Vec3d normal_at(const Vec3d& point) = 0;
+    virtual const Vec3d normal(const Vec3d& point) const = 0;
 
     bool intersect(Ray &r, double dist);
 

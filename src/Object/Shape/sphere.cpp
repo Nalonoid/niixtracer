@@ -47,18 +47,17 @@ bool Sphere::intersect(Ray &r)
 
         dist = t1 < t2 ? t1/2 : t2/2;
 
-        if ((intersects = Shape::intersect(r, dist)))
-            r.intersection().normal() =
-                    (r.intersection().position() - _position)/_radius;
-        /* Here, the center-to-intersection point has a length of r, so we do
-         * not need the call to .normalized() to normalize it. Doing so avoids
-         * the square root in the magnitude computation. */
+        intersects = Shape::intersect(r, dist);
     }
 
     return intersects;
 }
 
-const Vec3d Sphere::normal_at(const Vec3d &p)
+const Vec3d Sphere::normal(const Vec3d &p) const
 {
-    return (p - _position).normalized();
+    /* Here, the center-to-intersection point has a length of r, so we do
+     * not need the call to .normalized() to normalize it. Doing so avoids
+     * the square root in the magnitude computation. */
+
+    return (p - _position)/_radius;
 }

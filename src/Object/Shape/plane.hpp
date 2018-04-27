@@ -15,7 +15,7 @@ public:
           const Material &mat);
 
     // Getters
-    const Vec3d& normal() const;
+    const Vec3d normal(const Vec3d& point = Space::ORIGIN) const override;
     Vec3d& normal();
 
     double distance() const;
@@ -23,7 +23,6 @@ public:
 
     // Methods
     bool intersect(Ray &r) override;
-    const Vec3d normal_at(const Vec3d& point) override;
 
 private:
     Vec3d   _normal;
