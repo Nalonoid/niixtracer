@@ -61,6 +61,11 @@ unsigned Scene::nb_samples() const
     return _nb_samples;
 }
 
+std::string Scene::mode() const
+{
+    return _mode;
+}
+
 Shape& Scene::shape(unsigned i) const
 {
     return *(_shapes[i]);

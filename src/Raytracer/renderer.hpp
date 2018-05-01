@@ -15,7 +15,7 @@ class Renderer
 public:
     Renderer(Scene *scene);
 
-    void  render();
+    void  render_scene();
     Color launch(Ray &ray);
 
     virtual bool depth_recursion_over(Ray &ray) = 0;

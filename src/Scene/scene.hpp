@@ -39,6 +39,7 @@ public:
     std::string& output_path();
     unsigned& max_depth();
     unsigned& nb_samples();
+    std::string mode() const;
 
     // Methods
     template<typename... Args>
@@ -49,7 +50,7 @@ public:
     friend class Serializer;
     friend class Renderer;
 
-    friend Scene* init_scene(unsigned index, Image *output_img,
+    friend Scene* init_scene(unsigned index, Image *output_img, std::string mode,
                              unsigned samples_per_row_col, unsigned max_depth);
 
     // Members
@@ -60,6 +61,7 @@ private:
 
     // Scene configuration infornation
     std::string _output_img_path;
+    std::string _mode;
     unsigned    _max_depth;
     unsigned    _nb_samples;
     double      _russian_roulette_coeff;

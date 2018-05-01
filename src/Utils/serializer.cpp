@@ -29,27 +29,31 @@ void Serializer::write_to_XML(const std::string &output_path)
     QDomElement settings_elem = scene_doc.createElement("settings");
     scene_elem.appendChild(settings_elem);
 
+    QDomElement path_elem   = scene_doc.createElement("path");
     QDomElement xres_elem   = scene_doc.createElement("xres");
     QDomElement yres_elem   = scene_doc.createElement("yres");
-    QDomElement path_elem   = scene_doc.createElement("path");
+    QDomElement mode_elem   = scene_doc.createElement("mode");
     QDomElement depth_elem  = scene_doc.createElement("depth");
     QDomElement sample_elem = scene_doc.createElement("sampl");
 
+    QDomText path   = scene_doc.createTextNode(QString::fromStdString(_scene->output_path()));
     QDomText xres   = scene_doc.createTextNode(QString::number(img->width()));
     QDomText yres   = scene_doc.createTextNode(QString::number(img->height()));
-    QDomText path   = scene_doc.createTextNode(QString::fromStdString(_scene->output_path()));
+    QDomText mode   = scene_doc.createTextNode(QString::fromStdString(_scene->_mode));
     QDomText depth  = scene_doc.createTextNode(QString::number(_scene->max_depth()));
     QDomText sample = scene_doc.createTextNode(QString::number(_scene->nb_samples()));
 
+    path_elem.appendChild(path);
     xres_elem.appendChild(xres);
     yres_elem.appendChild(yres);
-    path_elem.appendChild(path);
+    mode_elem.appendChild(mode);
     depth_elem.appendChild(depth);
     sample_elem.appendChild(sample);
 
+    settings_elem.appendChild(path_elem);
     settings_elem.appendChild(xres_elem);
     settings_elem.appendChild(yres_elem);
-    settings_elem.appendChild(path_elem);
+    settings_elem.appendChild(mode_elem);
     settings_elem.appendChild(depth_elem);
     settings_elem.appendChild(sample_elem);
 
@@ -141,15 +145,17 @@ Scene* Serializer::read_from_XML(const std::string &input_path)
 
     QDomElement scene_elem      { xml_document.firstChildElement("scene")   };
     QDomElement settings_elem   { scene_elem.firstChildElement("settings")  };
+    QDomElement path_elem       { settings_elem.firstChildElement("path")   };
     QDomElement xres_elem       { settings_elem.firstChildElement("xres")   };
     QDomElement yres_elem       { settings_elem.firstChildElement("yres")   };
-    QDomElement path_elem       { settings_elem.firstChildElement("path")   };
+    QDomElement mode_elem       { settings_elem.firstChildElement("mode")   };
     QDomElement depth_elem      { settings_elem.firstChildElement("depth")  };
     QDomElement sample_elem     { settings_elem.firstChildElement("sampl")  };
 
+    _scene->_output_img_path        = path_elem.text().toStdString();
     _scene->_output_img->width()    = xres_elem.text().toUInt();
     _scene->_output_img->height()   = yres_elem.text().toUInt();
-    _scene->_output_img_path        = path_elem.text().toStdString();
+    _scene->_mode                   = mode_elem.text().toStdString();
     _scene->max_depth()             = depth_elem.text().toUInt();
     _scene->nb_samples()            = sqrt(sample_elem.text().toUInt());
 
@@ -158,7 +164,7 @@ Scene* Serializer::read_from_XML(const std::string &input_path)
     return _scene;
 }
 
-void Serializer::populate_scene_from_XML(QDomElement &scene_elem)
+void Serializer::populate_scene_from_XML(const QDomElement &scene_elem)
 {
     QDomElement obj_elem = scene_elem.firstChildElement("camera");
 

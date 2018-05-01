@@ -25,7 +25,7 @@ private:
     void serialize(QDomDocument &scene_doc, QDomElement &scene_elem, Sphere* s);
     void serialize(QDomDocument &scene_doc, QDomElement &scene_elem, Plane* p);
 
-    void populate_scene_from_XML(QDomElement &scene_element);
+    void populate_scene_from_XML(const QDomElement &scene_element);
 
     void add_camera(QDomElement &cam_elem);
     void add_light(QDomElement &light_elem);

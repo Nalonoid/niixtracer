@@ -10,7 +10,7 @@
 
 Renderer::Renderer(Scene *scene) : _scene(scene) {}
 
-void Renderer::render()
+void Renderer::render_scene()
 {
     Image *img { _scene->_output_img };
     double norm_i, norm_j;

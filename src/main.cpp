@@ -43,7 +43,12 @@ int main(int argc, char **argv)
     serializer.init(new Scene(img));
     Scene *scene { serializer.read_from_XML(scene_path) };
 
-    Raytracer rt(scene);
+    Renderer *renderer;
+    if (scene->mode() == "rt")
+         renderer = new Raytracer(scene);
+    else
+        renderer = new Pathtracer(scene);
+
 
     // Display scene settings
     std::cout << "{o}----------------------------------------->\\" << std::endl;
@@ -57,7 +62,7 @@ int main(int argc, char **argv)
               << "x" << img->height() << std::endl;
 
     std::cout << "- Aspect ratio:\t" << img->aspect_ratio() << std::endl;
-    std::cout << "- Rendering mode:\trt" << std::endl;
+    std::cout << "- Rendering mode:\t" << scene->mode() << std::endl;
     std::cout << "- Max ray bounces:\t" << scene->max_depth() << std::endl;
     std::cout << "- Sampling:\t" << scene->nb_samples()*scene->nb_samples()
               << "x" << std::endl;
@@ -70,7 +75,7 @@ int main(int argc, char **argv)
             std::chrono::high_resolution_clock::now();
 
     // Render the scene
-    rt.render();
+    renderer->render_scene();
 
     // Stop the chrono!
     std::chrono::high_resolution_clock::time_point chrono_stop =
