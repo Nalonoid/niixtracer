@@ -41,6 +41,7 @@ bool Shape::intersect(Ray &r, double t)
         r.intersection().position() = r.origin() + (t * r.direction());
         r.intersection().set_material(&_material);
         r.intersection().normal() = normal(r.intersection().position());
+        r.intersection().set_shape(this);
         return true;
     }
 

@@ -21,7 +21,7 @@ void Serializer::init(Scene *s)
 void Serializer::write_to_XML(const std::string &output_path)
 {
     QDomDocument scene_doc;
-    const Image img = *(_scene->_output_img);
+    const Image *img = _scene->_output_img;
 
     QDomElement scene_elem = scene_doc.createElement("scene");
     scene_doc.appendChild(scene_elem);
@@ -32,28 +32,24 @@ void Serializer::write_to_XML(const std::string &output_path)
     QDomElement xres_elem   = scene_doc.createElement("xres");
     QDomElement yres_elem   = scene_doc.createElement("yres");
     QDomElement path_elem   = scene_doc.createElement("path");
-    QDomElement mode_elem   = scene_doc.createElement("mode");
     QDomElement depth_elem  = scene_doc.createElement("depth");
     QDomElement sample_elem = scene_doc.createElement("sampl");
 
-    QDomText xres   = scene_doc.createTextNode(QString::number(img.width()));
-    QDomText yres   = scene_doc.createTextNode(QString::number(img.height()));
-    QDomText path   = scene_doc.createTextNode(QString::fromStdString(output_path));
-    QDomText mode   = scene_doc.createTextNode(QString::fromStdString(_scene->_mode));
+    QDomText xres   = scene_doc.createTextNode(QString::number(img->width()));
+    QDomText yres   = scene_doc.createTextNode(QString::number(img->height()));
+    QDomText path   = scene_doc.createTextNode(QString::fromStdString(_scene->output_path()));
     QDomText depth  = scene_doc.createTextNode(QString::number(_scene->max_depth()));
     QDomText sample = scene_doc.createTextNode(QString::number(_scene->nb_samples()));
 
     xres_elem.appendChild(xres);
     yres_elem.appendChild(yres);
     path_elem.appendChild(path);
-    mode_elem.appendChild(mode);
     depth_elem.appendChild(depth);
     sample_elem.appendChild(sample);
 
     settings_elem.appendChild(xres_elem);
     settings_elem.appendChild(yres_elem);
     settings_elem.appendChild(path_elem);
-    settings_elem.appendChild(mode_elem);
     settings_elem.appendChild(depth_elem);
     settings_elem.appendChild(sample_elem);
 
@@ -113,11 +109,20 @@ void Serializer::write_to_XML(const std::string &output_path)
         serialize(scene_doc, scene_elem, *itr);
 
     QFile file(QString::fromStdString(output_path));
-    file.open(QFile::WriteOnly);
+    if (file.open(QFile::WriteOnly))
+    {
+        QTextStream out(&file);
+        out << scene_doc << endl;
+        file.close();
+    }
+    else
+    {
+        std::cerr << "error: cannot write the scene file "
+                  << output_path << std::endl;
+        exit(1);
+    }
 
-    QTextStream out(&file);
-    out << scene_doc << endl;
-    file.close();
+
 }
 
 Scene* Serializer::read_from_XML(const std::string &input_path)
@@ -126,7 +131,7 @@ Scene* Serializer::read_from_XML(const std::string &input_path)
     QFile file(QString::fromStdString(input_path));
     if (!file.open(QFile::ReadOnly))
     {
-        std::cerr << "Error: cannot open the input scene file "
+        std::cerr << "error: cannot open the input scene file "
                   << input_path << std::endl;
         return nullptr;
     }
@@ -139,14 +144,12 @@ Scene* Serializer::read_from_XML(const std::string &input_path)
     QDomElement xres_elem       { settings_elem.firstChildElement("xres")   };
     QDomElement yres_elem       { settings_elem.firstChildElement("yres")   };
     QDomElement path_elem       { settings_elem.firstChildElement("path")   };
-    QDomElement mode_elem       { settings_elem.firstChildElement("mode")   };
     QDomElement depth_elem      { settings_elem.firstChildElement("depth")  };
     QDomElement sample_elem     { settings_elem.firstChildElement("sampl")  };
 
     _scene->_output_img->width()    = xres_elem.text().toUInt();
     _scene->_output_img->height()   = yres_elem.text().toUInt();
     _scene->_output_img_path        = path_elem.text().toStdString();
-    _scene->mode()                  = mode_elem.text().toStdString();
     _scene->max_depth()             = depth_elem.text().toUInt();
     _scene->nb_samples()            = sqrt(sample_elem.text().toUInt());
 

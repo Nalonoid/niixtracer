@@ -30,15 +30,14 @@ public:
 
     std::string output_path() const;
     unsigned max_depth() const;
-    const std::string& mode() const;
     unsigned nb_samples() const;
 
     Shape&  shape(unsigned i) const;
     Light&  light(unsigned i) const;
     Camera& camera(unsigned i) const;
 
+    std::string& output_path();
     unsigned& max_depth();
-    std::string& mode();
     unsigned& nb_samples();
 
     // Methods
@@ -50,7 +49,7 @@ public:
     friend class Serializer;
     friend class Renderer;
 
-    friend Scene* init_scene(unsigned index, Image *output_img, std::string& mode,
+    friend Scene* init_scene(unsigned index, Image *output_img,
                              unsigned samples_per_row_col, unsigned max_depth);
 
     // Members
@@ -62,7 +61,6 @@ private:
     // Scene configuration infornation
     std::string _output_img_path;
     unsigned    _max_depth;
-    std::string _mode;
     unsigned    _nb_samples;
     double      _russian_roulette_coeff;
     Image*      _output_img;

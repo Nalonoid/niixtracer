@@ -8,6 +8,7 @@
 #include "Scene/scene_examples.inl"
 #include "Raytracer/ray.hpp"
 #include "Raytracer/raytracer.hpp"
+#include "Raytracer/pathtracer.hpp"
 #include "Object/Camera/camera.hpp"
 #include "Object/Light/light.hpp"
 #include "Object/Shape/sphere.hpp"
@@ -29,11 +30,11 @@ int main(int argc, char **argv)
     const char *scene_path { argv[1] };
 
     // Check whether the scene file exists. If not, exit the program
-    if (!fopen(scene_path, "r"))
-    {
-        std::cerr << "error: the input scene file does not exist" << std::endl;
-        return 1;
-    }
+//    if (!fopen(scene_path, "r"))
+//    {
+//        std::cerr << "error: the input scene file does not exist" << std::endl;
+//        return 1;
+//    }
 
     Image *img = new Image(1600, 900);
 
@@ -56,7 +57,7 @@ int main(int argc, char **argv)
               << "x" << img->height() << std::endl;
 
     std::cout << "- Aspect ratio:\t" << img->aspect_ratio() << std::endl;
-    std::cout << "- Rendering mode:\t" << scene->mode() << std::endl;
+    std::cout << "- Rendering mode:\trt" << std::endl;
     std::cout << "- Max ray bounces:\t" << scene->max_depth() << std::endl;
     std::cout << "- Sampling:\t" << scene->nb_samples()*scene->nb_samples()
               << "x" << std::endl;

@@ -5,6 +5,8 @@
 
 struct Color
 {
+    Color() : rgb(Vec3d(0.0, 0.0, 0.0)), a(1.0) {}
+
     Color(double r, double g, double b, double alpha = 1) :
         rgb(Vec3d(r, g, b)), a(alpha) {}
 
@@ -13,6 +15,9 @@ struct Color
 
     Color(Vec3d rgb_v, double alpha = 1) :
         rgb(rgb_v), a(alpha) {}
+
+    Color(double rgb_d, double alpha = 1) :
+        rgb(Vec3d(rgb_d, rgb_d, rgb_d)), a(alpha) {}
 
     Vec3d rgb;
     double a;

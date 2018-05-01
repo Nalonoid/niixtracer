@@ -56,11 +56,6 @@ unsigned Scene::max_depth() const
     return _max_depth;
 }
 
-const std::string& Scene::mode() const
-{
-    return _mode;
-}
-
 unsigned Scene::nb_samples() const
 {
     return _nb_samples;
@@ -81,14 +76,14 @@ Camera& Scene::camera(unsigned i) const
     return *(_cameras[i]);
 }
 
+std::string& Scene::output_path()
+{
+    return _output_img_path;
+}
+
 unsigned& Scene::max_depth()
 {
     return _max_depth;
-}
-
-std::string& Scene::mode()
-{
-    return _mode;
 }
 
 unsigned& Scene::nb_samples()

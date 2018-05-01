@@ -12,22 +12,23 @@ Renderer::Renderer(Scene *scene) : _scene(scene) {}
 
 void Renderer::render()
 {
-    Image * img { _scene->_output_img };
+    Image *img { _scene->_output_img };
+    double norm_i, norm_j;
+    Vec3d towards_pixel;
+    Color avg_color;
 
-    #pragma omp parallel for
+    const Camera &c { camera(0) };
+
+    unsigned nb_samples = _scene->nb_samples();
+    const double range { 1.0/(double)nb_samples};
+    Uniform sampler(0.0, range);
+
+    #pragma omp parallel for private(norm_i, norm_j, towards_pixel, avg_color) schedule(dynamic)
     for (unsigned j = 0; j < img->height(); ++j)
     {
         for (unsigned i = 0; i < img->width(); ++i)
         {
-            const Camera &c { camera(0)     };
-            Color avg_color { Colors::BLACK };
-
-            double norm_i, norm_j;
-            unsigned nb_samples = _scene->nb_samples();
-            Vec3d towards_pixel;
-
-            const double range { 1.0/(double)nb_samples};
-            Uniform sampler(0.0, range);
+            avg_color = Colors::BLACK;
 
             for (double x = 0; x < 1.0; x += range)
             {

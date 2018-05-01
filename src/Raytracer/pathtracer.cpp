@@ -31,5 +31,7 @@ bool Pathtracer::depth_recursion_over(Ray &ray)
 
 Color Pathtracer::compute_color(Ray &ray)
 {
-    return Colors::BLACK;
+    const Shape *s = ray.intersection().shape();
+
+    return Color(s->emission()) * 2;
 }

@@ -12,6 +12,17 @@ const Material* Intersection::material() const
     return _material;
 }
 
+
+const Shape* Intersection::shape() const
+{
+    return _shape;
+}
+
+void Intersection::set_shape(Shape* s)
+{
+    _shape = s;
+}
+
 void Intersection::set_material(Material *mat)
 {
     _material = mat;

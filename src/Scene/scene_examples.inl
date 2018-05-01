@@ -12,7 +12,7 @@ Scene SCENE_1(2, new Image(1600, 900));
 
 }
 
-Scene* init_scene(unsigned index, Image *output_img, std::string& mode,
+Scene* init_scene(unsigned index, Image *output_img,
                   unsigned samples_per_row_col, unsigned max_depth)
 {
     Scene *s;
@@ -63,9 +63,9 @@ Scene* init_scene(unsigned index, Image *output_img, std::string& mode,
     }
 
     s->max_depth()          = max_depth;
-    s->mode()               = mode;
     s->nb_samples()         = samples_per_row_col;
     s->_output_img          = output_img;
+    s->output_path()        = "./test.bmp";
 
     return s;
 }

@@ -1,5 +1,5 @@
 #ifndef __RENDERER_HPP__
-#define __REMDERER_HPP__
+#define __RENDERER_HPP__
 
 class Ray;
 class Color;
