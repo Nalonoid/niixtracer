@@ -1,5 +1,10 @@
 #include "material.hpp"
 
+MATERIAL_TYPE Material::type() const
+{
+    return _type;
+}
+
 const Color& Material::color() const
 {
     return _color;

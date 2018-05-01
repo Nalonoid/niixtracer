@@ -33,11 +33,11 @@ Vector<T> Vector<T>::negative() const
 }
 
 template <typename T>
-Vector<T> cross(const Vector<T> &v1, const Vector<T> &v2)
+Vector<T> Vector<T>::cross(const Vector<T> &v) const
 {
-    return Vector<T>(v1.y*v2.z - v1.z*v2.y,
-                     v1.z*v2.x - v1.x*v2.z,
-                     v1.x*v2.y - v1.y*v2.x);
+    return Vector<T>(y*v.z - z*v.y,
+                     z*v.x - x*v.z,
+                     x*v.y - y*v.x);
 }
 
 template <typename T>

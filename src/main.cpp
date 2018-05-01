@@ -30,11 +30,11 @@ int main(int argc, char **argv)
     const char *scene_path { argv[1] };
 
     // Check whether the scene file exists. If not, exit the program
-//    if (!fopen(scene_path, "r"))
-//    {
-//        std::cerr << "error: the input scene file does not exist" << std::endl;
-//        return 1;
-//    }
+    if (!fopen(scene_path, "r"))
+    {
+        std::cerr << "error: the input scene file does not exist" << std::endl;
+        return 1;
+    }
 
     Image *img = new Image(1600, 900);
 
@@ -43,12 +43,8 @@ int main(int argc, char **argv)
     serializer.init(new Scene(img));
     Scene *scene { serializer.read_from_XML(scene_path) };
 
-    Renderer *renderer;
-    if (scene->mode() == "rt")
-         renderer = new Raytracer(scene);
-    else
-        renderer = new Pathtracer(scene);
-
+    Renderer *renderer { scene->mode() == "rt" ?
+        (Renderer*) new Raytracer(scene) : (Renderer*) new Pathtracer(scene) };
 
     // Display scene settings
     std::cout << "{o}----------------------------------------->\\" << std::endl;

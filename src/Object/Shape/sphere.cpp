@@ -10,8 +10,8 @@ Sphere::Sphere(const Vec3d &position, double radius, const Color &color) :
     Shape(position, Material(color)), _radius(radius) {}
 
 Sphere::Sphere(const Vec3d &position, double radius, const Color &color,
-       const Material &mat) :
-    Shape(position, mat), _radius(radius)
+       const Material &mat, double emission) :
+    Shape(position, mat, emission), _radius(radius)
 {
     material().color() = color;
 }

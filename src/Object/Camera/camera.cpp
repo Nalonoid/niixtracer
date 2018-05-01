@@ -27,8 +27,8 @@ Camera::Camera(const Vec3d& pos, const Vec3d& la, double ar) :
 
 void Camera::compute_camera_basis()
 {
-    _up         = cross(_direction, Space::XAXIS).normalized();
-    _left       = cross(_up, _direction).normalized();
+    _up         = _direction.cross(Space::XAXIS).normalized();
+    _left       = _up.cross(_direction).normalized();
 
     _up         = 1/_aspect_ratio * _up;
     _direction  = 1/tanf(PI * 120.0/360.0) * _direction;

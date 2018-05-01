@@ -31,6 +31,7 @@ struct Vector
     Vector<T> add(const Vector<T> &v) const;
     Vector<T> mult(const double scalar) const;
     Vector<T> reflect(const Vector<T> &normal) const;
+    Vector<T> cross(const Vector<T> &v) const;
 
     std::string to_string() const;
 };

@@ -15,6 +15,8 @@ class Serializer
 public:
     Serializer();
 
+    ~Serializer();
+
     void init(Scene *s);
     void write_to_XML(const std::string &output_path);
     Scene* read_from_XML(const std::string &input_path);

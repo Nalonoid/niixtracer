@@ -6,8 +6,6 @@
 class Object
 {
 public:
-    enum class OBJECT_TYPE { SHAPE, LIGHT, CAMERA };
-
     Object(const Vec3d &position = Space::ORIGIN, double emission = 0.0);
 
     virtual ~Object();
@@ -21,7 +19,6 @@ public:
     double& emission();
 
 protected:
-    OBJECT_TYPE _type;
     Vec3d _position;
     double _emission;
 };

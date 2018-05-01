@@ -30,6 +30,10 @@ public:
     Camera& camera(unsigned i) const;
 
 protected:
+    double schlick_approx(double n1, double n2, double cos_R,
+                          double sin2_T) const;
+
+protected:
     const Scene* _scene;
 
 };

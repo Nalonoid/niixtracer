@@ -13,6 +13,11 @@
 
 Serializer::Serializer() : _scene(nullptr) {}
 
+Serializer::~Serializer()
+{
+    delete _scene;
+}
+
 void Serializer::init(Scene *s)
 {
     _scene = s;
@@ -250,10 +255,11 @@ void Serializer::add_plane(QDomElement &plane_elem)
 
 void Serializer::add_sphere(QDomElement &sphere_elem)
 {
-    QDomElement center_elem { sphere_elem.firstChildElement("center")   };
-    QDomElement radius_elem { sphere_elem.firstChildElement("radius")   };
-    QDomElement color_elem  { sphere_elem.firstChildElement("color")    };
-    QDomElement mat_elem    { sphere_elem.firstChildElement("material") };
+    QDomElement center_elem     { sphere_elem.firstChildElement("center")   };
+    QDomElement radius_elem     { sphere_elem.firstChildElement("radius")   };
+    QDomElement color_elem      { sphere_elem.firstChildElement("color")    };
+    QDomElement mat_elem        { sphere_elem.firstChildElement("material") };
+    QDomElement emission_elem   { sphere_elem.firstChildElement("emission") };
 
     QStringList center_str { center_elem.text().split(", ") };
     Vec3d center(center_str[0].toDouble(),
@@ -270,7 +276,9 @@ void Serializer::add_sphere(QDomElement &sphere_elem)
 
     Material material { Materials::material(mat_elem.text().toStdString()) };
 
-    _scene->add(new Sphere(center, radius, color, material));
+    double emission { emission_elem.text().toDouble() };
+
+    _scene->add(new Sphere(center, radius, color, material, emission));
 }
 
 void Serializer::serialize(QDomDocument &scene_doc,
@@ -280,10 +288,7 @@ void Serializer::serialize(QDomDocument &scene_doc,
     Plane*  plane   { dynamic_cast<Plane*>(s)    };
 
     if (sphere)
-    {
         serialize(scene_doc, scene_elem, sphere);
-        return;
-    }
 
     if (plane)
         serialize(scene_doc, scene_elem, plane);
@@ -319,17 +324,23 @@ void Serializer::serialize(QDomDocument &scene_doc,
     QDomText material = scene_doc.createTextNode(
                 QString::fromStdString(s->material().name()));
 
+    QDomElement emission_elem = scene_doc.createElement("emission");
+    shape_elem.appendChild(emission_elem);
+
+    QDomText emission = scene_doc.createTextNode(
+                QString::number(s->emission()));
+
     center_elem.appendChild(center);
     radius_elem.appendChild(radius);
     color_elem.appendChild(color);
     material_elem.appendChild(material);
+    emission_elem.appendChild(emission);
 
     shape_elem.appendChild(center_elem);
     shape_elem.appendChild(radius_elem);
     shape_elem.appendChild(color_elem);
     shape_elem.appendChild(material_elem);
-
-    scene_elem.appendChild(shape_elem);
+    shape_elem.appendChild(emission_elem);
 }
 
 void Serializer::serialize(QDomDocument &scene_doc,
