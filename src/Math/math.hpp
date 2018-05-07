@@ -84,6 +84,10 @@ struct Space
         xaxis(x), yaxis(y), zaxis(z) {}
 };
 
+// Create an orthonormal basis from the vector v1
+template <typename T>
+void orthonormal_basis(const Vector<T>& v1, Vector<T>& v2, Vector<T>& v3);
+
 }
 
 #include "math.inl"

@@ -7,7 +7,7 @@ unsigned long long int Ray::_number = 0;
 unsigned long long int Ray::_over_number = 0;
 
 Ray::Ray(const Vec3d& ori, const Vec3d& dir) :
-    _origin(ori), _direction(dir.normalized()), _dist_max(1000), _bounces(0)
+    _origin(ori), _direction(dir.normalized()), _dist_max(10000), _bounces(0)
 {
     if (_number < std::numeric_limits<unsigned long long>::max())
         _number++;

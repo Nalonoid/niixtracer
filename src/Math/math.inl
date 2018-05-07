@@ -1,8 +1,6 @@
 #include <math.h>
 #include <iostream>
 
-#include "math.hpp"
-
 // Vectors
 
 template <typename T>
@@ -112,5 +110,15 @@ const Vector<double> ORIGIN { 0, 0, 0 };
 const Vector<double> XAXIS  { 1, 0, 0 };
 const Vector<double> YAXIS  { 0, 1, 0 };
 const Vector<double> ZAXIS  { 0, 0, 1 };
+
+template <typename T>
+void orthonormal_basis(const Vector<T>& v1, Vector<T>& v2, Vector<T>& v3)
+{
+    v2 = Vec3d(0, -v1.z, v1.y);
+    v3 = v1.cross(v2);
+
+    v2 = v2.normalized();
+    v3 = v3.normalized();
+}
 
 }

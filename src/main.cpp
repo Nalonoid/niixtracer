@@ -15,9 +15,10 @@
 #include "Object/Shape/plane.hpp"
 #include "Utils/save.hpp"
 #include "Utils/serializer.hpp"
+#include "Utils/sampler.hpp"
 
 int main(int argc, char **argv)
-{
+{    
     // Checking input arguments
     if (argc != 2)
     {
@@ -28,6 +29,9 @@ int main(int argc, char **argv)
 
     // Initialize arguments
     const char *scene_path { argv[1] };
+
+    halton_sampler1.number(0, 2);
+    halton_sampler2.number(0, 2);
 
     // Check whether the scene file exists. If not, exit the program
     if (!fopen(scene_path, "r"))
