@@ -35,9 +35,7 @@ bool Pathtracer::depth_recursion_over(Ray &ray)
 
 Color Pathtracer::compute_color(Ray &ray)
 {   
-    const Intersection &i   { ray.intersection()    };
-
-    Color ret_color;
+    const Intersection &i { ray.intersection()    };
 
     switch (i.material()->type())
     {
@@ -49,15 +47,13 @@ Color Pathtracer::compute_color(Ray &ray)
 
     case MATERIAL_TYPE::REFRACTIVE:
     {
-        return compute_diffuse(ray);
+        return compute_refraction(ray);
         break;
     }
     default:
-        compute_diffuse(ray);
+        return Colors::BLACK;
         break;
     }
-
-    return ret_color;
 }
 
 const Color Pathtracer::compute_reflection(Ray &ray)
@@ -109,6 +105,47 @@ const Color Pathtracer::compute_diffuse(Ray &ray)
     ret_color = Color(s->emission()) * _russian_roulette_coeff +
             obj_col * launch(recursive_ray) * cos_att *
             _russian_roulette_coeff;
+
+    return ret_color;
+}
+
+const Color Pathtracer::compute_refraction(Ray &ray)
+{
+    const Intersection &i   { ray.intersection()    };
+    const Shape *s          { i.shape()             };
+    Vec3d normal            { i.normal()            };
+
+    Color ret_color;
+
+    double n    { i.material()->refraction() };
+
+    /* For now we only consider reflection and refraction happening from air to
+     * a second medium. Hence n1 = 1 as an approximationm.
+     * That is why n = n1/n2 = 1.0/n2 here */
+    if (normal.dot(ray.direction()) > 0.0)
+        normal = normal.negative();
+    else
+        n = 1.0 / i.material()->refraction();
+
+    double cos_R    { -ray.direction().dot(i.normal())      };
+    double sin2_T   { n*n*(1 - cos_R*cos_R)                 };
+    double u        { uniform_sampler.sample()              };
+    double R        { schlick_approx(1.0, n, cos_R, sin2_T) };
+
+    if (u > R)
+    {
+        double T { 1 - R };
+
+        Vec3d refract_vect { n * ray.direction() +
+                    (n * cos_R - sqrt(1.0 - sin2_T))*i.normal() };
+        Ray refract_ray(i.position() + EPSILON*refract_vect, refract_vect);
+        refract_ray.bounces() = ray.bounces() + 1;
+
+        ret_color = Color(s->emission()) * _russian_roulette_coeff +
+                T * _russian_roulette_coeff * launch(refract_ray);
+    }
+    else
+        ret_color = compute_reflection(ray);
 
     return ret_color;
 }

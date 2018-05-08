@@ -31,7 +31,7 @@ int main(int argc, char **argv)
     const char *scene_path { argv[1] };
 
     halton_sampler1.number(0, 2);
-    halton_sampler2.number(0, 2);
+    halton_sampler2.number(0, 3);
 
     // Check whether the scene file exists. If not, exit the program
     if (!fopen(scene_path, "r"))

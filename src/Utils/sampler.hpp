@@ -16,35 +16,48 @@ private:
     std::uniform_real_distribution<double> _distribution;
 };
 
-// Class for generating the Halton low-discrepancy series for Quasi
-// Monte Carlo integration.
-class Halton {
-    double value, inv_base;
+/* Code from : https://users.cg.tuwien.ac.at/zsolnai/gfx/smallpaint/
+ * Pseudo code may be found on wikipedia
+ * https://en.wikipedia.org/wiki/Halton_sequence */
+class Halton
+{
 public:
     void number(int i, int base) {
-        double f = inv_base = 1.0 / base;
-        value = 0.0;
+        double f = _inv_base = 1.0 / base;
+        _value = 0.0;
         while (i > 0) {
-            value += f * (double)(i%base);
+            _value += f * (double)(i%base);
             i /= base;
-            f *= inv_base;
+            f *= _inv_base;
         }
     }
+
     void next() {
-        double r = 1.0 - value - 0.0000001;
-        if (inv_base < r) value += inv_base;
+        double r = 1.0 - _value - 0.0000001;
+        if (_inv_base < r) _value += _inv_base;
         else {
-            double h = inv_base, hh;
-            do { hh = h; h *= inv_base; } while (h >= r);
-            value += hh + h - 1.0;
+            double h = _inv_base;
+            double hh;
+
+            do
+            {
+                hh = h;
+                h *= _inv_base;
+            } while (h >= r);
+
+            _value += hh + h - 1.0;
         }
     }
-    double get() { return value; }
+
+    double get() { return _value; }
+
+private:
+    double _value;
+    double _inv_base;
 };
 
 extern Halton halton_sampler1;
 extern Halton halton_sampler2;
-extern Halton halton_sampler3;
 extern Uniform uniform_sampler;
 
 /* Compute a random point on a hemisphere, uniformly sampled

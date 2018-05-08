@@ -14,6 +14,7 @@ public:
 private:
     const Color compute_reflection(Ray &ray);
     const Color compute_diffuse(Ray &ray);
+    const Color compute_refraction(Ray &ray);
 
 private:
     double _russian_roulette_coeff;

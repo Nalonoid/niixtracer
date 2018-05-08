@@ -23,7 +23,7 @@ void Renderer::render_scene()
 
     Uniform sampler(0.0, range);
 
-    #pragma omp parallel for private(norm_i, norm_j, towards_pixel) schedule(dynamic)
+    #pragma omp parallel for private(norm_i, norm_j, towards_pixel, halton_sampler1, halton_sampler2) schedule(dynamic)
     for (unsigned j = 0; j < img->height(); ++j)
     {
         for (unsigned i = 0; i < img->width(); ++i)
@@ -90,7 +90,7 @@ double Renderer::schlick_approx(double n1,     double n2,
 
         R0 *= R0;
 
-        R = R0 + (1 - R0) * c * c * c * c * c;
+        R = R0 + (1.0 - R0) * c * c * c * c * c;
     }
 
     return R;

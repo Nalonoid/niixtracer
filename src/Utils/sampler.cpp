@@ -6,7 +6,6 @@ Uniform uniform_sampler;
 
 Halton halton_sampler1;
 Halton halton_sampler2;
-Halton halton_sampler3;
 
 Uniform::Uniform(double min, double max) :
     _gen(_rnd_dv()), _distribution(min, max) {}
