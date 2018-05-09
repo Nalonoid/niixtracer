@@ -8,6 +8,7 @@
 #include "Object/Light/light.hpp"
 #include "Object/Shape/shape.hpp"
 #include "Utils/sampler.hpp"
+#include "Utils/utils.hpp"
 
 Pathtracer::Pathtracer(Scene *scene) : Renderer(scene),
     _russian_roulette_coeff(1.0f) {}
@@ -46,14 +47,68 @@ Color Pathtracer::compute_color(Ray &ray)
         return compute_reflection(ray);
 
     case MATERIAL_TYPE::REFRACTIVE:
-    {
         return compute_refraction(ray);
-        break;
-    }
+
     default:
+        std::cerr << "error: wrong material type!" << std::endl;
         return Colors::BLACK;
         break;
     }
+}
+
+const Color Pathtracer::compute_diffuse(Ray &ray)
+{
+    const Intersection &i       { ray.intersection()    };
+    const Shape *s              { i.shape()             };
+    Color ret_color, obj_col    { i.material()->color() };
+
+//    //TO-DO Explicit light sampling
+//    const auto &shapes = _scene->shapes();
+//    for (auto shape_it = shapes.begin(); shape_it < shapes.end(); shape_it++)
+//    {
+//        // If the shape is an emitter, we'll check for direct illumination
+//        if ((*shape_it)->emits())
+//        {
+//            bool directly_illuminated = false;
+//            Vec3d towards_light {
+//                ((*shape_it)->position() - i.position()).normalized() };
+
+//            Vec3d cone_sample { (towards_light +
+//                        rnd_dir_hemisphere(-1.0*towards_light)).normalized() };
+
+//            double cos_att { i.normal().dot(cone_sample) };
+
+//            /* We don't need to compute direct illumination if normal of the
+//             * intersection doesn't point towards light */
+//            if (cos_att > 0.0)
+//            {
+//                Ray shadow_ray(i.position() + EPSILON*cone_sample, cone_sample);
+
+//                auto source_intersection =
+//                    std::find_if(shapes.begin(), shapes.end(), [&](Shape *shp)
+//                    {
+//                        return shp->intersect(shadow_ray);
+//                    });
+
+//                directly_illuminated = source_intersection == shape_it;
+
+//                if (directly_illuminated)
+//                    ret_color +=
+//                            (*shape_it)->emission() * obj_col * cos_att;
+//            }
+//        }
+//    }
+
+    // Global illumination
+    Vec3d recursive_dir { rnd_dir_hemisphere(i.normal()) };
+    Ray recursive_ray(i.position() + EPSILON*recursive_dir, recursive_dir);
+    recursive_ray.bounces() = ray.bounces() + 1;
+
+    double cos_att { recursive_dir.dot(i.normal()) };
+
+    ret_color = s->emission() + (obj_col * launch(recursive_ray) * cos_att);
+
+    return ret_color * _russian_roulette_coeff;
 }
 
 const Color Pathtracer::compute_reflection(Ray &ray)
@@ -77,34 +132,6 @@ const Color Pathtracer::compute_reflection(Ray &ray)
     }
     else // Here we take a random direction on the hemisphere (diffuse)
         ret_color = compute_diffuse(ray);
-
-    return ret_color;
-}
-
-const Color Pathtracer::compute_diffuse(Ray &ray)
-{
-    const Intersection &i   { ray.intersection()    };
-    const Shape *s          { i.shape()             };
-
-    Color ret_color, obj_col { i.material()->color() };
-
-    Vec3d x_axis, y_axis;
-    Space::orthonormal_basis(i.normal(), x_axis, y_axis);
-
-    Vec3d hsphere_smpl  { hemisphere_sample() };
-    Vec3d recursive_dir {
-        Vec3d(x_axis.x, y_axis.x, i.normal().x).dot(hsphere_smpl),
-        Vec3d(x_axis.y, y_axis.y, i.normal().y).dot(hsphere_smpl),
-        Vec3d(x_axis.z, y_axis.z, i.normal().z).dot(hsphere_smpl) };
-
-    Ray recursive_ray(i.position() + EPSILON*recursive_dir, recursive_dir);
-    recursive_ray.bounces() = ray.bounces() + 1;
-
-    double cos_att { recursive_dir.dot(i.normal()) };
-
-    ret_color = Color(s->emission()) * _russian_roulette_coeff +
-            obj_col * launch(recursive_ray) * cos_att *
-            _russian_roulette_coeff;
 
     return ret_color;
 }

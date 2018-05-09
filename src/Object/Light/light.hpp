@@ -16,16 +16,20 @@ class Light : public Object
 {
 public:
     Light();
-    Light(const Vec3d &p, const Color &c = Colors::WHITE);
+    Light(const Vec3d &p, const Color &c = Colors::WHITE, double emission = 500.0);
 
     // Getters
     unsigned index() const override;
     const Color& color() const;
+    double emission() const;
     double brightness() const;
+
+    double& emission();
 
 private:
     static unsigned _index;
     Color _color;
+    double _emission;
 };
 
 #endif

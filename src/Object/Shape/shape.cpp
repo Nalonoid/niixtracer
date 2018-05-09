@@ -5,9 +5,10 @@
 unsigned Shape::_index = 0;
 
 Shape::Shape(const Vec3d &position, const Material &material, double emission) :
-    Object(position, emission), _material(material)
+    Object(position), _material(material)
 {
     _index++;
+    _light = emission > 0.0 ? new Light(position, emission) : nullptr;
 }
 
 Shape::Shape(const Material &material) :
@@ -30,6 +31,16 @@ const Material& Shape::material() const
 Material &Shape::material()
 {
     return _material;
+}
+
+double Shape::emission() const
+{
+    return (_light != nullptr) ? _light->emission() : 0.0;
+}
+
+bool Shape::emits() const
+{
+    return _light != nullptr;
 }
 
 // Methods

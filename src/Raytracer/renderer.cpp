@@ -10,6 +10,8 @@
 
 Renderer::Renderer(Scene *scene) : _scene(scene) {}
 
+Renderer::~Renderer() {}
+
 void Renderer::render_scene()
 {
     Image *img { _scene->_output_img };
@@ -23,7 +25,7 @@ void Renderer::render_scene()
 
     Uniform sampler(0.0, range);
 
-    #pragma omp parallel for private(norm_i, norm_j, towards_pixel, halton_sampler1, halton_sampler2) schedule(dynamic)
+    #pragma omp parallel for private(norm_i, norm_j, towards_pixel) firstprivate(halton_sampler1, halton_sampler2) schedule(dynamic)
     for (unsigned j = 0; j < img->height(); ++j)
     {
         for (unsigned i = 0; i < img->width(); ++i)

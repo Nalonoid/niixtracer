@@ -8,8 +8,8 @@ Light::Light() :
     _index++;
 }
 
-Light::Light(const Vec3d &p, const Color& c) :
-    Object(p), _color(c)
+Light::Light(const Vec3d &p, const Color& c, double emission) :
+    Object(p), _color(c), _emission(emission)
 {
     _index++;
 }
@@ -28,4 +28,15 @@ const Color& Light::color() const
 double Light::brightness() const
 {
     return _color.brightness();
+}
+
+
+double Light::emission() const
+{
+    return _emission;
+}
+
+double& Light::emission()
+{
+    return _emission;
 }

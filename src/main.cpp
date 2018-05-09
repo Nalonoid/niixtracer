@@ -87,6 +87,9 @@ int main(int argc, char **argv)
     // Save the image to the specified output file
     save2bmp(scene->output_path().data(), img, 72);
 
+    // Clean data structures
+    delete renderer;
+
     // Display some information about the rendering
     std::cout << std::endl << "- Rays count:\t" << Ray::number() << "+"
               << Ray::over_number() << std::endl << "- Elapsed time:\t"

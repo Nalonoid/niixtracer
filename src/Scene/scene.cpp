@@ -18,7 +18,9 @@ Scene::Scene(Image* img) : _max_depth(0), _russian_roulette_coeff(1.0),
 Scene::Scene(unsigned depth, Image* img) : _max_depth(depth),
     _russian_roulette_coeff(1.0), _output_img(img) {}
 
-Scene::~Scene() {
+Scene::~Scene()
+{
+    delete _output_img;
 
     for (Shape* s : _shapes)
         delete s;

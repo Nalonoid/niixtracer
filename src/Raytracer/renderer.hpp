@@ -14,6 +14,7 @@ class Renderer
 {
 public:
     Renderer(Scene *scene);
+    virtual ~Renderer();
 
     void  render_scene();
     Color launch(Ray &ray);

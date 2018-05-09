@@ -6,21 +6,18 @@
 class Object
 {
 public:
-    Object(const Vec3d &position = Space::ORIGIN, double emission = 0.0);
+    Object(const Vec3d &position = Space::ORIGIN);
 
     virtual ~Object();
 
     // Getters
     virtual unsigned index() const = 0;
     const Vec3d& position() const;
-    double emission() const;
 
     Vec3d& position();
-    double& emission();
 
 protected:
     Vec3d _position;
-    double _emission;
 };
 
 #endif

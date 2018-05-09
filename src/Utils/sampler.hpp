@@ -65,4 +65,6 @@ extern Uniform uniform_sampler;
  * http://www.rorydriscoll.com/2009/01/07/better-sampling/ */
 Vec3d hemisphere_sample();
 
+Vec3d rnd_dir_hemisphere(Vec3d normal);
+
 #endif

@@ -4,6 +4,7 @@
 #include "Math/math.hpp"
 #include "../object.hpp"
 #include "../Material/material.hpp"
+#include "../Light/light.hpp"
 
 class Ray;
 
@@ -18,8 +19,13 @@ public:
 
     // Getters
     unsigned index() const override;
+
     const Material& material() const;
     Material& material();
+
+    double emission() const;
+
+    bool emits() const;
 
     // Methods
     virtual bool intersect(Ray &r) = 0;
@@ -30,6 +36,7 @@ public:
 private:
     static unsigned _index;
     Material _material;
+    Light *_light;
 };
 
 #endif
