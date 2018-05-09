@@ -41,8 +41,9 @@ Color Pathtracer::compute_color(Ray &ray)
     switch (i.material()->type())
     {
     case MATERIAL_TYPE::DIFFUSE:
+    {
         return compute_diffuse(ray);
-
+    }
     case MATERIAL_TYPE::SPECULAR:
         return compute_reflection(ray);
 
@@ -106,7 +107,8 @@ const Color Pathtracer::compute_diffuse(Ray &ray)
 
     double cos_att { recursive_dir.dot(i.normal()) };
 
-    ret_color = s->emission() + (obj_col * launch(recursive_ray) * cos_att);
+    ret_color = Color(s->emission()) +
+            (obj_col * launch(recursive_ray) * cos_att);
 
     return ret_color * _russian_roulette_coeff;
 }

@@ -15,7 +15,7 @@ public:
           const Material &material  = Materials::DEFAULT,
           double emission = 0.0);
 
-    Shape(const Material &material);
+    Shape(const Material &material, double emission = 0.0);
 
     // Getters
     unsigned index() const override;

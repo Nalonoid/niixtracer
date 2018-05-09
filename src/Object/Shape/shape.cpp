@@ -11,10 +11,11 @@ Shape::Shape(const Vec3d &position, const Material &material, double emission) :
     _light = emission > 0.0 ? new Light(position, emission) : nullptr;
 }
 
-Shape::Shape(const Material &material) :
+Shape::Shape(const Material &material, double emission) :
     Object(Space::ORIGIN), _material(material)
 {
     _index++;
+    _light = emission > 0.0 ? new Light(Space::ORIGIN, emission) : nullptr;
 }
 
 // Getters

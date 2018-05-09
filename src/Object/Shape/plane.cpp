@@ -11,8 +11,8 @@ Plane::Plane(const Vec3d &normal, double distance, const Material &mat) :
     Shape(mat), _normal(normal), _distance(distance) {}
 
 Plane::Plane(const Vec3d &normal, double distance, const Color &color,
-      const Material &mat) :
-    Shape(mat), _normal(normal), _distance(distance)
+      const Material &mat, double emission) :
+    Shape(mat, emission), _normal(normal), _distance(distance)
 {
     material().color() = color;
 }
