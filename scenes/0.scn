@@ -1,10 +1,10 @@
 <scene>
  <settings>
-  <xres>1600</xres>
-  <yres>900</yres>
-  <path>0_2_mcpt_test_256sp.bmp</path>
+  <xres>1200</xres>
+  <yres>675</yres>
+  <path>0_10_mcpt_test_256sp.bmp</path>
   <mode>mcpt</mode>
-  <depth>2</depth>
+  <depth>10</depth>
   <sampl>256</sampl>
  </settings>
  <camera>
@@ -32,49 +32,56 @@
   <radius>1</radius>
   <color>0.500000, 0.000000, 1.000000, 1.000000</color>
   <material>metal</material>
+  <emission>0.0</emission>
  </sphere>
  <sphere>
   <center>0.000000, 2.000000, 1.000000</center>
   <radius>2</radius>
   <color>1.000000, 1.000000, 0.000000, 1.000000</color>
   <material>metal</material>
+  <emission>0.0</emission>
  </sphere>
  <sphere>
   <center>2.900000, 0.600000, -2.400000</center>
   <radius>0.6</radius>
   <color>1.000000, 1.000000, 1.000000, 1.000000</color>
   <material>metal</material>
+  <emission>0.0</emission>
  </sphere>
  <sphere>
   <center>4.000000, 3.000000, 4.000000</center>
   <radius>3</radius>
   <color>1.000000, 0.000000, 0.000000, 1.000000</color>
   <material>platic</material>
+  <emission>0.0</emission>
  </sphere>
  <sphere>
   <center>-2.400000, 1.000000, -4.500000</center>
   <radius>1</radius>
   <color>1.000000, 1.000000, 1.000000, 1.000000</color>
   <material>translucent</material>
+  <emission>0.0</emission>
  </sphere>
  <sphere>
   <center>-1.000000, 3.000000, -1.500000</center>
   <radius>1</radius>
   <color>1.000000, 1.000000, 1.000000, 1.000000</color>
   <material>glossy</material>
+  <emission>0.0</emission>
  </sphere>
  <sphere>
   <center>-5.000000, 2.000000, -1.250000</center>
   <radius>2</radius>
   <color>0.000000, 1.000000, 0.000000, 1.000000</color>
   <material>plastic</material>
+  <emission>0.0</emission>
  </sphere>
  <sphere>
   <center>6.000000, 5.000000, -6.000000</center>
   <radius>1</radius>
   <color>1.000000, 1.000000, 1.000000, 1.000000</color>
   <material>diffuse</material>
-  <emission>500.0<emission>
+  <emission>1.0</emission>
  </sphere>
 </scene>
 
