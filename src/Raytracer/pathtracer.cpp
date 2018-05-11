@@ -36,9 +36,7 @@ bool Pathtracer::depth_recursion_over(Ray &ray)
 
 Color Pathtracer::compute_color(Ray &ray)
 {   
-    const Intersection &i { ray.intersection()    };
-
-    switch (i.material()->type())
+    switch (ray.intersection().material()->type())
     {
     case MATERIAL_TYPE::DIFFUSE:
     {
@@ -63,52 +61,62 @@ const Color Pathtracer::compute_diffuse(Ray &ray)
     const Shape *s              { i.shape()             };
     Color ret_color, obj_col    { i.material()->color() };
 
-//    //TO-DO Explicit light sampling
-//    const auto &shapes = _scene->shapes();
-//    for (auto shape_it = shapes.begin(); shape_it < shapes.end(); shape_it++)
-//    {
-//        // If the shape is an emitter, we'll check for direct illumination
-//        if ((*shape_it)->emits())
-//        {
-//            bool directly_illuminated = false;
-//            Vec3d towards_light {
-//                ((*shape_it)->position() - i.position()).normalized() };
-
-//            Vec3d cone_sample { (towards_light +
-//                        rnd_dir_hemisphere(-1.0*towards_light)).normalized() };
-
-//            double cos_att { i.normal().dot(cone_sample) };
-
-//            /* We don't need to compute direct illumination if normal of the
-//             * intersection doesn't point towards light */
-//            if (cos_att > 0.0)
-//            {
-//                Ray shadow_ray(i.position() + EPSILON*cone_sample, cone_sample);
-
-//                auto source_intersection =
-//                    std::find_if(shapes.begin(), shapes.end(), [&](Shape *shp)
-//                    {
-//                        return shp->intersect(shadow_ray);
-//                    });
-
-//                directly_illuminated = source_intersection == shape_it;
-
-//                if (directly_illuminated)
-//                    ret_color +=
-//                            (*shape_it)->emission() * obj_col * cos_att;
-//            }
-//        }
-//    }
-
     // Global illumination
     Vec3d recursive_dir { rnd_dir_hemisphere(i.normal()) };
-    Ray recursive_ray(i.position() + EPSILON*recursive_dir, recursive_dir);
+    recursive_dir = recursive_dir.normalized();
+
+    Ray recursive_ray(i.position() + EPSILON * recursive_dir, recursive_dir);
     recursive_ray.bounces() = ray.bounces() + 1;
 
     double cos_att { recursive_dir.dot(i.normal()) };
 
-    ret_color = Color(s->emission()) +
-            (obj_col * launch(recursive_ray) * cos_att);
+    // Without next event estimation use this :
+    //ret_color = Color(s->emission()) +
+    //        (obj_col * launch(recursive_ray) * cos_att);
+
+    if (s->emits())
+        return (0.015 * Color(s->emission()) +
+                (obj_col * launch(recursive_ray) * cos_att))
+                * _russian_roulette_coeff;
+
+    ret_color += launch(recursive_ray) * cos_att;
+
+    // Next event estimation - Direct illumination
+    const auto &shapes = _scene->shapes();
+    for (auto shape_it = shapes.begin(); shape_it < shapes.end(); shape_it++)
+    {
+        // If the shape is an emitter, we'll check for direct illumination
+        if ((*shape_it)->emits())
+        {
+            bool directly_illuminated = false;
+            Vec3d towards_light {
+                ((*shape_it)->position() - i.position()).normalized() };
+
+            Vec3d light_sample { (*shape_it)->position()+hemisphere_sample() };
+            Vec3d cone_sample { (light_sample - i.position()).normalized() };
+
+            double cos_att { i.normal().dot(cone_sample) };
+
+            /* We don't need to compute direct illumination if normal of the
+             * intersection doesn't point towards light */
+            if (cos_att > 0.0)
+            {
+                Ray shadow_ray(i.position() + EPSILON*cone_sample, cone_sample);
+
+                auto source_intersection =
+                    std::find_if(shapes.begin(), shapes.end(), [&](Shape *shp)
+                    {
+                        return shp->intersect(shadow_ray);
+                    });
+
+                directly_illuminated = (source_intersection == shape_it && *shape_it != s);
+
+                if (directly_illuminated)
+                    ret_color +=
+                            0.015 * Color((*shape_it)->emission()) * obj_col * cos_att;
+            }
+        }
+    }
 
     return ret_color * _russian_roulette_coeff;
 }
@@ -126,7 +134,9 @@ const Color Pathtracer::compute_reflection(Ray &ray)
     if (u <= R) // The reflection is in the perfect specular direction
     {
         Vec3d reflect_vect { ray.direction().reflect(i.normal()) };
-        Ray reflection_ray(i.position() + EPSILON * reflect_vect, reflect_vect);
+        reflect_vect = reflect_vect.normalized();
+
+        Ray reflection_ray(i.position() + EPSILON * i.normal(), reflect_vect);
         reflection_ray.bounces() = ray.bounces() + 1;
 
         ret_color = Color(s->emission()) * _russian_roulette_coeff +
@@ -167,7 +177,8 @@ const Color Pathtracer::compute_refraction(Ray &ray)
 
         Vec3d refract_vect { n * ray.direction() +
                     (n * cos_R - sqrt(1.0 - sin2_T))*i.normal() };
-        Ray refract_ray(i.position() + EPSILON*refract_vect, refract_vect);
+
+        Ray refract_ray(i.position() + EPSILON * refract_vect, refract_vect);
         refract_ray.bounces() = ray.bounces() + 1;
 
         ret_color = Color(s->emission()) * _russian_roulette_coeff +

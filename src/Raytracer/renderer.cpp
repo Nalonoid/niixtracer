@@ -20,8 +20,9 @@ void Renderer::render_scene()
 
     const Camera &c { camera(0) };
 
-    unsigned nb_samples { _scene->nb_samples()   };
-    const double range  { 1.0/(double)nb_samples };
+    unsigned nb_samples     { _scene->nb_samples()      };
+    unsigned total_samples  { nb_samples*nb_samples     };
+    const double range      { 1.0/(double)nb_samples    };
 
     Uniform sampler(0.0, range);
 
@@ -39,16 +40,16 @@ void Renderer::render_scene()
                     /* Using a stratified sampling instead of an uniform sampling
                      * TO-DO: use Poisson-disk / Sobol sequence instead ?
                      * See: Low-discrepancy sequence */
-                    double u { nb_samples > 1 ? sampler.sample() : 0.5 };
-                    double v { nb_samples > 1 ? sampler.sample() : 0.5 };
+                    double u { total_samples > 1 ? sampler.sample() : 0.5 };
+                    double v { total_samples > 1 ? sampler.sample() : 0.5 };
 
                     norm_i        = (i+xsp+u)/img->width()  - 0.5;
                     norm_j        = (j+ysp+v)/img->height() - 0.5;
                     towards_pixel = (norm_i * c.left()) + (norm_j * c.up())
                             + c.direction();
 
-                    Ray r(c.position(), towards_pixel);
-                    avg_color += launch(r);
+                    Ray ray(c.position(), towards_pixel.normalized());
+                    avg_color += launch(ray);
                 }
             }
 
