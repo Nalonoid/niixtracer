@@ -5,6 +5,8 @@
 #include "utils.hpp"
 
 Uniform uniform_sampler;
+Uniform longitude_sampler(0, 2*PI);
+Uniform wavelength_sampler(430, 770);
 
 Halton halton_sampler1;
 Halton halton_sampler2;
@@ -19,20 +21,18 @@ double Uniform::sample()
 
 Vec3d hemisphere_sample()
 {
-    double u { halton_sampler1.get() };
-    double v { halton_sampler2.get() };
-
-    halton_sampler1.next();
-    halton_sampler2.next();
+    double u { uniform_sampler.sample()     };
+    double v { longitude_sampler.sample()   };
 
     // Compute a random point on a hemisphere
-    double r    { sqrt(1 - u*u) };
-    double phi  { 2 * PI * v    };
+    double phi      { 2.0 * u - 1.0     };
+    double theta    { v                 };
+    double r        { sqrt(1 - phi*phi) };
 
-    double x { cos(phi) * r };
-    double y { sin(phi) * r };
+    double x { cos(theta) * r   };
+    double y { sin(theta) * r   };
 
-    return Vec3d(x, y, u);
+    return Vec3d(x, y, phi);
 }
 
 Vec3d rnd_dir_hemisphere(Vec3d normal)

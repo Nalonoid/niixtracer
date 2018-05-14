@@ -75,7 +75,7 @@ const Color Pathtracer::compute_diffuse(Ray &ray)
     //        (obj_col * launch(recursive_ray) * cos_att);
 
     if (s->emits())
-        return 1/(4*PI) * (Color(s->emission()) +
+        return 1/(2*PI) * (Color(s->emission()) +
                 (obj_col * launch(recursive_ray) * cos_att))
                 * _russian_roulette_coeff;
 
@@ -111,7 +111,7 @@ const Color Pathtracer::compute_diffuse(Ray &ray)
 
                 if (directly_illuminated)
                     ret_color +=
-                            1/(4*PI) * Color((*shape_it)->emission()) * obj_col * cos_att;
+                            1/(2*PI) * Color((*shape_it)->emission()) * obj_col * cos_att;
             }
         }
     }

@@ -74,6 +74,10 @@ int main(int argc, char **argv)
     std::chrono::high_resolution_clock::time_point chrono_start =
             std::chrono::high_resolution_clock::now();
 
+    std::time_t start { std::chrono::system_clock::to_time_t(chrono_start) };
+    std::cout << std::endl << "- Rendering start:\t" << std::ctime(&start)
+              << std::flush;
+
     // Render the scene
     renderer->render_scene();
 
@@ -91,9 +95,13 @@ int main(int argc, char **argv)
     delete renderer;
 
     // Display some information about the rendering
-    std::cout << std::endl << "- Rays count:\t" << Ray::number() << "+"
-              << Ray::over_number() << std::endl << "- Elapsed time:\t"
-              << duration/1000000.0 << "s" << std::endl;
+
+    std::time_t end { std::chrono::system_clock::to_time_t(chrono_stop) };
+    std::cout << "- Rendering end:\t" << std::ctime(&end);
+
+    std::cout << "- Elapsed time:\t" << duration/1000000.0 << "s" << std::endl
+              << "- Rays count:\t" << Ray::number() << "+" << Ray::over_number()
+              << std::endl;
 
     std::cout << std::endl
               << "{o}----------------------------------------->|"  << std::endl;

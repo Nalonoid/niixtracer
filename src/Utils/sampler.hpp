@@ -22,20 +22,27 @@ private:
 class Halton
 {
 public:
-    void number(int i, int base) {
+    void number(int i, int base)
+    {
         double f = _inv_base = 1.0 / base;
         _value = 0.0;
-        while (i > 0) {
+
+        while (i > 0)
+        {
             _value += f * (double)(i%base);
             i /= base;
             f *= _inv_base;
         }
     }
 
-    void next() {
+    void next()
+    {
         double r = 1.0 - _value - 0.0000001;
-        if (_inv_base < r) _value += _inv_base;
-        else {
+
+        if (_inv_base < r)
+            _value += _inv_base;
+        else
+        {
             double h = _inv_base;
             double hh;
 
@@ -49,7 +56,10 @@ public:
         }
     }
 
-    double get() { return _value; }
+    double get()
+    {
+        return _value;
+    }
 
 private:
     double _value;
@@ -58,7 +68,10 @@ private:
 
 extern Halton halton_sampler1;
 extern Halton halton_sampler2;
+
 extern Uniform uniform_sampler;
+extern Uniform longitude_sampler;
+extern Uniform wavelength_sampler;
 
 /* Compute a random point on a hemisphere, uniformly sampled
  * More information here :
