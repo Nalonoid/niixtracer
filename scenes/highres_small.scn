@@ -1,0 +1,63 @@
+<scene>
+ <settings>
+  <xres>1920</xres>
+  <yres>1080</yres>
+  <path>highres_small_mcpt_nee_10bnc_4096sp.bmp</path>
+  <mode>mcpt</mode>
+  <depth>10</depth>
+  <sampl>4096</sampl>
+ </settings>
+ <camera>
+  <position>0.000000, 3.000000, -10.000000</position>
+  <look_at>0.000000, 0.000000, 0.000000</look_at>
+ </camera>
+ <plane>
+  <normal>0.000000, 1.000000, 0.000000</normal>
+  <distance>0</distance>
+  <color>0.500000, 0.250000, 0.250000, 1.000000</color>
+  <material>metal</material>
+ </plane>
+ <sphere>
+  <center>2.000000, 1.000000, -1.250000</center>
+  <radius>1</radius>
+  <color>0.500000, 0.000000, 1.000000, 1.000000</color>
+  <material>metal</material>
+  <emission>0.0</emission>
+ </sphere>
+ <sphere>
+  <center>0.000000, 2.000000, 1.000000</center>
+  <radius>2</radius>
+  <color>1.000000, 1.000000, 0.000000, 1.000000</color>
+  <material>metal</material>
+  <emission>0.0</emission>
+ </sphere>
+ <sphere>
+  <center>2.900000, 0.600000, -2.400000</center>
+  <radius>0.6</radius>
+  <color>1.000000, 1.000000, 1.000000, 1.000000</color>
+  <material>metal</material>
+  <emission>0.0</emission>
+ </sphere>
+ <sphere>
+  <center>-2.400000, 1.000000, -4.500000</center>
+  <radius>1</radius>
+  <color>1.000000, 1.000000, 1.000000, 1.000000</color>
+  <material>translucent</material>
+  <emission>0.0</emission>
+ </sphere>
+ <sphere>
+  <center>-1.000000, 3.000000, -1.500000</center>
+  <radius>1</radius>
+  <color>1.000000, 1.000000, 1.000000, 1.000000</color>
+  <material>glossy</material>
+  <emission>0.0</emission>
+ </sphere>
+ <sphere>
+  <center>6.000000, 5.000000, -6.000000</center>
+  <radius>1</radius>
+  <color>1.000000, 1.000000, 1.000000, 1.000000</color>
+  <material>diffuse</material>
+  <emission>31.405</emission>
+ </sphere>
+</scene>
+
