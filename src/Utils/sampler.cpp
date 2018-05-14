@@ -26,14 +26,13 @@ Vec3d hemisphere_sample()
     halton_sampler2.next();
 
     // Compute a random point on a hemisphere
-    double r      { sqrt(u)     };
-    double theta  { 2 * PI * v  };
+    double r    { sqrt(1 - u*u) };
+    double phi  { 2 * PI * v    };
 
-    double x { cos(theta) * r           };
-    double y { sin(theta) * r           };
-    double z { sqrt(max(0.0, 1.0 - u))  };
+    double x { cos(phi) * r };
+    double y { sin(phi) * r };
 
-    return Vec3d(x, y, z);
+    return Vec3d(x, y, u);
 }
 
 Vec3d rnd_dir_hemisphere(Vec3d normal)

@@ -8,7 +8,8 @@ Shape::Shape(const Vec3d &position, const Material &material, double emission) :
     Object(position), _material(material)
 {
     _index++;
-    _light = emission > 0.0 ? new Light(position, emission) : nullptr;
+    _light = emission > 0.0 ? new Light(position, material.color(), emission)
+                            : nullptr;
 }
 
 Shape::Shape(const Material &material, double emission) :

@@ -75,7 +75,7 @@ const Color Pathtracer::compute_diffuse(Ray &ray)
     //        (obj_col * launch(recursive_ray) * cos_att);
 
     if (s->emits())
-        return (0.015 * Color(s->emission()) +
+        return 1/(4*PI) * (Color(s->emission()) +
                 (obj_col * launch(recursive_ray) * cos_att))
                 * _russian_roulette_coeff;
 
@@ -89,8 +89,6 @@ const Color Pathtracer::compute_diffuse(Ray &ray)
         if ((*shape_it)->emits())
         {
             bool directly_illuminated = false;
-            Vec3d towards_light {
-                ((*shape_it)->position() - i.position()).normalized() };
 
             Vec3d light_sample { (*shape_it)->position()+hemisphere_sample() };
             Vec3d cone_sample { (light_sample - i.position()).normalized() };
@@ -101,7 +99,7 @@ const Color Pathtracer::compute_diffuse(Ray &ray)
              * intersection doesn't point towards light */
             if (cos_att > 0.0)
             {
-                Ray shadow_ray(i.position() + EPSILON*cone_sample, cone_sample);
+                Ray shadow_ray(i.position() + EPSILON*i.normal(), cone_sample);
 
                 auto source_intersection =
                     std::find_if(shapes.begin(), shapes.end(), [&](Shape *shp)
@@ -109,11 +107,11 @@ const Color Pathtracer::compute_diffuse(Ray &ray)
                         return shp->intersect(shadow_ray);
                     });
 
-                directly_illuminated = (source_intersection == shape_it && *shape_it != s);
+                directly_illuminated = (source_intersection == shape_it);
 
                 if (directly_illuminated)
                     ret_color +=
-                            0.015 * Color((*shape_it)->emission()) * obj_col * cos_att;
+                            1/(4*PI) * Color((*shape_it)->emission()) * obj_col * cos_att;
             }
         }
     }
@@ -136,11 +134,11 @@ const Color Pathtracer::compute_reflection(Ray &ray)
         Vec3d reflect_vect { ray.direction().reflect(i.normal()) };
         reflect_vect = reflect_vect.normalized();
 
-        Ray reflection_ray(i.position() + EPSILON * i.normal(), reflect_vect);
+        Ray reflection_ray(i.position() + EPSILON * reflect_vect, reflect_vect);
         reflection_ray.bounces() = ray.bounces() + 1;
 
-        ret_color = Color(s->emission()) * _russian_roulette_coeff +
-                launch(reflection_ray) * _russian_roulette_coeff;
+        ret_color = (Color(s->emission()) + launch(reflection_ray))
+                * _russian_roulette_coeff;
     }
     else // Here we take a random direction on the hemisphere (diffuse)
         ret_color = compute_diffuse(ray);
@@ -181,8 +179,8 @@ const Color Pathtracer::compute_refraction(Ray &ray)
         Ray refract_ray(i.position() + EPSILON * refract_vect, refract_vect);
         refract_ray.bounces() = ray.bounces() + 1;
 
-        ret_color = Color(s->emission()) * _russian_roulette_coeff +
-                T * _russian_roulette_coeff * launch(refract_ray);
+        ret_color = (Color(s->emission()) + T * launch(refract_ray))
+                * _russian_roulette_coeff;
     }
     else
         ret_color = compute_reflection(ray);

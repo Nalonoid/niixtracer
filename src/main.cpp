@@ -40,7 +40,7 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    Image *img = new Image(1600, 900);
+    Image *img = new Image();
 
     // Read scene from the XML file
     Serializer serializer;
@@ -96,8 +96,8 @@ int main(int argc, char **argv)
               << duration/1000000.0 << "s" << std::endl;
 
     std::cout << std::endl
-              << "{o}----------------------------------------->|" << std::endl;
-    std::cout << "{o}----------------{-E-N-D-}---------------->\\"  << std::endl;
+              << "{o}----------------------------------------->|"  << std::endl;
+    std::cout << "{o}----------------{-E-N-D-}---------------->\\" << std::endl;
     std::cout << "{o}----------------------------------------->/"  << std::endl;
 
     return 0;

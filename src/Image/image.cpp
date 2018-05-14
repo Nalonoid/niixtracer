@@ -3,12 +3,12 @@
 
 #include "image.hpp"
 
-Image::Image(int width, int height) :
+Image::Image() {}
+
+Image::Image(unsigned width, unsigned height) :
     _width(width), _height(height)
 {
-    /* Initialize an image of width*height pixels.
-     * Each pixel of the image is initialized to (192, 0, 255) */
-    _pixels.resize(width, std::vector<Pixel>(height, Pixel(192, 0, 255)));
+    init();
 }
 
 unsigned Image::height() const
@@ -58,6 +58,13 @@ std::vector<Pixel>& Image::operator[](int index)
 const std::vector<Pixel>& Image::operator[](int index) const
 {
     return _pixels[index];
+}
+
+void Image::init()
+{
+    /* Initialize an image of width*height pixels.
+     * Each pixel of the image is initialized to (192, 0, 255) */
+    _pixels.resize(_width, std::vector<Pixel>(_height, Pixel(192, 0, 255)));
 }
 
 void Image::paint(Color c)

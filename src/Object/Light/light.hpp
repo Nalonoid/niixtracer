@@ -15,8 +15,8 @@
 class Light : public Object
 {
 public:
-    Light();
-    Light(const Vec3d &p, const Color &c = Colors::WHITE, double emission = 500.0);
+    Light(const Vec3d &p = Space::ORIGIN,
+          const Color &c = Colors::WHITE, double emission = 500.0);
 
     // Getters
     unsigned index() const override;

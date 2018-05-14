@@ -160,6 +160,7 @@ Scene* Serializer::read_from_XML(const std::string &input_path)
     _scene->_output_img_path        = path_elem.text().toStdString();
     _scene->_output_img->width()    = xres_elem.text().toUInt();
     _scene->_output_img->height()   = yres_elem.text().toUInt();
+    _scene->_output_img->init();
     _scene->_mode                   = mode_elem.text().toStdString();
     _scene->max_depth()             = depth_elem.text().toUInt();
     _scene->nb_samples()            = sqrt(sample_elem.text().toUInt());

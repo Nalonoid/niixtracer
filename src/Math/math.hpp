@@ -3,8 +3,9 @@
 
 #include <ostream>
 
-namespace {
-    float const EPSILON { 0.001 };
+namespace
+{
+    float const EPSILON { 0.0000001     };
     float const PI      { 3.141592653589 };
 }
 

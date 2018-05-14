@@ -25,7 +25,8 @@ struct Pixel
 class Image
 {
 public:
-    Image(int width, int height);
+    Image();
+    Image(unsigned width, unsigned height);
 
     // Getters
     unsigned height() const;
@@ -44,6 +45,7 @@ public:
     const std::vector<Pixel>& operator[](int index) const;
 
     // Functions
+    void init();
     void paint(Color c);
 
 private:
