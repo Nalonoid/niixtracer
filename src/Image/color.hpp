@@ -40,6 +40,7 @@ struct Color
 
     // Operators
     Color operator+=(const Color &c);
+    Color operator*=(const Color &c);
 };
 
 // Operators

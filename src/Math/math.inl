@@ -82,6 +82,13 @@ Vector<T> operator*(const double scalar, const Vector<T> &v)
 }
 
 template <typename T>
+Vector<T> operator*(const Vector<T> &v1, const Vector<T> &v2)
+{
+    return Vector<T>(v1.x * v2.x, v1.y * v2.y, v1.z * v2.z);
+}
+
+
+template <typename T>
 Vector<T> operator/(const Vector<T> &v,const double scalar)
 {
     return Vector<T>(v.x / scalar, v.y / scalar, v.z / scalar);

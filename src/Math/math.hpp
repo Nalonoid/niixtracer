@@ -60,6 +60,9 @@ template <typename T>
 Vector<T> operator*(const double scalar, const Vector<T> &v);
 
 template <typename T>
+Vector<T> operator*(const Vector<T> &v1, const Vector<T> &v2);
+
+template <typename T>
 Vector<T> operator/(const Vector<T> &v,const double scalar);
 
 template <typename T>

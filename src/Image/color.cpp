@@ -81,3 +81,9 @@ Color Color::operator+=(const Color &c)
     this->rgb = this->rgb + c.rgb;
     return *this;
 }
+
+Color Color::operator*=(const Color &c)
+{
+    this->rgb = this->rgb * c.rgb;
+    return *this;
+}

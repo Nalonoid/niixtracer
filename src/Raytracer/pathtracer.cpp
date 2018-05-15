@@ -57,29 +57,27 @@ Color Pathtracer::compute_color(Ray &ray)
 
 const Color Pathtracer::compute_diffuse(Ray &ray)
 {
-    const Intersection &i       { ray.intersection()    };
-    const Shape *s              { i.shape()             };
-    Color ret_color, obj_col    { i.material()->color() };
+    Intersection &i { ray.intersection()    };
+    const Shape *s  { i.shape()             };
+    Color obj_col   { i.material()->color() };
 
     // Global illumination
-    Vec3d recursive_dir { rnd_dir_hemisphere(i.normal()) };
-    recursive_dir = recursive_dir.normalized();
+    double cos_att { ray.direction().dot(i.normal()) };
 
+    if (cos_att > 0.0)
+        i.normal() = i.normal().negative();
+
+    Vec3d recursive_dir { rnd_dir_hemisphere(i.normal()).normalized() };
     Ray recursive_ray(i.position() + EPSILON * recursive_dir, recursive_dir);
     recursive_ray.bounces() = ray.bounces() + 1;
 
-    double cos_att { recursive_dir.dot(i.normal()) };
-
-    // Without next event estimation use this :
-    //ret_color = Color(s->emission()) +
-    //        (obj_col * launch(recursive_ray) * cos_att);
-
+    // Without it we could not see the reflections of the source itself
     if (s->emits())
-        return 1/(2*PI) * (Color(s->emission()) +
+        return 1/(2*PI) * (s->emission() * s->material().color() +
                 (obj_col * launch(recursive_ray) * cos_att))
                 * _russian_roulette_coeff;
 
-    ret_color += launch(recursive_ray) * cos_att;
+    Color ret_color { launch(recursive_ray) * cos_att };
 
     // Next event estimation - Direct illumination
     const auto &shapes = _scene->shapes();
@@ -88,30 +86,36 @@ const Color Pathtracer::compute_diffuse(Ray &ray)
         // If the shape is an emitter, we'll check for direct illumination
         if ((*shape_it)->emits())
         {
-            bool directly_illuminated = false;
-
             Vec3d light_sample { (*shape_it)->position()+hemisphere_sample() };
-            Vec3d cone_sample { (light_sample - i.position()).normalized() };
+            Vec3d cone_sample { light_sample - i.position() };
+            double source_distance  { cone_sample.magnitude() };
+            cone_sample = cone_sample.normalized();
 
-            double cos_att { i.normal().dot(cone_sample) };
+            double cosine_norm_light { i.normal().dot(cone_sample) };
 
             /* We don't need to compute direct illumination if normal of the
              * intersection doesn't point towards light */
-            if (cos_att > 0.0)
+            if (cosine_norm_light > 0.0)
             {
-                Ray shadow_ray(i.position() + EPSILON*i.normal(), cone_sample);
+                Ray shadow_ray(i.position() + EPSILON*cone_sample, cone_sample);
+                bool in_shadow = false;
 
                 auto source_intersection =
                     std::find_if(shapes.begin(), shapes.end(), [&](Shape *shp)
                     {
-                        return shp->intersect(shadow_ray);
+                        return shp->intersect(shadow_ray)
+                               && shadow_ray.dist_max() < source_distance;
                     });
 
-                directly_illuminated = (source_intersection == shape_it);
+                if (source_intersection != shapes.end())
+                {
+                    in_shadow = !(*source_intersection)->emits();
 
-                if (directly_illuminated)
-                    ret_color +=
-                            1/(2*PI) * Color((*shape_it)->emission()) * obj_col * cos_att;
+                    if (!in_shadow)
+                        ret_color += 1/(2*PI) * (*shape_it)->emission() *
+                                (*shape_it)->material().color() * obj_col *
+                                cosine_norm_light;
+                }
             }
         }
     }
@@ -131,7 +135,7 @@ const Color Pathtracer::compute_reflection(Ray &ray)
 
     if (u <= R) // The reflection is in the perfect specular direction
     {
-        Vec3d reflect_vect { ray.direction().reflect(i.normal()) };
+        Vec3d reflect_vect  { ray.direction().reflect(i.normal()) };
         reflect_vect = reflect_vect.normalized();
 
         Ray reflection_ray(i.position() + EPSILON * reflect_vect, reflect_vect);

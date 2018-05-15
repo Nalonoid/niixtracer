@@ -40,9 +40,9 @@ Vec3d rnd_dir_hemisphere(Vec3d normal)
     Vec3d x_axis, y_axis;
     Space::orthonormal_basis(normal, x_axis, y_axis);
 
-    Vec3d hsphere_smpl  { hemisphere_sample() };
+    Vec3d hsphere_smpl { hemisphere_sample() };
 
-    return Vec3d(Vec3d(x_axis.x, y_axis.x, normal.x).dot(hsphere_smpl),
-                 Vec3d(x_axis.y, y_axis.y, normal.y).dot(hsphere_smpl),
-                 Vec3d(x_axis.z, y_axis.z, normal.z).dot(hsphere_smpl));
+    return Vec3d(hsphere_smpl.dot(x_axis),
+                 hsphere_smpl.dot(y_axis),
+                 hsphere_smpl.dot(normal));
 }

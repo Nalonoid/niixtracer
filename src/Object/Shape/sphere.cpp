@@ -55,13 +55,5 @@ bool Sphere::intersect(Ray &r)
 
 const Vec3d Sphere::normal(const Vec3d &p) const
 {
-    /* Here, the center-to-intersection point has a length of r, so we do
-     * not need the call to .normalized() to normalize it. Doing so avoids
-     * the square root in the magnitude computation. */
-
-    if (((p - _position)/_radius).magnitude() < 1.0 - EPSILON
-            || ((p - _position)/_radius).magnitude() > 1.0 + EPSILON)
-        std::cerr << "Normalize it! " << ((p - _position)/_radius).magnitude() << std::endl;
-
-    return (p - _position)/_radius;
+    return (p - _position).normalized();
 }

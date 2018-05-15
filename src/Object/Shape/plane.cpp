@@ -39,7 +39,7 @@ double& Plane::distance()
 
 bool Plane::intersect(Ray &r)
 {
-    double  dist        { -1 };
+    double  dist        { -1    };
     bool    intersects  { false };
 
     double rd_n { r.direction().dot(_normal) };
