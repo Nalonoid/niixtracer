@@ -27,32 +27,38 @@ bool Pathtracer::depth_recursion_over(Ray &ray)
         double u                { uniform_sampler.sample() };
         double rr_stop_proba    { 0.1 };
 
-        if (u > rr_stop_proba)
+        if (u < rr_stop_proba)
             _russian_roulette_coeff = 1.0 / (1.0 - rr_stop_proba);
     }
 
-    return curr_depth > _scene->max_depth() && _russian_roulette_coeff == 1.0;
+    return curr_depth > _scene->max_depth() && _russian_roulette_coeff != 1.0;
 }
 
 Color Pathtracer::compute_color(Ray &ray)
 {   
+    Color ret_color;
+
     switch (ray.intersection().material()->type())
     {
     case MATERIAL_TYPE::DIFFUSE:
-    {
-        return compute_diffuse(ray);
-    }
+        ret_color = compute_diffuse(ray);
+        break;
+
     case MATERIAL_TYPE::SPECULAR:
-        return compute_reflection(ray);
+        ret_color = compute_reflection(ray);
+        break;
 
     case MATERIAL_TYPE::REFRACTIVE:
-        return compute_refraction(ray);
+        ret_color = compute_refraction(ray);
+        break;
 
     default:
         std::cerr << "error: wrong material type!" << std::endl;
-        return Colors::BLACK;
+        ret_color = Colors::BLACK;
         break;
     }
+
+    return ret_color;
 }
 
 const Color Pathtracer::compute_diffuse(Ray &ray)
@@ -158,20 +164,28 @@ const Color Pathtracer::compute_refraction(Ray &ray)
 
     Color ret_color;
 
-    double n    { i.material()->refraction() };
+    double n { i.material()->refraction() };
+    double n1 { 1.0 };
+    double n2 { 1.0 };
 
     /* For now we only consider reflection and refraction happening from air to
      * a second medium. Hence n1 = 1 as an approximationm.
      * That is why n = n1/n2 = 1.0/n2 here */
-    if (normal.dot(ray.direction()) > 0.0)
+    if (normal.dot(ray.direction()) > 0.0)  // Inside the medium, going out
+    {
         normal = normal.negative();
+        n1 = n;
+    }
     else
-        n = 1.0 / i.material()->refraction();
+    {
+        n2 = n;
+        n = 1.0 / n;
+    }
 
     double cos_R    { -ray.direction().dot(i.normal())      };
     double sin2_T   { n*n*(1 - cos_R*cos_R)                 };
     double u        { uniform_sampler.sample()              };
-    double R        { schlick_approx(1.0, n, cos_R, sin2_T) };
+    double R        { schlick_approx(n1, n2, cos_R, sin2_T) };
 
     if (u > R)
     {
