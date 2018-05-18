@@ -31,7 +31,7 @@ Scene* init_scene(unsigned index, Image *output_img, std::string mode,
                 ,dynamic_cast<Object*>(new Sphere(Vec3d( -5.0, 2.0, -1.25), 2.00, Colors::GREEN,  Materials::PLASTIC))
                 ,dynamic_cast<Object*>(new Sphere(Vec3d(  0.0, 2.0,  1.00), 2.00, Colors::YELLOW, Materials::METAL))
                 ,dynamic_cast<Object*>(new Sphere(Vec3d(  2.9, 0.6, -2.40), 0.60, Colors::WHITE,  Materials::METAL))
-                ,dynamic_cast<Object*>(new Sphere(Vec3d( -1.0, 3.0, -1.50), 1.00, Colors::WHITE,  Materials::GLOSSY))
+                ,dynamic_cast<Object*>(new Sphere(Vec3d( -1.0, 3.0, -1.50), 1.00, Colors::WHITE,  Materials::DIAMOND))
                 ,dynamic_cast<Object*>(new Sphere(Vec3d( -2.4, 1.0, -4.50), 1.00, Colors::WHITE,  Materials::TRANSLUCENT))
                 ,dynamic_cast<Object*>(new Sphere(Vec3d(  4.0, 3.0,  4.00), 3.00, Colors::RED,    Materials::PLASTIC))
         );

@@ -20,7 +20,7 @@
 int main(int argc, char **argv)
 {    
     // Checking input arguments
-    if (argc != 2)
+    if (argc != 4)  // != 4 if you're using render.sh 2 otherwise
     {
         std::cerr << "usage: "
                   << argv[0] << " XML_scene_file_path" << std::endl;
@@ -30,13 +30,14 @@ int main(int argc, char **argv)
     // Initialize arguments
     const char *scene_path { argv[1] };
 
-    halton_sampler1.number(0, 2);
-    halton_sampler2.number(0, 3);
+//    halton_sampler1.number(0, 2);
+//    halton_sampler2.number(0, 3);
 
     // Check whether the scene file exists. If not, exit the program
     if (!fopen(scene_path, "r"))
     {
-        std::cerr << "error: the input scene file does not exist" << std::endl;
+        std::cerr << "error: the input scene file does not exist : "
+                  << scene_path << std::endl;
         return 1;
     }
 
@@ -46,6 +47,11 @@ int main(int argc, char **argv)
     Serializer serializer;
     serializer.init(new Scene(img));
     Scene *scene { serializer.read_from_XML(scene_path) };
+
+    /* To be used with render.sh if you want to render the same scene at
+     * different number of samples */
+    scene->nb_samples() = sqrt(std::stoi(argv[2]));
+    scene->output_path() = std::string(argv[3]);
 
     Renderer *renderer { scene->mode() == "rt" ?
         (Renderer*) new Raytracer(scene) : (Renderer*) new Pathtracer(scene) };

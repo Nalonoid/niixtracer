@@ -48,8 +48,9 @@ const struct Material PLASTIC       { "plastic",     Colors::CYAN,   200.0, 0.30
 const struct Material METAL         { "metal",       Colors::CYAN,    10.0, 0.70, 0.000 };
 const struct Material GLASS         { "glass",       Colors::CYAN,    50.0, 0.90, 1.540 };
 const struct Material DIFFUSE       { "diffuse",     Colors::BLUE,     0.0, 0.00, 0.000 };
-const struct Material GLOSSY        { "glossy",      Colors::WHITE,   25.0, 0.90, 2.417 };
+const struct Material DIAMOND       { "diamond",     Colors::WHITE,   25.0, 0.90, 2.417 };
 const struct Material TRANSLUCENT   { "translucent", Colors::WHITE,  100.0, 0.90, 1.020 };
+const struct Material MIRROR        { "mirror",      Colors::WHITE,  100.0, 1.00, 0.000 };
 
 const Material& material(std::string name);
 

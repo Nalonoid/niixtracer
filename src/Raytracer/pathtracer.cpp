@@ -77,13 +77,11 @@ const Color Pathtracer::compute_diffuse(Ray &ray)
     Ray recursive_ray(i.position() + EPSILON * recursive_dir, recursive_dir);
     recursive_ray.bounces() = ray.bounces() + 1;
 
+    Color ret_color { launch(recursive_ray) * cos_att };
+
     // Without it we could not see the reflections of the source itself
     if (s->emits())
-        return 1/(2*PI) * (s->emission() * s->material().color() +
-                (obj_col * launch(recursive_ray) * cos_att))
-                * _russian_roulette_coeff;
-
-    Color ret_color { launch(recursive_ray) * cos_att };
+        ret_color += s->material().color();
 
     // Next event estimation - Direct illumination
     const auto &shapes = _scene->shapes();
@@ -110,7 +108,8 @@ const Color Pathtracer::compute_diffuse(Ray &ray)
                     std::find_if(shapes.begin(), shapes.end(), [&](Shape *shp)
                     {
                         return shp->intersect(shadow_ray)
-                               && shadow_ray.dist_max() < source_distance;
+                               && shadow_ray.dist_max() < source_distance
+                               && shp != s;
                     });
 
                 if (source_intersection != shapes.end())

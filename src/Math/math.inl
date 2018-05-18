@@ -121,11 +121,8 @@ const Vector<double> ZAXIS  { 0, 0, 1 };
 template <typename T>
 void orthonormal_basis(const Vector<T>& v1, Vector<T>& v2, Vector<T>& v3)
 {
-    v2 = Vec3d(0, -v1.z, v1.y);
-    v3 = v1.cross(v2);
-
-    v2 = v2.normalized();
-    v3 = v3.normalized();
+    v2 = Vec3d(v1.y, -v1.x, 0).normalized();
+    v3 = v1.cross(v2).normalized();
 }
 
 }
