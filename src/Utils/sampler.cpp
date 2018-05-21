@@ -6,10 +6,7 @@
 
 Uniform uniform_sampler;
 Uniform longitude_sampler(0, 2*PI);
-Uniform wavelength_sampler(430, 770);
-
-Halton halton_sampler1;
-Halton halton_sampler2;
+Uniform wavelength_sampler(400, 700);
 
 Uniform::Uniform(double min, double max) :
     _gen(_rnd_dv()), _distribution(min, max) {}
@@ -29,8 +26,8 @@ Vec3d hemisphere_sample()
     double theta    { v                 };
     double r        { sqrt(1 - phi*phi) };
 
-    double x { cos(theta) * r   };
-    double y { sin(theta) * r   };
+    double x { cos(theta) * r };
+    double y { sin(theta) * r };
 
     return Vec3d(x, y, phi);
 }

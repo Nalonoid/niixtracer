@@ -4,7 +4,7 @@
 #include "Object/object.hpp"
 #include "Object/Shape/shape.hpp"
 #include "Image/color.hpp"
-#include "Object/Material/material.hpp"
+#include "Material/material.hpp"
 
 class Intersection : public Object
 {

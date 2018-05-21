@@ -26,7 +26,7 @@ void Renderer::render_scene()
 
     Uniform sampler(0.0, range);
 
-    #pragma omp parallel for private(norm_i, norm_j, towards_pixel) firstprivate(halton_sampler1, halton_sampler2) schedule(dynamic)
+    #pragma omp parallel for private(norm_i, norm_j, towards_pixel, uniform_sampler) schedule(dynamic)
     for (unsigned j = 0; j < img->height(); ++j)
     {
         for (unsigned i = 0; i < img->width(); ++i)

@@ -3,7 +3,7 @@
 
 #include "Math/math.hpp"
 #include "../object.hpp"
-#include "../Material/material.hpp"
+#include "Material/material.hpp"
 #include "../Light/light.hpp"
 
 class Ray;

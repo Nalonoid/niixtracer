@@ -146,7 +146,7 @@ const Color Pathtracer::compute_reflection(Ray &ray)
         Ray reflection_ray(i.position() + EPSILON * reflect_vect, reflect_vect);
         reflection_ray.bounces() = ray.bounces() + 1;
 
-        ret_color = (Color(s->emission()) + launch(reflection_ray))
+        ret_color = (Color(s->emission()) + launch(reflection_ray)) * R
                 * _russian_roulette_coeff;
     }
     else // Here we take a random direction on the hemisphere (diffuse)
