@@ -7,10 +7,11 @@
 
 class BRDF
 {
-
 public:
-    virtual Spectrum<> evaluate(const Vec3d &wi, const Vec3d &wo,
-                                const Intersection &i) const = 0;
+    BRDF();
+
+    virtual Spectrum<> evaluate(
+            const Vec3d &wi, const Vec3d &wo, const Intersection &i) const = 0;
 
     // BRDF's Probability Density Function given a sampled incident direction
     virtual float pdf(const Vec3d &wi, const Vec3d &wo,

@@ -9,6 +9,7 @@
 #include "Raytracer/ray.hpp"
 #include "Raytracer/raytracer.hpp"
 #include "Raytracer/pathtracer.hpp"
+#include "Raytracer/spectrum.hpp"
 #include "Object/Camera/camera.hpp"
 #include "Object/Light/light.hpp"
 #include "Object/Shape/sphere.hpp"

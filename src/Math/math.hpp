@@ -7,6 +7,11 @@ namespace
 {
     float const EPSILON { 0.000000000001 };
     float const PI      { 3.141592653589 };
+
+    unsigned const MIN_WAVELENGTH { 380 };
+    unsigned const MAX_WAVELENGTH { 740 };
+
+    unsigned const SPECTRAL_SAMPLES { 30 };
 }
 
 template <typename T>

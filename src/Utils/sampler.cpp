@@ -6,7 +6,7 @@
 
 Uniform uniform_sampler;
 Uniform longitude_sampler(0, 2*PI);
-Uniform wavelength_sampler(400, 700);
+Uniform wavelength_sampler(MIN_WAVELENGTH, MAX_WAVELENGTH);
 
 Uniform::Uniform(double min, double max) :
     _gen(_rnd_dv()), _distribution(min, max) {}
