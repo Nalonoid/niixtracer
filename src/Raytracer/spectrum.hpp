@@ -4,7 +4,6 @@
 #include <string>
 
 #include "Math/math.hpp"
-#include "Utils/utils.hpp"
 
 template <unsigned nb_samples = SPECTRAL_SAMPLES>
 class Spectrum
@@ -66,21 +65,21 @@ private:
 namespace Spectra
 {
 
-const ConstantSPD<>     CONSTANT_SPD    { 0.6f  };
+const ConstantSPD<>     CONSTANT_SPD    { 0.6f };
 
-const NormalSPD<>       NORMAL_RED      { 685   };
-const NormalSPD<>       NORMAL_ORANGE   { 595   };
-const NormalSPD<>       NORMAL_YELLOW   { 580   };
-const NormalSPD<>       NORMAL_GREEN    { 535   };
-const NormalSPD<>       NORMAL_BLUE     { 475   };
-const NormalSPD<>       NORMAL_PURPLE   { 415   };
+const NormalSPD<>       NORMAL_RED      { 685 };
+const NormalSPD<>       NORMAL_ORANGE   { 595 };
+const NormalSPD<>       NORMAL_YELLOW   { 580 };
+const NormalSPD<>       NORMAL_GREEN    { 535 };
+const NormalSPD<>       NORMAL_BLUE     { 475 };
+const NormalSPD<>       NORMAL_PURPLE   { 415 };
 
-const BlackBodySPD<>    BLACK_BODY_A    { 2856  }; // Incandescent / Tungstene
-const BlackBodySPD<>    BLACK_BODY_D50  { 5003  }; // Horizon daylight
-const BlackBodySPD<>    BLACK_BODY_D55  { 5503  }; // mid-morning / mid-afternoon daylight
-const BlackBodySPD<>    BLACK_BODY_D65  { 6504  }; // Noon daylight
-const BlackBodySPD<>    BLACK_BODY_D75  { 7504  }; // North sky daylight
-const BlackBodySPD<>    BLACK_BODY_E    { 5454  }; // Equal energy
+const BlackBodySPD<>    BLACK_BODY_A    { 2856 }; // Incandescent / Tungstene
+const BlackBodySPD<>    BLACK_BODY_D50  { 5003 }; // Horizon daylight
+const BlackBodySPD<>    BLACK_BODY_D55  { 5503 }; // mid-morning / mid-afternoon daylight
+const BlackBodySPD<>    BLACK_BODY_D65  { 6504 }; // Noon daylight
+const BlackBodySPD<>    BLACK_BODY_D75  { 7504 }; // North sky daylight
+const BlackBodySPD<>    BLACK_BODY_E    { 5454 }; // Equal energy
 
 }
 

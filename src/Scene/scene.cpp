@@ -7,7 +7,6 @@
 #include "Object/Shape/plane.hpp"
 #include "Object/Light/light.hpp"
 #include "Object/Camera/camera.hpp"
-#include "Utils/utils.hpp"
 #include "Utils/sampler.hpp"
 #include "Image/image.hpp"
 #include "Raytracer/ray.hpp"

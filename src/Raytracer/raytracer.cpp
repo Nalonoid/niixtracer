@@ -4,6 +4,7 @@
 #include "Scene/scene.hpp"
 #include "Object/Light/light.hpp"
 #include "Object/Shape/shape.hpp"
+#include "Utils/utils.hpp"
 
 #include <algorithm>
 

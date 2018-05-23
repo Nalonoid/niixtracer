@@ -1,4 +1,5 @@
 #include <assert.h>
+#include "Utils/utils.hpp"
 
 template <unsigned nb_samples>
 Spectrum<nb_samples>::Spectrum(float sample_value)

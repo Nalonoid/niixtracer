@@ -2,7 +2,6 @@
 #include <chrono>
 
 #include "sampler.hpp"
-#include "utils.hpp"
 
 Uniform uniform_sampler;
 Uniform longitude_sampler(0, 2*PI);
