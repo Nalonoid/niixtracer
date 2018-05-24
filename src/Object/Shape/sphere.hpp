@@ -10,11 +10,11 @@ using Vec3d = Vector<double>;
 class Sphere : public Shape
 {
 public:
-    Sphere();
-    Sphere(const Vec3d &position, double radius = 1.0);
-    Sphere(const Vec3d &position, double radius, const Color &color);
     Sphere(const Vec3d &position, double radius, const Color &color,
-           const Material &mat, double emission = 0.0);
+           const Material *mat, double emission = 0.0);
+
+    Sphere(const Vec3d &position, double radius, const Color &color,
+           const MaterialPBR *mat, double emission = 0.0);
 
     // Getters
     double radius() const;

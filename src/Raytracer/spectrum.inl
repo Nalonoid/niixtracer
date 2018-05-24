@@ -53,7 +53,7 @@ float Spectrum<nb_samples>::power_at(const unsigned wavelength) const
     int index { static_cast<int>(wavelength - MIN_WAVELENGTH) /
                 static_cast<int>(nb_samples) };
 
-    assert(index > 0);
+    assert(index >= 0);
 
     if (belongs_to_visible_spectrum(wavelength) && index < (int) nb_samples)
         return _samples[index];
@@ -82,14 +82,8 @@ BlackBodySPD<nb_samples>::BlackBodySPD(float temperature) :
 
 // Constant Spectral Power Distribution - can be used for diffuse materials
 template <unsigned nb_samples>
-ConstantSPD<nb_samples>::ConstantSPD(double sample_value) :
+ConstantSPD<nb_samples>::ConstantSPD(float sample_value) :
     Spectrum<>(sample_value) {}
-
-template <unsigned nb_samples>
-float ConstantSPD<nb_samples>::power_at(unsigned) const
-{
-    return _constant;
-}
 
 // Normal Spectral Power Distribution
 template <unsigned nb_samples>

@@ -8,11 +8,11 @@
 class Plane : public Shape
 {
 public:
-    Plane(const Vec3d &normal = Space::YAXIS, double distance = 0.0);
-    Plane(const Vec3d &normal, double distance, const Color &color);
-    Plane(const Vec3d &normal, double distance, const Material &mat);
     Plane(const Vec3d &normal, double distance, const Color &color,
-          const Material &mat, double emission = 0.0);
+          const Material *mat, double emission = 0.0);
+
+    Plane(const Vec3d &normal, double distance, const Color &color,
+          const MaterialPBR *mat, double emission = 0.0);
 
     // Getters
     const Vec3d normal(const Vec3d& point = Space::ORIGIN) const override;

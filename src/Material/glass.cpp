@@ -2,7 +2,7 @@
 #include "brdf.hpp"
 #include "Utils/sampler.hpp"
 
-Glass::Glass(float ior) : MaterialBRDF(BRDFs::IDEAL_REFRACTION), _ior (ior) {}
+Glass::Glass(float ior) : MaterialPBR(BRDFs::IDEAL_REFRACTION), _ior (ior) {}
 
 Vec3d Glass::wi(const Vec3d &wo, Vec3d &normal) const
 {

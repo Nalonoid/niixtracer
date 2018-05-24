@@ -9,7 +9,7 @@ template <unsigned nb_samples = SPECTRAL_SAMPLES>
 class Spectrum
 {
 public:
-    Spectrum(float sample_value = 0.0);
+    Spectrum(float sample_value = 0.0f);
 
     Spectrum operator+(const Spectrum &s);
     Spectrum operator-(const Spectrum &s);
@@ -17,7 +17,7 @@ public:
 
     float& operator[](int index);
 
-    virtual float power_at(const unsigned wavelength) const;
+    float power_at(const unsigned wavelength) const;
 
 protected:
     float _samples[nb_samples];
@@ -38,8 +38,7 @@ template <unsigned nb_samples = SPECTRAL_SAMPLES>
 class ConstantSPD : public Spectrum<nb_samples>
 {
 public:
-    ConstantSPD(double sample_value = 0.0);
-    float power_at(const unsigned wavelength) const override;
+    ConstantSPD(float sample_value = 0.0);
 
 private:
     // Normalized power value of the constant distribution
@@ -62,26 +61,27 @@ private:
     float       _sigma;
 };
 
-namespace Spectra
-{
+//namespace Spectra
+//{
 
-const ConstantSPD<>     CONSTANT_SPD    { 0.6f };
+//const ConstantSPD<> CONSTANT_SPD { ConstantSPD<>(0.6f) };
 
-const NormalSPD<>       NORMAL_RED      { 685 };
-const NormalSPD<>       NORMAL_ORANGE   { 595 };
-const NormalSPD<>       NORMAL_YELLOW   { 580 };
-const NormalSPD<>       NORMAL_GREEN    { 535 };
-const NormalSPD<>       NORMAL_BLUE     { 475 };
-const NormalSPD<>       NORMAL_PURPLE   { 415 };
+//const NormalSPD<>       NORMAL_RED      { NormalSPD<>(685) };
+//const NormalSPD<>       NORMAL_ORANGE   { NormalSPD<>(595) };
+//const NormalSPD<>       NORMAL_YELLOW   { NormalSPD<>(580) };
+//const NormalSPD<>       NORMAL_GREEN    { NormalSPD<>(535) };
+//const NormalSPD<>       NORMAL_BLUE     { NormalSPD<>(475) };
+//const NormalSPD<>       NORMAL_PURPLE   { NormalSPD<>(415) };
 
-const BlackBodySPD<>    BLACK_BODY_A    { 2856 }; // Incandescent / Tungstene
-const BlackBodySPD<>    BLACK_BODY_D50  { 5003 }; // Horizon daylight
-const BlackBodySPD<>    BLACK_BODY_D55  { 5503 }; // mid-morning / mid-afternoon daylight
-const BlackBodySPD<>    BLACK_BODY_D65  { 6504 }; // Noon daylight
-const BlackBodySPD<>    BLACK_BODY_D75  { 7504 }; // North sky daylight
-const BlackBodySPD<>    BLACK_BODY_E    { 5454 }; // Equal energy
+//const BlackBodySPD<>    BLACK_BODY_A    { BlackBodySPD<>(2856) }; // Incandescent / Tungstene
+//const BlackBodySPD<>    BLACK_BODY_D50  { BlackBodySPD<>(5003) }; // Horizon daylight
+//const BlackBodySPD<>    BLACK_BODY_D55  { BlackBodySPD<>(5503) }; // mid-morning / mid-afternoon daylight
+//const BlackBodySPD<>    BLACK_BODY_D65  { BlackBodySPD<>(6504) }; // Noon daylight
+//const BlackBodySPD<>    BLACK_BODY_D75  { BlackBodySPD<>(7504) }; // North sky daylight
 
-}
+//const BlackBodySPD<>    BLACK_BODY_E    { BlackBodySPD<>(5454) }; // Equal energy
+
+//}
 
 #include "spectrum.inl"
 

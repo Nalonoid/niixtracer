@@ -20,6 +20,7 @@ public:
     double dist_max() const;
     unsigned bounces() const;
     const Intersection& intersection() const;
+    unsigned wavelength() const;
 
     /* This second set of getters is useful to allow this kind of statement :
      * r.origin() = Vector(12, -3, 5); */
@@ -38,6 +39,7 @@ private:
     double        _dist_max;
     unsigned      _bounces;
     Intersection  _intersection;
+    int      _wavelength;
 };
 
 #endif

@@ -1,20 +1,13 @@
 #include "sphere.hpp"
 #include "Raytracer/ray.hpp"
 
-Sphere::Sphere() : Shape(), _radius(1.0) {}
-
-Sphere::Sphere(const Vec3d &position, double radius) :
-    Shape(position), _radius(radius) {}
-
-Sphere::Sphere(const Vec3d &position, double radius, const Color &color) :
-    Shape(position, Material(color)), _radius(radius) {}
+Sphere::Sphere(const Vec3d &position, double radius, const Color &color,
+       const Material *mat, double emission) :
+    Shape(position, mat, color, emission), _radius(radius) {}
 
 Sphere::Sphere(const Vec3d &position, double radius, const Color &color,
-       const Material &mat, double emission) :
-    Shape(position, mat, emission), _radius(radius)
-{
-    material().color() = color;
-}
+       const MaterialPBR *mat, double emission) :
+    Shape(position, mat, color, emission), _radius(radius) {}
 
 // Getters
 double Sphere::radius() const

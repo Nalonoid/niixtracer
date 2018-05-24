@@ -52,7 +52,7 @@ const Material DIAMOND       { "diamond",     Colors::WHITE,   25.0, 0.90, 2.417
 const Material TRANSLUCENT   { "translucent", Colors::WHITE,  100.0, 0.90, 1.020 };
 const Material MIRROR        { "mirror",      Colors::WHITE,  100.0, 1.00, 0.000 };
 
-const Material& material(std::string name);
+const Material* material(std::string name);
 
 }
 

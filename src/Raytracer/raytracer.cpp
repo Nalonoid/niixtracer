@@ -19,10 +19,10 @@ Color Raytracer::compute_color(Ray &ray)
 {
     double ambient_light   { 0.1 };
 
-    Color obj_color        { ray.intersection().material()->color() };
-    Color ambient_color    { obj_color * ambient_light              };
-    Color diffuse_specular { compute_blinn_phong(ray, obj_color)    };
-    Color reflect_color    { compute_refl_refractive(ray)           };
+    Color obj_color        { ray.intersection().shape()->material()->color() };
+    Color ambient_color    { obj_color * ambient_light                       };
+    Color diffuse_specular { compute_blinn_phong(ray, obj_color)             };
+    Color reflect_color    { compute_refl_refractive(ray)                    };
 
     return (ambient_color + diffuse_specular + reflect_color).clamp();
 }
@@ -32,7 +32,8 @@ const Color Raytracer::compute_blinn_phong(Ray &ray, const Color &obj_color) con
     Color diffuse  { Colors::BLACK };
     Color specular { Colors::BLACK };
 
-    const Intersection &i { ray.intersection() };
+    const Intersection &i   { ray.intersection() };
+    const Shape *s          { i.shape()          };
 
     for (unsigned light_id {0}; light_id < lights().size(); ++light_id)
     {
@@ -68,7 +69,7 @@ const Color Raytracer::compute_blinn_phong(Ray &ray, const Color &obj_color) con
 
                 /* In case of a glossy material we need to compute the specular
                  * color. We add this contribution to the diffuse color. */
-                if (i.material()->shininess() > 0)
+                if (s->material()->shininess() > 0)
                     specular += compute_specular(ray, light(light_id));
             }
         }
@@ -81,8 +82,9 @@ const Color Raytracer::compute_specular(Ray &ray, const Light &light) const
 {
     Color specular { Colors::BLACK };
 
-    const Intersection &i { ray.intersection() };
-    double shininess { i.material()->shininess() };
+    const Intersection &i { ray.intersection()          };
+    const Shape *s        { i.shape()                   };
+    double shininess      { s->material()->shininess()  };
 
     // The surface is not shiny, so we do not compute specular color
     if (shininess == 0.0)
@@ -109,16 +111,17 @@ const Color Raytracer::compute_refl_refractive(Ray &ray)
     Color reflective { Colors::BLACK };
 
     Intersection i { ray.intersection() };
+    const Shape *s { i.shape()          };
 
     double R { 0 }, T { 0 };
 
     // If the material is neither reflective nor refractive, we return black
-    if (i.material()->reflection() <= 0.0 && i.material()->refraction() <= 0.0)
+    if (s->material()->reflection() <= 0.0 && s->material()->refraction() <= 0.0)
         return reflective + refractive;
 
     // If there is no refraction, we simply take the reflection ratio of the material into account
-    if (i.material()->refraction() <= 0.0)
-        R = i.material()->reflection();
+    if (s->material()->refraction() <= 0.0)
+        R = s->material()->reflection();
     else
     {
         /* For now we only consider reflection and refraction happening from air to
@@ -127,7 +130,7 @@ const Color Raytracer::compute_refl_refractive(Ray &ray)
          * e.g. Intersection::through_material and Intersection::end_material */
 
         double n1       { 1.0                               };
-        double n2       { i.material()->refraction()        };
+        double n2       { s->material()->refraction()        };
         double cos_R    { -ray.direction().dot(i.normal())  };
         double sin2_T   { (n1/n2)*(n1/n2)*(1 - cos_R*cos_R) };
 

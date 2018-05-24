@@ -249,9 +249,18 @@ void Serializer::add_plane(QDomElement &plane_elem)
                 color_str[2].toDouble(),
                 color_str[3].toDouble());
 
-    Material material { Materials::material(mat_elem.text().toStdString()) };
-
-    _scene->add(new Plane(normal, dist, color, material));
+    if (_scene->mode() == "rt") // Ray tracing
+    {
+        const Material *material {
+            Materials::material(mat_elem.text().toStdString()) };
+        _scene->add(new Plane(normal, dist, color, material));
+    }
+    else // PBR : Monte Carlo Path Tracing
+    {
+        const MaterialPBR *material {
+            MaterialsPBR::material(mat_elem.text().toStdString()) };
+        _scene->add(new Plane(normal, dist, color, material));
+    }
 }
 
 void Serializer::add_sphere(QDomElement &sphere_elem)
@@ -275,11 +284,21 @@ void Serializer::add_sphere(QDomElement &sphere_elem)
                 color_str[2].toDouble(),
                 color_str[3].toDouble());
 
-    Material material { Materials::material(mat_elem.text().toStdString()) };
-
     double emission { emission_elem.text().toDouble() };
 
-    _scene->add(new Sphere(center, radius, color, material, emission));
+    if (_scene->mode() == "rt") // Ray tracing
+    {
+        const Material *material {
+            Materials::material(mat_elem.text().toStdString()) };
+        _scene->add(new Sphere(center, radius, color, material, emission));
+    }
+    else    // Monte Carlo Path Tracing
+    {
+        const MaterialPBR *material_pbr {
+            MaterialsPBR::material(mat_elem.text().toStdString()) };
+
+        _scene->add(new Sphere(center, radius, color, material_pbr, emission));
+    }
 }
 
 void Serializer::serialize(QDomDocument &scene_doc,
@@ -317,13 +336,13 @@ void Serializer::serialize(QDomDocument &scene_doc,
     shape_elem.appendChild(color_elem);
 
     QDomText color = scene_doc.createTextNode(
-                QString::fromStdString(s->material().color().to_string()));
+                QString::fromStdString(s->color().to_string()));
 
     QDomElement material_elem = scene_doc.createElement("material");
     shape_elem.appendChild(material_elem);
 
     QDomText material = scene_doc.createTextNode(
-                QString::fromStdString(s->material().name()));
+                QString::fromStdString(s->material()->name()));
 
     QDomElement emission_elem = scene_doc.createElement("emission");
     shape_elem.appendChild(emission_elem);
@@ -366,13 +385,13 @@ void Serializer::serialize(QDomDocument &scene_doc,
     shape_elem.appendChild(color_elem);
 
     QDomText color = scene_doc.createTextNode(
-                QString::fromStdString(p->material().color().to_string()));
+                QString::fromStdString(p->color().to_string()));
 
     QDomElement material_elem = scene_doc.createElement("material");
     shape_elem.appendChild(material_elem);
 
     QDomText material = scene_doc.createTextNode(
-                QString::fromStdString(p->material().name()));
+                QString::fromStdString(p->material()->name()));
 
     normal_elem.appendChild(normal);
     distance_elem.appendChild(distance);

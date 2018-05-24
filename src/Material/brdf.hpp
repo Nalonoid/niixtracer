@@ -11,6 +11,7 @@ class BRDF
 {
 public:
     BRDF();
+    BRDF(Spectrum<SPECTRAL_SAMPLES> *spectrum);
 
     virtual double evaluate(const Vec3d &wi, const Vec3d &wo,
                                 const Intersection &i,
@@ -19,10 +20,15 @@ public:
     // BRDF's Probability Density Function given a sampled incident direction
     virtual float pdf(const Vec3d &wi, const Vec3d &wo,
                       const Intersection &i) = 0;
+
+    Spectrum<SPECTRAL_SAMPLES> *_spectrum;
 };
 
 class LambertianModel : public BRDF
 {
+public:
+    LambertianModel(ConstantSPD<> *spectrum = new ConstantSPD<>(0.6));
+
     double evaluate(const Vec3d &wi, const Vec3d &wo,
                         const Intersection &i,
                         const unsigned wavelength) const override;
@@ -32,6 +38,9 @@ class LambertianModel : public BRDF
 
 class IdealRefraction : public BRDF
 {
+public:
+    IdealRefraction(ConstantSPD<> *spectrum = new ConstantSPD<>(0.6));
+
     double evaluate(const Vec3d &wi, const Vec3d &wo,
                         const Intersection &i,
                         const unsigned wavelength) const override;
@@ -41,6 +50,9 @@ class IdealRefraction : public BRDF
 
 class IdealSpecular : public BRDF
 {
+public:
+    IdealSpecular(ConstantSPD<> *spectrum = new ConstantSPD<>(0.6));
+
     double evaluate(const Vec3d &wi, const Vec3d &wo,
                         const Intersection &i,
                         const unsigned wavelength) const override;
@@ -51,10 +63,11 @@ class IdealSpecular : public BRDF
 namespace BRDFs
 {
 
-extern const BRDF *LAMBERT;
-extern const BRDF *IDEAL_REFRACTION;
-extern const BRDF *IDEAL_SPECULAR;
+extern const LambertianModel LAMBERT;
+extern const IdealSpecular   IDEAL_SPECULAR;
+extern const IdealRefraction IDEAL_REFRACTION;
 
 }
+
 
 #endif

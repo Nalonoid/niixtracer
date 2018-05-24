@@ -3,17 +3,17 @@
 
 #include "sampler.hpp"
 
-Uniform uniform_sampler;
-Uniform longitude_sampler(0, 2*PI);
-Uniform wavelength_sampler(MIN_WAVELENGTH, MAX_WAVELENGTH);
+Uniform<std::uniform_real_distribution, double> uniform_sampler;
+Uniform<std::uniform_real_distribution, double> longitude_sampler(0, 2*PI);
+Uniform<std::uniform_int_distribution, int> wavelength_sampler(MIN_WAVELENGTH, MAX_WAVELENGTH);
 
-Uniform::Uniform(double min, double max) :
+template <template<class> class T, class U>
+Uniform<T, U>::Uniform(double min, double max) :
     _gen(_rnd_dv()), _distribution(min, max) {}
 
-double Uniform::sample()
-{
-    return _distribution(_gen);
-}
+template <template<class> class T, class U>
+Uniform<T, U>::Uniform(unsigned min, unsigned max) :
+    _gen(_rnd_dv()), _distribution(min, max) {}
 
 Vec3d hemisphere_sample()
 {

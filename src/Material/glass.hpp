@@ -1,9 +1,9 @@
 #ifndef __GLASS_HPP__
 #define __GLASS_HPP__
 
-#include "material_brdf.hpp"
+#include "material_pbr.hpp"
 
-class Glass : public MaterialBRDF
+class Glass : public MaterialPBR
 {
 public:
     Glass(float ior = 1.5f);

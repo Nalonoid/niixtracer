@@ -1,22 +1,15 @@
 #include <iostream>
 #include <chrono>
 
-#include <omp.h>
-
 #include "Image/image.hpp"
 #include "Scene/scene.hpp"
-#include "Scene/scene_examples.inl"
 #include "Raytracer/ray.hpp"
 #include "Raytracer/raytracer.hpp"
 #include "Raytracer/pathtracer.hpp"
-#include "Raytracer/spectrum.hpp"
-#include "Object/Camera/camera.hpp"
-#include "Object/Light/light.hpp"
-#include "Object/Shape/sphere.hpp"
-#include "Object/Shape/plane.hpp"
 #include "Utils/save.hpp"
 #include "Utils/serializer.hpp"
-#include "Utils/sampler.hpp"
+
+#include "Raytracer/spectrum.hpp"
 
 int main(int argc, char **argv)
 {    

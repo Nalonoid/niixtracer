@@ -38,33 +38,33 @@ std::string Material::name() const
 namespace Materials
 {
 
-const Material& material(std::string name)
+const Material* material(std::string name)
 {
     if (name == "default")
-        return Materials::DEFAULT;
+        return &Materials::DEFAULT;
 
     if (name == "plastic")
-        return Materials::PLASTIC;
+        return &Materials::PLASTIC;
 
     if (name == "metal")
-        return Materials::METAL;
+        return &Materials::METAL;
 
     if (name == "glass")
-        return Materials::GLASS;
+        return &Materials::GLASS;
 
     if (name == "diffuse")
-        return Materials::DIFFUSE;
+        return &Materials::DIFFUSE;
 
     if (name == "diamond")
-        return Materials::DIAMOND;
+        return &Materials::DIAMOND;
 
     if (name == "translucent")
-        return Materials::TRANSLUCENT;
+        return &Materials::TRANSLUCENT;
 
     if (name == "mirror")
-        return Materials::MIRROR;
+        return &Materials::MIRROR;
 
-    return Materials::DEFAULT;
+    return nullptr;
 }
 
 }

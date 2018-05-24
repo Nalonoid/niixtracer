@@ -10,6 +10,10 @@
 #include "Utils/sampler.hpp"
 #include "Utils/utils.hpp"
 
+#include "Material/glass.hpp"
+#include "Material/matte.hpp"
+#include "Material/mirror.hpp"
+
 Pathtracer::Pathtracer(Scene *scene) : Renderer(scene),
     _russian_roulette_coeff(1.0f) {}
 
@@ -36,36 +40,31 @@ bool Pathtracer::depth_recursion_over(Ray &ray)
 
 Color Pathtracer::compute_color(Ray &ray)
 {   
-    Color ret_color;
+    const MaterialPBR *m { ray.intersection().shape()->materialPBR() };
 
-    switch (ray.intersection().material()->type())
-    {
-    case MATERIAL_TYPE::DIFFUSE:
-        ret_color = compute_diffuse(ray);
-        break;
+    const Glass   *glass  { dynamic_cast<const Glass*>(m)   };
+    const Mirror  *mirror { dynamic_cast<const Mirror*>(m)  };
+    const Matte   *matte  { dynamic_cast<const Matte*>(m)   };
 
-    case MATERIAL_TYPE::SPECULAR:
-        ret_color = compute_reflection(ray);
-        break;
+    if (matte)
+        return compute_diffuse(ray);
 
-    case MATERIAL_TYPE::REFRACTIVE:
-        ret_color = compute_refraction(ray);
-        break;
+    if (mirror)
+        return compute_reflection(ray);
 
-    default:
-        std::cerr << "error: wrong material type!" << std::endl;
-        ret_color = Colors::BLACK;
-        break;
-    }
+    if (glass)
+        return compute_refraction(ray);
 
-    return ret_color;
+    std::cerr << "error: wrong material type!" << std::endl;
+    return Colors::BLACK;
 }
 
 const Color Pathtracer::compute_diffuse(Ray &ray)
 {
-    Intersection &i { ray.intersection()    };
-    const Shape *s  { i.shape()             };
-    Color obj_col   { i.material()->color() };
+    Intersection &i         { ray.intersection()    };
+    const Shape *s          { i.shape()             };
+    const MaterialPBR *m    { s->materialPBR()      };
+    Color obj_col           { s->color()            };
 
     // Global illumination
     double cos_att { ray.direction().dot(i.normal()) };
@@ -73,7 +72,7 @@ const Color Pathtracer::compute_diffuse(Ray &ray)
     if (cos_att > 0.0)
         i.normal() = i.normal().negative();
 
-    Vec3d recursive_dir { rnd_dir_hemisphere(i.normal()).normalized() };
+    Vec3d recursive_dir { m->wi(ray.direction(), i.normal()) };
     Ray recursive_ray(i.position() + EPSILON * recursive_dir, recursive_dir);
     recursive_ray.bounces() = ray.bounces() + 1;
 
@@ -81,7 +80,7 @@ const Color Pathtracer::compute_diffuse(Ray &ray)
 
     // Without it we could not see the reflections of the source itself
     if (s->emits())
-        ret_color += s->material().color();
+        ret_color += s->color();
 
     // Next event estimation - Direct illumination
     const auto &shapes = _scene->shapes();
@@ -118,7 +117,7 @@ const Color Pathtracer::compute_diffuse(Ray &ray)
 
                     if (!in_shadow)
                         ret_color += 1/(2*PI) * (*shape_it)->emission() *
-                                (*shape_it)->material().color() * obj_col *
+                                (*shape_it)->color() * obj_col *
                                 cosine_norm_light;
                 }
             }
@@ -130,77 +129,40 @@ const Color Pathtracer::compute_diffuse(Ray &ray)
 
 const Color Pathtracer::compute_reflection(Ray &ray)
 {
-    const Intersection &i   { ray.intersection()    };
+    Intersection &i         { ray.intersection()    };
     const Shape *s          { i.shape()             };
+    const MaterialPBR *m    { s->materialPBR()      };
 
-    Color ret_color;
+    Vec3d reflect_vect  { m->wi(ray.direction(), i.normal()) };
+    float reflectance {
+        m->reflectance(reflect_vect, ray.direction(), i, ray.wavelength()) };
 
-    double u { uniform_sampler.sample()     };
-    double R { i.material()->reflection()   };
+    reflect_vect = reflect_vect.normalized();
 
-    if (u <= R) // The reflection is in the perfect specular direction
-    {
-        Vec3d reflect_vect  { ray.direction().reflect(i.normal()) };
-        reflect_vect = reflect_vect.normalized();
+    Ray reflection_ray(i.position() + EPSILON * reflect_vect, reflect_vect);
+    reflection_ray.bounces() = ray.bounces() + 1;
 
-        Ray reflection_ray(i.position() + EPSILON * reflect_vect, reflect_vect);
-        reflection_ray.bounces() = ray.bounces() + 1;
-
-        ret_color = (Color(s->emission()) + launch(reflection_ray)) * R
-                * _russian_roulette_coeff;
-    }
-    else // Here we take a random direction on the hemisphere (diffuse)
-        ret_color = compute_diffuse(ray);
-
-    return ret_color;
+    return (Color(s->emission()) + reflectance * launch(reflection_ray))
+            * _russian_roulette_coeff;
 }
 
 const Color Pathtracer::compute_refraction(Ray &ray)
 {
-    const Intersection &i   { ray.intersection()    };
+    Intersection &i         { ray.intersection()    };
     const Shape *s          { i.shape()             };
-    Vec3d normal            { i.normal()            };
+    const MaterialPBR *m    { s->materialPBR()      };
 
     Color ret_color;
 
-    double n { i.material()->refraction() };
-    double n1 { 1.0 };
-    double n2 { 1.0 };
+    Vec3d refract_vect { m->wi(ray.direction(), i.normal()) };
+    float transmitance {
+        1 - m->reflectance(refract_vect, ray.direction(), i, ray.wavelength()) };
 
-    /* For now we only consider reflection and refraction happening from air to
-     * a second medium. Hence n1 = 1 as an approximationm.
-     * That is why n = n1/n2 = 1.0/n2 here */
-    if (normal.dot(ray.direction()) > 0.0)  // Inside the medium, going out
-    {
-        normal = normal.negative();
-        n1 = n;
-    }
-    else
-    {
-        n2 = n;
-        n = 1.0 / n;
-    }
+    Ray refract_ray(i.position() + EPSILON * refract_vect, refract_vect);
+    refract_ray.bounces() = ray.bounces() + 1;
 
-    double cos_R    { -ray.direction().dot(i.normal())      };
-    double sin2_T   { n*n*(1 - cos_R*cos_R)                 };
-    double u        { uniform_sampler.sample()              };
-    double R        { schlick_approx(n1, n2, cos_R, sin2_T) };
-
-    if (u > R)
-    {
-        double T { 1 - R };
-
-        Vec3d refract_vect { n * ray.direction() +
-                    (n * cos_R - sqrt(1.0 - sin2_T))*i.normal() };
-
-        Ray refract_ray(i.position() + EPSILON * refract_vect, refract_vect);
-        refract_ray.bounces() = ray.bounces() + 1;
-
-        ret_color = (Color(s->emission()) + T * launch(refract_ray))
-                * _russian_roulette_coeff;
-    }
-    else
-        ret_color = compute_reflection(ray);
+    ret_color = (Color(s->emission()) + transmitance * launch(refract_ray))
+            * _russian_roulette_coeff;
 
     return ret_color;
 }

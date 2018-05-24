@@ -1,9 +1,9 @@
 #ifndef __MATTE_HPP__
 #define __MATTE_HPP__
 
-#include "material_brdf.hpp"
+#include "material_pbr.hpp"
 
-class Matte : public MaterialBRDF
+class Matte : public MaterialPBR
 {
 public:
     Matte();

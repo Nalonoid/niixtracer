@@ -100,9 +100,9 @@ unsigned& Scene::nb_samples()
 // Methods
 void Scene::add(Object* o)
 {
-    Shape*  shape  { dynamic_cast<Shape*>(o)  };
-    Light*  light  { dynamic_cast<Light*>(o)  };
-    Camera* camera { dynamic_cast<Camera*>(o) };
+    Shape   *shape  { dynamic_cast<Shape*>(o)  };
+    Light   *light  { dynamic_cast<Light*>(o)  };
+    Camera  *camera { dynamic_cast<Camera*>(o) };
 
     if (shape)
     {

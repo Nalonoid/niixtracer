@@ -1,12 +1,24 @@
 #include "brdf.hpp"
 
-BRDF::BRDF() {}
+BRDF::BRDF() : _spectrum(nullptr) {}
+
+BRDF::BRDF(Spectrum<SPECTRAL_SAMPLES> *spectrum) : _spectrum(spectrum) {}
+
+LambertianModel::LambertianModel(ConstantSPD<> *spectrum) :
+    BRDF(spectrum) {}
+
+IdealRefraction::IdealRefraction(ConstantSPD<> *spectrum) :
+    BRDF(spectrum) {}
+
+IdealSpecular::IdealSpecular(ConstantSPD<> *spectrum) :
+    BRDF(spectrum) {}
 
 double LambertianModel::evaluate(const Vec3d&, const Vec3d&,
                                  const Intersection&,
                                  const unsigned wavelength) const
 {
-    return max(0.0, Spectra::CONSTANT_SPD.power_at(wavelength));
+    std::cout << "evaluate lambert " << _spectrum->power_at(wavelength) << std::endl;
+    return max(0.0, _spectrum->power_at(wavelength));
 }
 
 float LambertianModel::pdf(const Vec3d &wi, const Vec3d&, const Intersection &i)
@@ -18,7 +30,7 @@ double IdealRefraction::evaluate(const Vec3d&, const Vec3d&,
                                  const Intersection&,
                                  const unsigned wavelength) const
 {
-    return max(0.0, Spectra::CONSTANT_SPD.power_at(wavelength));
+    return max(0.0, _spectrum->power_at(wavelength));
 }
 
 float IdealRefraction::pdf(const Vec3d&, const Vec3d&, const Intersection&)
@@ -31,7 +43,7 @@ double IdealSpecular::evaluate(const Vec3d&, const Vec3d&,
                                  const Intersection&,
                                  const unsigned wavelength) const
 {
-    return max(0.0, Spectra::CONSTANT_SPD.power_at(wavelength));
+    return max(0.0, _spectrum->power_at(wavelength));
 }
 
 float IdealSpecular::pdf(const Vec3d&, const Vec3d&, const Intersection&)
@@ -43,8 +55,8 @@ float IdealSpecular::pdf(const Vec3d&, const Vec3d&, const Intersection&)
 namespace BRDFs
 {
 
-const BRDF *LAMBERT             { new LambertianModel() };
-const BRDF *IDEAL_REFRACTION    { new IdealRefraction() };
-const BRDF *IDEAL_SPECULAR      { new IdealSpecular()   };
+const LambertianModel   LAMBERT             { LambertianModel() };
+const IdealRefraction   IDEAL_REFRACTION    { IdealRefraction() };
+const IdealSpecular     IDEAL_SPECULAR      { IdealSpecular()   };
 
 }

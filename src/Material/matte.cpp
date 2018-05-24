@@ -2,7 +2,7 @@
 #include "brdf.hpp"
 #include "Utils/sampler.hpp"
 
-Matte::Matte() : MaterialBRDF(BRDFs::LAMBERT) {}
+Matte::Matte() : MaterialPBR(BRDFs::LAMBERT) {}
 
 Vec3d Matte::wi(const Vec3d&, Vec3d &normal) const
 {
