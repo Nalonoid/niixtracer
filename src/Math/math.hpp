@@ -73,6 +73,9 @@ Vector<T> operator/(const Vector<T> &v,const double scalar);
 template <typename T>
 std::ostream& operator<<(std::ostream &os, const Vector<T> &v);
 
+template <typename T>
+bool operator==(const Vector<T> &v1, const Vector<T> &v2);
+
 // Space
 namespace Space
 {
@@ -95,7 +98,7 @@ struct Space
 
 // Create an orthonormal basis from the vector v1
 template <typename T>
-void orthonormal_basis(const Vector<T>& v1, Vector<T>& v2, Vector<T>& v3);
+void orthonormal_basis(const Vector<T> &v1, Vector<T> &v2, Vector<T> &v3);
 
 }
 

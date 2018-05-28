@@ -12,7 +12,7 @@
 #include "Raytracer/spectrum.hpp"
 
 int main(int argc, char **argv)
-{    
+{
     // Checking input arguments
     if (argc != 2)  // != 4 if you're using render.sh 2 otherwise
     {

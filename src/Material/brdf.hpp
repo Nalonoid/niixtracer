@@ -19,7 +19,7 @@ public:
 
     // BRDF's Probability Density Function given a sampled incident direction
     virtual float pdf(const Vec3d &wi, const Vec3d &wo,
-                      const Intersection &i) = 0;
+                      const Intersection &i) const = 0;
 
     Spectrum<SPECTRAL_SAMPLES> *_spectrum;
 };
@@ -33,7 +33,8 @@ public:
                         const Intersection &i,
                         const unsigned wavelength) const override;
 
-    float pdf(const Vec3d &wi, const Vec3d &wo, const Intersection &i) override;
+    float pdf(const Vec3d &wi, const Vec3d &wo,
+              const Intersection &i) const override;
 };
 
 class IdealRefraction : public BRDF
@@ -45,7 +46,8 @@ public:
                         const Intersection &i,
                         const unsigned wavelength) const override;
 
-    float pdf(const Vec3d &wi, const Vec3d &wo, const Intersection &i) override;
+    float pdf(const Vec3d &wi, const Vec3d &wo,
+              const Intersection &i) const override;
 };
 
 class IdealSpecular : public BRDF
@@ -57,7 +59,8 @@ public:
                         const Intersection &i,
                         const unsigned wavelength) const override;
 
-    float pdf(const Vec3d &wi, const Vec3d &wo, const Intersection &i) override;
+    float pdf(const Vec3d &wi, const Vec3d &wo,
+              const Intersection &i) const override;
 };
 
 namespace BRDFs

@@ -8,8 +8,7 @@ template <template<class> class T, class U>
 class Uniform
 {
 public:
-    Uniform(double min = 0.0, double max = 1.0);
-    Uniform(unsigned min, unsigned max);
+    Uniform(U min = 0, U max = 1);
     U sample();
 
 private:
@@ -18,9 +17,10 @@ private:
     T<U> _distribution;
 };
 
-extern Uniform<std::uniform_real_distribution, double> uniform_sampler;
-extern Uniform<std::uniform_real_distribution, double> longitude_sampler;
-extern Uniform<std::uniform_int_distribution, int> wavelength_sampler;
+extern Uniform<std::uniform_real_distribution, double>  uniform_sampler_double;
+extern Uniform<std::uniform_real_distribution, float>   uniform_sampler_float;
+extern Uniform<std::uniform_real_distribution, double>  longitude_sampler;
+extern Uniform<std::uniform_int_distribution, int>      wavelength_sampler;
 
 /* Compute a random point on a hemisphere, uniformly sampled
  * More information here :

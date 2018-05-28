@@ -9,12 +9,12 @@ class BRDF;
 class MaterialPBR
 {
 public:
-    MaterialPBR(const BRDF &brdf);
+    MaterialPBR(const BRDF *brdf, std::string name);
 
     // Getters
     const std::string& name() const;
-    const BRDF& brdf() const;
-    virtual float roughness() const;
+    const BRDF* brdf() const;
+    virtual float roughness() const = 0;
 
     // Methods
     virtual Vec3d wi(const Vec3d &wo, Vec3d &normal) const = 0;
@@ -22,9 +22,18 @@ public:
                       const unsigned wavelength) const;
 
 private:
+    const BRDF *_brdf;
     std::string _name;
-    const BRDF &_brdf;
 };
+
+class Matte : public MaterialPBR
+{
+public:
+    Matte();
+    Vec3d wi(const Vec3d &wo, Vec3d &normal) const override;
+    float roughness() const override;
+};
+
 
 namespace MaterialsPBR
 {
@@ -32,6 +41,8 @@ namespace MaterialsPBR
 extern const MaterialPBR *MATTE;
 extern const MaterialPBR *GLASS;
 extern const MaterialPBR *MIRROR;
+extern const MaterialPBR *METAL;
+extern const MaterialPBR *DIAMOND;
 
 const MaterialPBR* material(std::string name);
 

@@ -3,22 +3,19 @@
 
 #include "sampler.hpp"
 
-Uniform<std::uniform_real_distribution, double> uniform_sampler;
+Uniform<std::uniform_real_distribution, double> uniform_sampler_double;
+Uniform<std::uniform_real_distribution, float>  uniform_sampler_float;
 Uniform<std::uniform_real_distribution, double> longitude_sampler(0, 2*PI);
-Uniform<std::uniform_int_distribution, int> wavelength_sampler(MIN_WAVELENGTH, MAX_WAVELENGTH);
+Uniform<std::uniform_int_distribution, int>     wavelength_sampler(MIN_WAVELENGTH, MAX_WAVELENGTH);
 
 template <template<class> class T, class U>
-Uniform<T, U>::Uniform(double min, double max) :
-    _gen(_rnd_dv()), _distribution(min, max) {}
-
-template <template<class> class T, class U>
-Uniform<T, U>::Uniform(unsigned min, unsigned max) :
+Uniform<T, U>::Uniform(U min, U max) :
     _gen(_rnd_dv()), _distribution(min, max) {}
 
 Vec3d hemisphere_sample()
 {
-    double u { uniform_sampler.sample()     };
-    double v { longitude_sampler.sample()   };
+    double u { uniform_sampler_double.sample()  };
+    double v { longitude_sampler.sample()       };
 
     // Compute a random point on a hemisphere
     double phi      { 2.0 * u - 1.0     };

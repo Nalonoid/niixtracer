@@ -1,12 +1,12 @@
-#ifndef __MIRROR_HPP__
-#define __MIRROR_HPP__
+#ifndef __METAL_HPP__
+#define __METAL_HPP__
 
 #include "material_pbr.hpp"
 
-class Mirror : public MaterialPBR
+class Metal : public MaterialPBR
 {
 public:
-    Mirror(float glossiness = 1.0f);
+    Metal(float roughness = 0.3f, std::string name = "metal");
 
     // Getters
     float roughness() const override;

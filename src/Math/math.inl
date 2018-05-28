@@ -101,6 +101,12 @@ std::ostream& operator<<(std::ostream &os, const Vector<T> &v)
 }
 
 template <typename T>
+bool operator==(const Vector<T> &v1, const Vector<T> &v2)
+{
+    return v1.x == v2.x && v1.y == v2.y && v1.z == v2.z;
+}
+
+template <typename T>
 std::string Vector<T>::to_string() const
 {
     return std::to_string(x) + ", " +
@@ -119,10 +125,14 @@ const Vector<double> YAXIS  { 0, 1, 0 };
 const Vector<double> ZAXIS  { 0, 0, 1 };
 
 template <typename T>
-void orthonormal_basis(const Vector<T>& v1, Vector<T>& v2, Vector<T>& v3)
+void orthonormal_basis(const Vector<T>& v1, Vector<T> &v2, Vector<T> &v3)
 {
-    v2 = Vec3d(v1.y, -v1.x, 0).normalized();
-    v3 = v1.cross(v2).normalized();
+    v2 = Vec3d(0, -v1.z, v1.y);
+
+    if (v2 == Vector<T>(0, 0, 0))
+        v2 = Vec3d(-v1.z, 0, v1.x);
+
+    v3 = v1.cross(v2);
 }
 
 }

@@ -76,6 +76,27 @@ Color operator*(const Color &c1, const Color &c2)
                  c1.b() * c2.b());
 }
 
+Color operator/(const Color &c1, const Color &c2)
+{
+    return Color(c1.r() / c2.r(),
+                 c1.g() / c2.g(),
+                 c1.b() / c2.b());
+}
+
+Color operator/(double scalar, const Color &c)
+{
+    return Color(scalar / c.r(),
+                 scalar / c.g(),
+                 scalar / c.b());
+}
+
+Color operator/(const Color &c, double scalar)
+{
+    return Color(c.r() / scalar,
+                 c.g() / scalar,
+                 c.b() / scalar);
+}
+
 Color Color::operator+=(const Color &c)
 {
     this->rgb = this->rgb + c.rgb;
@@ -85,5 +106,11 @@ Color Color::operator+=(const Color &c)
 Color Color::operator*=(const Color &c)
 {
     this->rgb = this->rgb * c.rgb;
+    return *this;
+}
+
+Color Color::operator/=(double scalar)
+{
+    this->rgb = this->rgb / scalar;
     return *this;
 }
