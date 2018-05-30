@@ -74,11 +74,17 @@ const Color Pathtracer::compute_diffuse(Ray &ray)
     const MaterialPBR *m    { s->materialPBR()      };
     Color obj_col           { s->color()            };
 
+    // We stop the path when we hit a light source
+    if (s->emits())
+        return obj_col;
+
     // Global illumination
     double cos_att { ray.direction().dot(i.normal()) };
 
     if (cos_att > 0.0)
         i.normal() = i.normal().negative();
+    else
+        cos_att = -cos_att;
 
     Vec3d recursive_dir { m->wi(ray.direction(), i.normal()) };
     Ray recursive_ray(i.position() + EPSILON * recursive_dir, recursive_dir);
@@ -86,20 +92,18 @@ const Color Pathtracer::compute_diffuse(Ray &ray)
 
     Color ret_color { launch(recursive_ray) * cos_att };
 
-    // We stop the path when we hit a source
-    if (s->emits())
-        return obj_col;
-
     // Next event estimation - Direct illumination
     const auto &shapes = _scene->shapes();
-    int emitters = 0;
+
+    /* Here we sample all the light sources. An alternative would be to sample
+     * one randomly chosen light source and multiply the result by the number of
+     * light sources in the scene. Monte Carlo integration ensures that it will
+     * still compute the correct result on average. */
     for (auto shape_it = shapes.begin(); shape_it < shapes.end(); shape_it++)
     {
         // If the shape is an emitter, we'll check for direct illumination
         if ((*shape_it)->emits())
         {
-            emitters++;
-
             Vec3d light_sample { (*shape_it)->position()+hemisphere_sample() };
             Vec3d cone_sample { light_sample - i.position() };
             double source_distance  { cone_sample.magnitude() };
@@ -130,14 +134,12 @@ const Color Pathtracer::compute_diffuse(Ray &ray)
                     {
                         float reflectance {
                             m->reflectance(recursive_dir, ray.direction(), i,
-                                           ray.wavelength()) / PI };
+                                           ray.wavelength()) };
 
                         ret_color *= reflectance;
-
                         ret_color += (*shape_it)->emission() *
                                 (*shape_it)->color() * obj_col *
                                 cosine_norm_light;
-
                         ret_color /= 2*PI;
                     }
                 }

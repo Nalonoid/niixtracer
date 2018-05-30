@@ -34,15 +34,15 @@ public:
     float roughness() const override;
 };
 
-
 namespace MaterialsPBR
 {
 
-extern const MaterialPBR *MATTE;
+extern const MaterialPBR *DIAMOND;
 extern const MaterialPBR *GLASS;
+extern const MaterialPBR *MATTE;
 extern const MaterialPBR *MIRROR;
 extern const MaterialPBR *METAL;
-extern const MaterialPBR *DIAMOND;
+extern const MaterialPBR *TRANSLUCENT;
 
 const MaterialPBR* material(std::string name);
 

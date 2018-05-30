@@ -20,8 +20,8 @@ double LambertianModel::evaluate(const Vec3d&, const Vec3d&,
     return max(0.0, _spectrum->power_at(wavelength));
 }
 
-float LambertianModel::pdf(const Vec3d &wi, const Vec3d&,
-                           const Intersection &i) const
+float LambertianModel::pdf(const Vec3d&, const Vec3d&,
+                           const Intersection&) const
 {
     // Uniform hemisphere sampling PDF
     return 1/(2*PI);

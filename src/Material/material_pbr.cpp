@@ -30,29 +30,33 @@ namespace MaterialsPBR
 const MaterialPBR *MATTE    { new Matte() };
 
 // Index of Refraction / Roughness / Name
-const MaterialPBR *GLASS    { new Dielectric(1.5f, 0.0f, "glass")       };
-const MaterialPBR *DIAMOND  { new Dielectric(2.418f, 0.0f, "diamond")   };
+const MaterialPBR *DIAMOND      { new Dielectric(2.418f, 0.0f, "diamond")     };
+const MaterialPBR *GLASS        { new Dielectric(1.500f, 0.0f, "glass")       };
+const MaterialPBR *TRANSLUCENT  { new Dielectric(1.010f, 0.0f, "translucent") };
 
 // Index of Refraction / Name
-const MaterialPBR *MIRROR   { new Metal(0.0f, "mirror") };
 const MaterialPBR *METAL    { new Metal(0.3f)           };
+const MaterialPBR *MIRROR   { new Metal(0.0f, "mirror") };
 
 const MaterialPBR* material(std::string name)
 {
-    if (name == "matte")
-        return MaterialsPBR::MATTE;
-
-    if (name == "mirror")
-        return MaterialsPBR::MIRROR;
+    if (name == "diamond")
+        return MaterialsPBR::DIAMOND;
 
     if (name == "glass")
         return MaterialsPBR::GLASS;
 
+    if (name == "matte")
+        return MaterialsPBR::MATTE;
+
     if (name == "metal")
         return MaterialsPBR::METAL;
 
-    if (name == "diamond")
-        return MaterialsPBR::DIAMOND;
+    if (name == "mirror")
+        return MaterialsPBR::MIRROR;
+
+    if (name == "translucent")
+        return MaterialsPBR::TRANSLUCENT;
 
     std::cerr << "error: invalid material name - nullptr returned" << std::endl;
     return nullptr;

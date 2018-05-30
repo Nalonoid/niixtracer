@@ -2,7 +2,6 @@
 #include <iostream>
 
 // Vectors
-
 template <typename T>
 double Vector<T>::magnitude() const
 {
