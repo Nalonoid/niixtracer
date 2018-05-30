@@ -51,7 +51,7 @@ Color Pathtracer::compute_color(Ray &ray)
     if (u > m->roughness())
         reflect_vect = m->wi(ray.direction(), i.normal());
     else
-        return compute_diffuse(ray);    // Diffuse reflection
+        return compute_diffuse(ray) * _russian_roulette_coeff; // Diffuse reflection
 
     float reflectance {
         m->reflectance(reflect_vect, ray.direction(), i, ray.wavelength()) };
@@ -62,7 +62,7 @@ Color Pathtracer::compute_color(Ray &ray)
     reflection_ray.bounces() = ray.bounces() + 1;
 
     return 1/m->brdf()->pdf(reflect_vect, ray.direction(), i) *
-            (Color(s->emission()) + reflectance * launch(reflection_ray))
+            (Color(s->emission(ray.wavelength())) + reflectance * launch(reflection_ray))
             * _russian_roulette_coeff;
 }
 
@@ -137,7 +137,7 @@ const Color Pathtracer::compute_diffuse(Ray &ray)
                                            ray.wavelength()) };
 
                         ret_color *= reflectance;
-                        ret_color += (*shape_it)->emission() *
+                        ret_color += (*shape_it)->emission(ray.wavelength()) *
                                 (*shape_it)->color() * obj_col *
                                 cosine_norm_light;
                         ret_color /= 2*PI;

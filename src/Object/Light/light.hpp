@@ -11,25 +11,28 @@
 #include "Math/math.hpp"
 #include "Image/color.hpp"
 #include "../object.hpp"
+#include "Raytracer/spectrum.hpp"
 
 class Light : public Object
 {
 public:
-    Light(const Vec3d &p = Space::ORIGIN,
-          const Color &c = Colors::WHITE, double emission = 500.0);
+    Light(double emission, const Vec3d &p = Space::ORIGIN,
+          const Color &c = Colors::WHITE);
+
+    Light(const Spectrum<> *s = Spectra::BLACK_BODY_D65,
+          const Vec3d &p = Space::ORIGIN,
+          const Color& c = Colors::WHITE);
 
     // Getters
     unsigned index() const override;
     const Color& color() const;
-    double emission() const;
+    double emission(unsigned wavelength = AVG_WAVELENGTH) const;
     double brightness() const;
-
-    double& emission();
 
 private:
     static unsigned _index;
     Color _color;
-    double _emission;
+    const Spectrum<> *_emission_spectrum;
 };
 
 #endif

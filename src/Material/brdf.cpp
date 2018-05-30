@@ -1,4 +1,5 @@
 #include "brdf.hpp"
+#include "Utils/utils.hpp"
 
 BRDF::BRDF() : _spectrum(nullptr) {}
 

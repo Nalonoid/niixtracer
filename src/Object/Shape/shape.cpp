@@ -9,7 +9,7 @@ Shape::Shape(const Vec3d &position, const Material *material,
     Object(position), _material(material), _material_pbr(nullptr), _color(color)
 {
     _index++;
-    _light = emission > 0.0 ? new Light(position, color, emission)
+    _light = emission > 0.0 ? new Light(emission, position, color)
                             : nullptr;
 }
 
@@ -18,22 +18,47 @@ Shape::Shape(const Vec3d &position, const MaterialPBR *material,
     Object(position), _material(nullptr), _material_pbr(material), _color(color)
 {
     _index++;
-    _light = emission > 0.0 ? new Light(position, color, emission)
+    _light = emission > 0.0 ? new Light(emission, position, color)
                             : nullptr;
 }
 
-Shape::Shape(const Material *material, const Color &color, double emission) :
-    Object(Space::ORIGIN), _material(material), _material_pbr(nullptr), _color(color)
+Shape::Shape(const Vec3d &position, const MaterialPBR *material,
+             const Color &color, const Spectrum<> *emission_spctr) :
+    Object(position), _material(nullptr), _material_pbr(material), _color(color)
 {
     _index++;
-    _light = emission > 0.0 ? new Light(Space::ORIGIN, emission) : nullptr;
+    _light = emission_spctr != nullptr ?
+                new Light(emission_spctr, position, color) :
+                nullptr;
+}
+
+Shape::Shape(const Material *material, const Color &color, double emission) :
+    Object(Space::ORIGIN), _material(material), _material_pbr(nullptr),
+    _color(color)
+{
+    _index++;
+    _light = emission > 0.0 ? new Light(emission, Space::ORIGIN, color) :
+                              nullptr;
 }
 
 Shape::Shape(const MaterialPBR *material, const Color &color, double emission) :
-    Object(Space::ORIGIN), _material(nullptr), _material_pbr(material), _color(color)
+    Object(Space::ORIGIN), _material(nullptr), _material_pbr(material),
+    _color(color)
 {
     _index++;
-    _light = emission > 0.0 ? new Light(Space::ORIGIN, emission) : nullptr;
+    _light = emission > 0.0 ? new Light(emission, Space::ORIGIN, color) :
+                              nullptr;
+}
+
+Shape::Shape(const MaterialPBR *material, const Color &color,
+             const Spectrum<> *emission_spctr) :
+    Object(Space::ORIGIN), _material(nullptr), _material_pbr(material),
+    _color(color)
+{
+    _index++;
+    _light = emission_spctr != nullptr ?
+                new Light(emission_spctr, Space::ORIGIN, color) :
+                nullptr;
 }
 
 
@@ -63,9 +88,9 @@ Color &Shape::color()
     return _color;
 }
 
-double Shape::emission() const
+double Shape::emission(unsigned wavelength) const
 {
-    return (_light != nullptr) ? _light->emission() : 0.0;
+    return (_light != nullptr) ? _light->emission(wavelength) : 0.0;
 }
 
 bool Shape::emits() const

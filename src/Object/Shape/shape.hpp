@@ -15,26 +15,37 @@ public:
     Shape(const Vec3d &position     = Space::ORIGIN,
           const Material *material  = &Materials::DEFAULT,
           const Color &color        = Colors::WHITE,
+          double emission           = 0.0);
+
+    Shape(const Vec3d &position         = Space::ORIGIN,
+          const MaterialPBR *material   = MaterialsPBR::MATTE,
+          const Color &color            = Colors::WHITE,
+          double emission               = 0.0);
+
+    Shape(const Vec3d &position             = Space::ORIGIN,
+          const MaterialPBR *material       = MaterialsPBR::MATTE,
+          const Color &color                = Colors::WHITE,
+          const Spectrum<> *emission_spctr  = nullptr);
+
+    Shape(const Material *material, const Color &color = Colors::WHITE,
           double emission = 0.0);
 
-    Shape(const Vec3d &position     = Space::ORIGIN,
-          const MaterialPBR *material  = MaterialsPBR::MATTE,
-          const Color &color        = Colors::WHITE,
+    Shape(const MaterialPBR *material, const Color &color = Colors::WHITE,
           double emission = 0.0);
 
-    Shape(const Material *material, const Color &color = Colors::WHITE, double emission = 0.0);
-    Shape(const MaterialPBR *material, const Color &color = Colors::WHITE, double emission = 0.0);
+    Shape(const MaterialPBR *material, const Color &color = Colors::WHITE,
+          const Spectrum<> *emission_spctr = nullptr);
 
     // Getters
     unsigned index() const override;
 
-    const Material* material() const;
-    const MaterialPBR* materialPBR() const;
+    const Material*     material() const;
+    const MaterialPBR*  materialPBR() const;
 
     const Color& color() const;
     Color& color();
 
-    double emission() const;
+    double emission(unsigned wavelength = 0) const;
 
     bool emits() const;
 

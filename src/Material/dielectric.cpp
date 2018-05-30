@@ -1,6 +1,7 @@
 #include "dielectric.hpp"
 #include "brdf.hpp"
 #include "Utils/sampler.hpp"
+#include "Utils/utils.hpp"
 
 Dielectric::Dielectric(float ior, float roughness, std::string name) :
     MaterialPBR(&BRDFs::IDEAL_REFRACTION, name), _ior (ior),

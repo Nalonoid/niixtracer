@@ -226,7 +226,7 @@ void Serializer::add_light(QDomElement &light_elem)
                 color_str[2].toDouble(),
                 color_str[3].toDouble());
 
-    _scene->add(new Light(pos, color));
+    _scene->add(new Light(20, pos, color));
 }
 
 void Serializer::add_plane(QDomElement &plane_elem)
@@ -284,20 +284,31 @@ void Serializer::add_sphere(QDomElement &sphere_elem)
                 color_str[2].toDouble(),
                 color_str[3].toDouble());
 
-    double emission { emission_elem.text().toDouble() };
-
     if (_scene->mode() == "rt") // Ray tracing
     {
+        double emission { emission_elem.text().toDouble() };
+
         const Material *material {
             Materials::material(mat_elem.text().toStdString()) };
         _scene->add(new Sphere(center, radius, color, material, emission));
     }
     else    // Monte Carlo Path Tracing
     {
+        const Spectrum<> * emission_spctr {
+            Spectra::spectrum(emission_elem.text().toStdString()) };
+
         const MaterialPBR *material_pbr {
             MaterialsPBR::material(mat_elem.text().toStdString()) };
 
-        _scene->add(new Sphere(center, radius, color, material_pbr, emission));
+        if (emission_spctr)
+            _scene->add(new Sphere(center, radius, color, material_pbr,
+                                   emission_spctr));
+        else
+        {
+            double emission { emission_elem.text().toDouble() };
+            _scene->add(new Sphere(center, radius, color, material_pbr,
+                                   emission));
+        }
     }
 }
 

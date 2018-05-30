@@ -32,11 +32,12 @@ const MaterialPBR *MATTE    { new Matte() };
 // Index of Refraction / Roughness / Name
 const MaterialPBR *DIAMOND      { new Dielectric(2.418f, 0.0f, "diamond")     };
 const MaterialPBR *GLASS        { new Dielectric(1.500f, 0.0f, "glass")       };
-const MaterialPBR *TRANSLUCENT  { new Dielectric(1.010f, 0.0f, "translucent") };
+const MaterialPBR *TRANSLUCENT  { new Dielectric(1.020f, 0.0f, "translucent") };
 
 // Index of Refraction / Name
-const MaterialPBR *METAL    { new Metal(0.3f)           };
-const MaterialPBR *MIRROR   { new Metal(0.0f, "mirror") };
+const MaterialPBR *METAL    { new Metal(0.3f)               };
+const MaterialPBR *MIRROR   { new Metal(0.0f, "mirror")     };
+const MaterialPBR *PLASTIC  { new Metal(0.7f, "plastic")    };
 
 const MaterialPBR* material(std::string name)
 {
@@ -54,6 +55,9 @@ const MaterialPBR* material(std::string name)
 
     if (name == "mirror")
         return MaterialsPBR::MIRROR;
+
+    if (name == "plastic")
+        return MaterialsPBR::PLASTIC;
 
     if (name == "translucent")
         return MaterialsPBR::TRANSLUCENT;

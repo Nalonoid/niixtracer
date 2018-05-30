@@ -38,7 +38,7 @@ template <unsigned nb_samples = SPECTRAL_SAMPLES>
 class ConstantSPD : public Spectrum<nb_samples>
 {
 public:
-    ConstantSPD(float sample_value = 0.0);
+    ConstantSPD(float sample_value = 1.0);
 
 private:
     // Normalized power value of the constant distribution
@@ -64,22 +64,24 @@ private:
 namespace Spectra
 {
 
-const ConstantSPD<>     CONSTANT_SPD { ConstantSPD<>(0.6f) };
+extern const ConstantSPD<>     *CONSTANT_SPD;
 
-const NormalSPD<>       NORMAL_RED      { NormalSPD<>(685) };
-const NormalSPD<>       NORMAL_ORANGE   { NormalSPD<>(595) };
-const NormalSPD<>       NORMAL_YELLOW   { NormalSPD<>(580) };
-const NormalSPD<>       NORMAL_GREEN    { NormalSPD<>(535) };
-const NormalSPD<>       NORMAL_BLUE     { NormalSPD<>(475) };
-const NormalSPD<>       NORMAL_PURPLE   { NormalSPD<>(415) };
+extern const NormalSPD<>       *NORMAL_RED;
+extern const NormalSPD<>       *NORMAL_ORANGE;
+extern const NormalSPD<>       *NORMAL_YELLOW;
+extern const NormalSPD<>       *NORMAL_GREEN;
+extern const NormalSPD<>       *NORMAL_BLUE;
+extern const NormalSPD<>       *NORMAL_PURPLE;
 
-const BlackBodySPD<>    BLACK_BODY_A    { BlackBodySPD<>(2856) }; // Incandescent / Tungstene
-const BlackBodySPD<>    BLACK_BODY_D50  { BlackBodySPD<>(5003) }; // Horizon daylight
-const BlackBodySPD<>    BLACK_BODY_D55  { BlackBodySPD<>(5503) }; // mid-morning / mid-afternoon daylight
-const BlackBodySPD<>    BLACK_BODY_D65  { BlackBodySPD<>(6504) }; // Noon daylight
-const BlackBodySPD<>    BLACK_BODY_D75  { BlackBodySPD<>(7504) }; // North sky daylight
+extern const BlackBodySPD<>    *BLACK_BODY_A;
+extern const BlackBodySPD<>    *BLACK_BODY_D50;
+extern const BlackBodySPD<>    *BLACK_BODY_D55;
+extern const BlackBodySPD<>    *BLACK_BODY_D65;
+extern const BlackBodySPD<>    *BLACK_BODY_D75;
 
-const BlackBodySPD<>    BLACK_BODY_E    { BlackBodySPD<>(5454) }; // Equal energy
+extern const BlackBodySPD<>    *BLACK_BODY_E;
+
+const Spectrum<>* spectrum(std::string name);
 
 }
 

@@ -42,6 +42,7 @@ extern const MaterialPBR *GLASS;
 extern const MaterialPBR *MATTE;
 extern const MaterialPBR *MIRROR;
 extern const MaterialPBR *METAL;
+extern const MaterialPBR *PLASTIC;
 extern const MaterialPBR *TRANSLUCENT;
 
 const MaterialPBR* material(std::string name);

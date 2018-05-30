@@ -2,8 +2,14 @@
 
 unsigned Light::_index = 0;
 
-Light::Light(const Vec3d &p, const Color& c, double emission) :
-    Object(p), _color(c), _emission(emission)
+Light::Light(double emission, const Vec3d &p, const Color& c) :
+    Object(p), _color(c), _emission_spectrum(new ConstantSPD<>(emission))
+{
+    _index++;
+}
+
+Light::Light(const Spectrum<> *s, const Vec3d &p, const Color& c) :
+    Object(p), _color(c), _emission_spectrum(s)
 {
     _index++;
 }
@@ -25,12 +31,7 @@ double Light::brightness() const
 }
 
 
-double Light::emission() const
+double Light::emission(unsigned wavelength) const
 {
-    return _emission;
-}
-
-double& Light::emission()
-{
-    return _emission;
+    return _emission_spectrum->power_at(wavelength);
 }

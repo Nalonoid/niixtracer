@@ -63,20 +63,26 @@ float Spectrum<nb_samples>::power_at(const unsigned wavelength) const
 
 // Black body emission Spectral Power Distribution
 template <unsigned nb_samples>
-BlackBodySPD<nb_samples>::BlackBodySPD(float temperature) :
-    _temperature (temperature)
+BlackBodySPD<nb_samples>::BlackBodySPD(float T) :
+    _temperature (T)
 {
     unsigned range  { MAX_WAVELENGTH - MIN_WAVELENGTH   };
     unsigned step   { range / nb_samples                };
 
     for (unsigned i {0}; i < nb_samples; ++i)
     {
-        // Plank's law
-        float wavelength    { (MIN_WAVELENGTH + i * step) * 1e-9f       };
-        float energy        { 3.74183e-16f * powf(wavelength, -5.0f)    };
+        // Planck's law
+        float h         { 6.626070040e-34                               }; // Planck's constant
+        float c         { 299792458.0                                   }; // speed of light in m.s-1
+        float hc        { h * c                                         };
 
-        energy /= (exp(1.4388e-2f / (wavelength * _temperature)) - 1.0f);
-        this->_samples[i] = energy;
+        float k         { 1.38064852e-23                                }; // Boltzmann's constant
+        float lambda    { (MIN_WAVELENGTH + i * step) * 1.0e-9f          }; // wavelength in m
+
+        double energy   { (2.0 * hc * c) * powf(lambda, -5.0)           };
+        energy /= exp(hc/(lambda*k*T)) - 1.0;
+
+        this->_samples[i] = energy * 1.0e-12;
     }
 }
 

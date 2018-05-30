@@ -16,6 +16,9 @@ public:
     Sphere(const Vec3d &position, double radius, const Color &color,
            const MaterialPBR *mat, double emission = 0.0);
 
+    Sphere(const Vec3d &position, double radius, const Color &color,
+           const MaterialPBR *mat, const Spectrum<> *emission_spctr);
+
     // Getters
     double radius() const;
     double& radius();
