@@ -1,4 +1,6 @@
 #include <assert.h>
+#include <random>
+
 #include "Utils/utils.hpp"
 
 template <unsigned nb_samples>
@@ -82,7 +84,7 @@ BlackBodySPD<nb_samples>::BlackBodySPD(float T) :
         double energy   { (2.0 * hc * c) * powf(lambda, -5.0)           };
         energy /= exp(hc/(lambda*k*T)) - 1.0;
 
-        this->_samples[i] = energy * 1.0e-12;
+        this->_samples[i] = energy * 1.0e-12;   // TODO remove Magic constants...
     }
 }
 
@@ -96,21 +98,25 @@ template <unsigned nb_samples>
 NormalSPD<nb_samples>::NormalSPD(unsigned peak, float sigma) :
     _peak(peak), _sigma(sigma)
 {
-    unsigned range  { MAX_WAVELENGTH - MIN_WAVELENGTH   };
-    unsigned step   { range / nb_samples                };
+    std::default_random_engine generator;
+    std::normal_distribution<float> ndf(float(peak), sigma*nb_samples);
+
+    unsigned range          { MAX_WAVELENGTH - MIN_WAVELENGTH   };
+    unsigned experiments    { 100000                            };
+
+    for (unsigned i {0}; i < experiments; ++i)
+    {
+        float nb { ndf(generator) };
+
+        if (nb >= MIN_WAVELENGTH && nb <= MAX_WAVELENGTH)
+        {
+            float       norm_nb { float(nb - MIN_WAVELENGTH)/float(range)   };
+            unsigned    index   { unsigned(norm_nb * nb_samples)            };
+
+            this->_samples[index]++;
+        }
+    }
 
     for (unsigned i {0}; i < nb_samples; ++i)
-    {
-        unsigned wavelength { MIN_WAVELENGTH + i * step };
-
-        /* Normal distribution, with x the wavelength
-         * f(x | μ, σ^2) = 1/(sqrt(2*PI*σ^2)) * exp(-(x-μ)^2 / 2*σ^2) */
-
-        float sigma_2_2 { 2 * _sigma * _sigma                   };
-        float norm_fact { 1.f/sqrtf(PI * PI * sigma_2_2 * 2.f)  };
-        int deviation   { static_cast<int>(wavelength - _peak)  };
-        deviation *= deviation;
-
-        this->_samples[i] = norm_fact * exp(-deviation/sigma_2_2);
-    }
+        this->_samples[i] /= float(experiments);
 }

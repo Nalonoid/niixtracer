@@ -50,7 +50,7 @@ class NormalSPD : public Spectrum<nb_samples>
 {
 public:
     NormalSPD(unsigned peak = (MAX_WAVELENGTH - MIN_WAVELENGTH)/2,
-              float sigma = 0.5f);
+              float sigma = 0.7f);
 
 private:
     // The wavelength (nm) on which the distribution is centered (μ)
@@ -67,11 +67,11 @@ namespace Spectra
 extern const ConstantSPD<>     *CONSTANT_SPD;
 
 extern const NormalSPD<>       *NORMAL_RED;
-extern const NormalSPD<>       *NORMAL_ORANGE;
-extern const NormalSPD<>       *NORMAL_YELLOW;
-extern const NormalSPD<>       *NORMAL_GREEN;
-extern const NormalSPD<>       *NORMAL_BLUE;
-extern const NormalSPD<>       *NORMAL_PURPLE;
+//extern const NormalSPD<>       *NORMAL_ORANGE;
+//extern const NormalSPD<>       *NORMAL_YELLOW;
+//extern const NormalSPD<>       *NORMAL_GREEN;
+//extern const NormalSPD<>       *NORMAL_BLUE;
+//extern const NormalSPD<>       *NORMAL_PURPLE;
 
 extern const BlackBodySPD<>    *BLACK_BODY_A;
 extern const BlackBodySPD<>    *BLACK_BODY_D50;
