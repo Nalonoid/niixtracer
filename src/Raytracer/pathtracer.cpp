@@ -66,7 +66,6 @@ Color Pathtracer::compute_color(Ray &ray)
             * _russian_roulette_coeff;
 }
 
-
 const Color Pathtracer::compute_diffuse(Ray &ray)
 {
     Intersection &i         { ray.intersection()    };

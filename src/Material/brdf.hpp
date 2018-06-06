@@ -21,6 +21,7 @@ public:
     virtual float pdf(const Vec3d &wi, const Vec3d &wo,
                       const Intersection &i) const = 0;
 
+    // Reflectance / Refractance spectrum of the Shape
     Spectrum<SPECTRAL_SAMPLES> *_spectrum;
 };
 

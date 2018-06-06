@@ -50,6 +50,12 @@ float& Spectrum<nb_samples>::operator[](int index)
 }
 
 template <unsigned nb_samples>
+float Spectrum<nb_samples>::operator[](int index) const
+{
+    return _samples[index];
+}
+
+template <unsigned nb_samples>
 float Spectrum<nb_samples>::power_at(const unsigned wavelength) const
 {
     int index { static_cast<int>(wavelength - MIN_WAVELENGTH) /

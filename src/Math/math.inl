@@ -63,6 +63,15 @@ Vector<T> operator+(const Vector<T> &v1, const Vector<T> &v2)
 }
 
 template <typename T>
+Vector<T> Vector<T>::operator+=(const Vector<T> &v)
+{
+    this->x = this->x + v.x;
+    this->y = this->y + v.y;
+    this->z = this->z + v.z;
+    return *this;
+}
+
+template <typename T>
 Vector<T> operator-(const Vector<T> &v1, const Vector<T> &v2)
 {
     return v1.add(v2.negative());

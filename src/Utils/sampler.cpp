@@ -2,6 +2,7 @@
 #include <chrono>
 
 #include "sampler.hpp"
+#include "Utils/utils.hpp"
 
 Uniform<std::uniform_real_distribution, double> uniform_sampler_double;
 Uniform<std::uniform_real_distribution, float>  uniform_sampler_float;

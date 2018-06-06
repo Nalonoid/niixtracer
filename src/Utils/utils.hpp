@@ -3,6 +3,22 @@
 
 #include "Math/math.hpp"
 
+namespace
+{
+
+float const EPSILON { 0.000000000001 };
+float const PI      { 3.141592653589 };
+
+unsigned const MIN_WAVELENGTH { 380 };
+unsigned const MAX_WAVELENGTH { 780 };
+unsigned const AVG_WAVELENGTH { (MIN_WAVELENGTH + MAX_WAVELENGTH) / 2};
+
+unsigned const COLOR_MATCHING_FCTS_RES { 5 };
+unsigned const SPECTRAL_SAMPLES { 1 + (MAX_WAVELENGTH - MIN_WAVELENGTH) /
+            COLOR_MATCHING_FCTS_RES };
+
+}
+
 inline double clamp(double value, double min, double max)
 {
     return value < min ?

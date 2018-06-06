@@ -3,7 +3,9 @@
 
 #include <string>
 
-#include "Math/math.hpp"
+#include "Utils/utils.hpp"
+
+enum SPD_TYPE { EMISSIVE_SPD, REF_LE_RACTIVE_SPD };
 
 template <unsigned nb_samples = SPECTRAL_SAMPLES>
 class Spectrum
@@ -16,6 +18,7 @@ public:
     Spectrum operator*(const Spectrum &s);
 
     float& operator[](int index);
+    float  operator[](int index) const;
 
     float power_at(const unsigned wavelength) const;
 
@@ -67,11 +70,11 @@ namespace Spectra
 extern const ConstantSPD<>     *CONSTANT_SPD;
 
 extern const NormalSPD<>       *NORMAL_RED;
-//extern const NormalSPD<>       *NORMAL_ORANGE;
-//extern const NormalSPD<>       *NORMAL_YELLOW;
-//extern const NormalSPD<>       *NORMAL_GREEN;
-//extern const NormalSPD<>       *NORMAL_BLUE;
-//extern const NormalSPD<>       *NORMAL_PURPLE;
+extern const NormalSPD<>       *NORMAL_ORANGE;
+extern const NormalSPD<>       *NORMAL_YELLOW;
+extern const NormalSPD<>       *NORMAL_GREEN;
+extern const NormalSPD<>       *NORMAL_BLUE;
+extern const NormalSPD<>       *NORMAL_PURPLE;
 
 extern const BlackBodySPD<>    *BLACK_BODY_A;
 extern const BlackBodySPD<>    *BLACK_BODY_D50;

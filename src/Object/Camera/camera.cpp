@@ -1,4 +1,5 @@
 #include "camera.hpp"
+#include "Utils/utils.hpp"
 
 unsigned Camera::_index = 0;
 
