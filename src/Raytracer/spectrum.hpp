@@ -5,8 +5,6 @@
 
 #include "Utils/utils.hpp"
 
-enum SPD_TYPE { EMISSIVE_SPD, REF_LE_RACTIVE_SPD };
-
 template <unsigned nb_samples = SPECTRAL_SAMPLES>
 class Spectrum
 {
@@ -23,7 +21,13 @@ public:
     float power_at(const unsigned wavelength) const;
 
 protected:
-    float _samples[nb_samples];
+    float _samples[nb_samples];     // Spectral Power Distribution
+    Vec3f _xyz;
+    Vec3f _rgb;
+
+private:
+    virtual void to_XYZ();
+    virtual void to_RGB();
 };
 
 template <unsigned nb_samples = SPECTRAL_SAMPLES>

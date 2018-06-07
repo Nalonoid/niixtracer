@@ -2,12 +2,16 @@
 #include <random>
 
 #include "Utils/utils.hpp"
+#include "Utils/color_matching.hpp"
 
 template <unsigned nb_samples>
 Spectrum<nb_samples>::Spectrum(float sample_value)
 {
     for (unsigned i {0}; i < nb_samples; ++i)
         _samples[i] = sample_value;
+
+    to_XYZ();
+    to_RGB();
 }
 
 template <unsigned nb_samples>
@@ -69,6 +73,29 @@ float Spectrum<nb_samples>::power_at(const unsigned wavelength) const
         return 0.0f;
 }
 
+template <unsigned nb_samples>
+void Spectrum<nb_samples>::to_XYZ()
+{
+    float luminance { 0.0f };
+
+    for (unsigned i {0}; i < SPECTRAL_SAMPLES; ++i)
+    {
+        _xyz += (*this)[i] * CIE_cm_fcts[i];
+        luminance += CIE_cm_fcts[i].y;
+    }
+
+    _xyz /= luminance;
+}
+
+// From PBRT - Second Edition by Matt Pharr & Greg Humphreys
+template <unsigned nb_samples>
+void Spectrum<nb_samples>::to_RGB()
+{
+    _rgb.x = 3.240479f   * _xyz.x - 1.537150f * _xyz.y - 0.498535f * _xyz.z;
+    _rgb.y = -0.969256f  * _xyz.x + 1.875991f * _xyz.y + 0.041556f * _xyz.z;
+    _rgb.z = 0.055648f   * _xyz.x - 0.204043f * _xyz.y + 1.057311f * _xyz.z;
+}
+
 // Black body emission Spectral Power Distribution
 template <unsigned nb_samples>
 BlackBodySPD<nb_samples>::BlackBodySPD(float T) :
@@ -80,17 +107,17 @@ BlackBodySPD<nb_samples>::BlackBodySPD(float T) :
     for (unsigned i {0}; i < nb_samples; ++i)
     {
         // Planck's law
-        float h         { 6.626070040e-34                               }; // Planck's constant
-        float c         { 299792458.0                                   }; // speed of light in m.s-1
-        float hc        { h * c                                         };
+        float h         { 6.626070040e-34   }; // Planck's constant
+        float c         { 299792458.0       }; // speed of light in m.s-1
+        float k         { 1.38064852e-23    }; // Boltzmann's constant
 
-        float k         { 1.38064852e-23                                }; // Boltzmann's constant
-        float lambda    { (MIN_WAVELENGTH + i * step) * 1.0e-9f          }; // wavelength in m
+        float lambda    { (MIN_WAVELENGTH + i * step) * 1.0e-9f }; // wavelength in m
+        float hc        { h * c                                 };
 
-        double energy   { (2.0 * hc * c) * powf(lambda, -5.0)           };
+        double energy   { (2.0 * hc * c) * powf(lambda, -5.0)   };
         energy /= exp(hc/(lambda*k*T)) - 1.0;
 
-        this->_samples[i] = energy * 1.0e-12;   // TODO remove Magic constants...
+        this->_samples[i] = energy; //* 1.0e-12;   // TODO remove Magic constants...
     }
 }
 

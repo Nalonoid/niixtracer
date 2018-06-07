@@ -3,7 +3,7 @@
 namespace Spectra
 {
 
-const ConstantSPD<>     *CONSTANT_SPD { new ConstantSPD<>(0.6f) };
+const ConstantSPD<> *CONSTANT_SPD { new ConstantSPD<>(0.6f) };
 
 const NormalSPD<>       *NORMAL_RED      { new NormalSPD<>(685) };
 const NormalSPD<>       *NORMAL_ORANGE   { new NormalSPD<>(595) };
