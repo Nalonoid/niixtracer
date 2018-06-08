@@ -4,6 +4,7 @@
 #include <string>
 
 #include "Utils/utils.hpp"
+#include "Image/color.hpp"
 
 template <unsigned nb_samples = SPECTRAL_SAMPLES>
 class Spectrum
@@ -20,14 +21,13 @@ public:
 
     float power_at(const unsigned wavelength) const;
 
+    virtual void to_XYZ();
+    virtual Color to_RGB();
+
 protected:
     float _samples[nb_samples];     // Spectral Power Distribution
     Vec3f _xyz;
-    Vec3f _rgb;
-
-private:
-    virtual void to_XYZ();
-    virtual void to_RGB();
+    Color _rgb;
 };
 
 template <unsigned nb_samples = SPECTRAL_SAMPLES>

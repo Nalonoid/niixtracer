@@ -5,12 +5,13 @@
 #include "Utils/color_matching.hpp"
 
 template <unsigned nb_samples>
-Spectrum<nb_samples>::Spectrum(float sample_value)
+Spectrum<nb_samples>::Spectrum(float sample_value) :
+    _xyz (Vec3f()), _rgb (Colors::BLACK)
 {
     for (unsigned i {0}; i < nb_samples; ++i)
         _samples[i] = sample_value;
 
-    to_XYZ();
+    // to_RGB() initializes _xyz and _rgb
     to_RGB();
 }
 
@@ -89,11 +90,15 @@ void Spectrum<nb_samples>::to_XYZ()
 
 // From PBRT - Second Edition by Matt Pharr & Greg Humphreys
 template <unsigned nb_samples>
-void Spectrum<nb_samples>::to_RGB()
+Color Spectrum<nb_samples>::to_RGB()
 {
-    _rgb.x = 3.240479f   * _xyz.x - 1.537150f * _xyz.y - 0.498535f * _xyz.z;
-    _rgb.y = -0.969256f  * _xyz.x + 1.875991f * _xyz.y + 0.041556f * _xyz.z;
-    _rgb.z = 0.055648f   * _xyz.x - 0.204043f * _xyz.y + 1.057311f * _xyz.z;
+    to_XYZ();
+
+    _rgb.r() = 3.240479f   * _xyz.x - 1.537150f * _xyz.y - 0.498535f * _xyz.z;
+    _rgb.g() = -0.969256f  * _xyz.x + 1.875991f * _xyz.y + 0.041556f * _xyz.z;
+    _rgb.b() = 0.055648f   * _xyz.x - 0.204043f * _xyz.y + 1.057311f * _xyz.z;
+
+    return _rgb;
 }
 
 // Black body emission Spectral Power Distribution

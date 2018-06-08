@@ -38,58 +38,61 @@ bool Pathtracer::depth_recursion_over(Ray &ray)
     return curr_depth > _scene->max_depth() && _russian_roulette_coeff != 1.0;
 }
 
-Color Pathtracer::compute_color(Ray &ray)
+float Pathtracer::launch(Ray &ray)
 {
-    Intersection &i         { ray.intersection()    };
-    const Shape *s          { i.shape()             };
-    const MaterialPBR *m    { s->materialPBR()      };
+    bool collides { false };
 
-    float u { uniform_sampler_float.sample() };
-    Vec3d reflect_vect;
+    if (depth_recursion_over(ray))
+        return 0.0f;
 
-    // Reflection is in the ideal specular/refractive direction (depends on m)
-    if (u > m->roughness())
-        reflect_vect = m->wi(ray.direction(), i.normal());
-    else
-        return compute_diffuse(ray) * _russian_roulette_coeff; // Diffuse reflection
+    for (auto itr = shapes().begin(); itr < shapes().end(); itr++)
+        collides = (*itr)->intersect(ray) || collides;
 
-    float reflectance {
-        m->reflectance(reflect_vect, ray.direction(), i, ray.wavelength()) };
+    if (!collides)
+        return 0.0f;
 
-    reflect_vect = reflect_vect.normalized();
-
-    Ray reflection_ray(i.position() + EPSILON * reflect_vect, reflect_vect);
-    reflection_ray.bounces() = ray.bounces() + 1;
-
-    return 1/m->brdf()->pdf(reflect_vect, ray.direction(), i) *
-            (Color(s->emission(ray.wavelength())) + reflectance * launch(reflection_ray))
-            * _russian_roulette_coeff;
+    return radiance(ray);
 }
 
-const Color Pathtracer::compute_diffuse(Ray &ray)
+Color Pathtracer::compute_color(Ray &ray)
+{
+    Spectrum<SPECTRAL_SAMPLES> spectral_radiance;
+
+    // Integration over the wavelengths
+    for (unsigned i {0}; i < SPECTRAL_SAMPLES; ++i)
+        spectral_radiance[i] = radiance(ray);
+
+    return spectral_radiance.to_RGB();
+}
+
+float Pathtracer::diffuse_radiance(Ray &ray)
 {
     Intersection &i         { ray.intersection()    };
     const Shape *s          { i.shape()             };
     const MaterialPBR *m    { s->materialPBR()      };
-    Color obj_col           { s->color()            };
+
+    unsigned lambda         { ray.wavelength()      };
 
     // We stop the path when we hit a light source
     if (s->emits())
-        return obj_col;
+        return 0.0f; /* As the emission is added through Next Event Estimation
+                      * no need to return s->emission(lambda) */
+
+    Vec3d rdir { ray.direction() };
 
     // Global illumination
-    double cos_att { ray.direction().dot(i.normal()) };
+    float cos_att { float(rdir.dot(i.normal())) };
 
     if (cos_att > 0.0)
         i.normal() = i.normal().negative();
     else
         cos_att = -cos_att;
 
-    Vec3d recursive_dir { m->wi(ray.direction(), i.normal()) };
+    Vec3d recursive_dir { m->wi(rdir, i.normal()) };
     Ray recursive_ray(i.position() + EPSILON * recursive_dir, recursive_dir);
     recursive_ray.bounces() = ray.bounces() + 1;
 
-    Color ret_color { launch(recursive_ray) * cos_att };
+    float radiance { launch(recursive_ray) * cos_att };
 
     // Next event estimation - Direct illumination
     const auto &shapes = _scene->shapes();
@@ -131,20 +134,43 @@ const Color Pathtracer::compute_diffuse(Ray &ray)
 
                     if (!in_shadow)
                     {
-                        float reflectance {
-                            m->reflectance(recursive_dir, ray.direction(), i,
-                                           ray.wavelength()) };
-
-                        ret_color *= reflectance;
-                        ret_color += (*shape_it)->emission(ray.wavelength()) *
-                                (*shape_it)->color() * obj_col *
-                                cosine_norm_light;
-                        ret_color /= 2*PI;
+                        radiance +=
+                                m->reflectance(recursive_dir, rdir, i, lambda);
                     }
                 }
             }
         }
     }
 
-    return ret_color;
+    return radiance;
+}
+
+float Pathtracer::radiance(Ray &ray)
+{
+    Intersection &i         { ray.intersection()    };
+    const Shape *s          { i.shape()             };
+    const MaterialPBR *m    { s->materialPBR()      };
+
+    unsigned lambda         { ray.wavelength()      };
+    Vec3d rdir { ray.direction() };
+
+    float u { uniform_sampler_float.sample() };
+    Vec3d reflect_vect;
+
+    // Reflection is in the ideal specular/refractive direction (depends on m)
+    if (u > m->roughness())
+        reflect_vect = m->wi(rdir, i.normal());
+    else
+        return diffuse_radiance(ray) * _russian_roulette_coeff; // Diffuse reflection
+
+    float reflectance { (m->reflectance(reflect_vect, rdir, i, lambda) / PI) };
+
+    reflect_vect = reflect_vect.normalized();
+
+    Ray reflection_ray(i.position() + EPSILON * reflect_vect, reflect_vect);
+    reflection_ray.bounces() = ray.bounces() + 1;
+
+    return (s->emission(lambda) +
+            reflectance/m->brdf()->pdf(reflect_vect, rdir, i) *
+            launch(reflection_ray)) * _russian_roulette_coeff;
 }
