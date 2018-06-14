@@ -6,10 +6,13 @@
 
 template <unsigned nb_samples>
 Spectrum<nb_samples>::Spectrum(float sample_value) :
-    _xyz (Vec3f()), _rgb (Colors::BLACK)
+    _nb_samples(nb_samples), _rgb (Colors::BLACK)
 {
-    for (unsigned i {0}; i < nb_samples; ++i)
+    for (unsigned i {0}; i < nb_samples/3; ++i)
+    {
         _samples[i] = sample_value;
+        _xyz[i]     = Vec3f(0.0f, 0.0f, 0.0f);
+    }
 
     // to_RGB() initializes _xyz and _rgb
     to_RGB();
@@ -75,17 +78,27 @@ float Spectrum<nb_samples>::power_at(const unsigned wavelength) const
 }
 
 template <unsigned nb_samples>
+const float* Spectrum<nb_samples>::samples() const
+{
+    return _samples;
+}
+
+template <unsigned nb_samples>
+unsigned Spectrum<nb_samples>::n_samples() const
+{
+    return _nb_samples;
+}
+
+template <unsigned nb_samples>
 void Spectrum<nb_samples>::to_XYZ()
 {
     float luminance { 0.0f };
 
-    for (unsigned i {0}; i < SPECTRAL_SAMPLES; ++i)
+    for (unsigned i {0}; i < nb_samples; ++i)
     {
-        _xyz += (*this)[i] * CIE_cm_fcts[i];
-        luminance += CIE_cm_fcts[i].y;
+        _xyz[i]     = (*this)[i] * CIE_cm_fcts[i*SPECTRAL_RES];
+        luminance   += CIE_cm_fcts[i*SPECTRAL_RES].y;
     }
-
-    _xyz /= luminance;
 }
 
 // From PBRT - Second Edition by Matt Pharr & Greg Humphreys
@@ -94,11 +107,14 @@ Color Spectrum<nb_samples>::to_RGB()
 {
     to_XYZ();
 
-    _rgb.r() = 3.240479f   * _xyz.x - 1.537150f * _xyz.y - 0.498535f * _xyz.z;
-    _rgb.g() = -0.969256f  * _xyz.x + 1.875991f * _xyz.y + 0.041556f * _xyz.z;
-    _rgb.b() = 0.055648f   * _xyz.x - 0.204043f * _xyz.y + 1.057311f * _xyz.z;
+    for (unsigned i {0}; i < nb_samples; ++i)
+    {
+        _rgb.r() += 3.240479f   * _xyz[i].x - 1.537150f * _xyz[i].y - 0.498535f * _xyz[i].z;
+        _rgb.g() += -0.969256f  * _xyz[i].x + 1.875991f * _xyz[i].y + 0.041556f * _xyz[i].z;
+        _rgb.b() += 0.055648f   * _xyz[i].x - 0.204043f * _xyz[i].y + 1.057311f * _xyz[i].z;
+    }
 
-    return _rgb;
+    return Colors::average(_rgb, nb_samples);
 }
 
 // Black body emission Spectral Power Distribution
@@ -106,23 +122,22 @@ template <unsigned nb_samples>
 BlackBodySPD<nb_samples>::BlackBodySPD(float T) :
     _temperature (T)
 {
-    unsigned range  { MAX_WAVELENGTH - MIN_WAVELENGTH   };
-    unsigned step   { range / nb_samples                };
+    unsigned res    { SPECTRAL_RES           };
 
     for (unsigned i {0}; i < nb_samples; ++i)
     {
         // Planck's law
-        float h         { 6.626070040e-34   }; // Planck's constant
-        float c         { 299792458.0       }; // speed of light in m.s-1
-        float k         { 1.38064852e-23    }; // Boltzmann's constant
+        double h         { 6.626070040e-34   }; // Planck's constant
+        double c         { 299792458.0       }; // speed of light in m.s-1
+        double k         { 1.38064852e-23    }; // Boltzmann's constant
 
-        float lambda    { (MIN_WAVELENGTH + i * step) * 1.0e-9f }; // wavelength in m
-        float hc        { h * c                                 };
+        double lambda    { (MIN_WAVELENGTH + i * res) * 1.0e-9  }; // wavelength in m
+        double hc        { h * c                                };
 
-        double energy   { (2.0 * hc * c) * powf(lambda, -5.0)   };
+        double energy   { (2.0 * hc * c) * pow(lambda, -3.0)    };
         energy /= exp(hc/(lambda*k*T)) - 1.0;
 
-        this->_samples[i] = energy; //* 1.0e-12;   // TODO remove Magic constants...
+        this->_samples[i] = energy;   // TODO remove Magic constants...
     }
 }
 
@@ -156,5 +171,5 @@ NormalSPD<nb_samples>::NormalSPD(unsigned peak, float sigma) :
     }
 
     for (unsigned i {0}; i < nb_samples; ++i)
-        this->_samples[i] /= float(experiments);
+        this->_samples[i] /= float(10.0f);
 }

@@ -3,9 +3,9 @@
 
 BRDF::BRDF() : _spectrum(nullptr) {}
 
-BRDF::BRDF(Spectrum<SPECTRAL_SAMPLES> *spectrum) : _spectrum(spectrum) {}
+BRDF::BRDF(const Spectrum<SPECTRAL_SAMPLES> *spectrum) : _spectrum(spectrum) {}
 
-LambertianModel::LambertianModel(ConstantSPD<> *spectrum) :
+LambertianModel::LambertianModel(const Spectrum<> *spectrum) :
     BRDF(spectrum) {}
 
 IdealRefraction::IdealRefraction(ConstantSPD<> *spectrum) :

@@ -6,6 +6,7 @@
 #include "Raytracer/ray.hpp"
 #include "Raytracer/raytracer.hpp"
 #include "Raytracer/pathtracer.hpp"
+#include "Raytracer/spectral_pathtracer.hpp"
 #include "Utils/save.hpp"
 #include "Utils/serializer.hpp"
 
@@ -44,8 +45,21 @@ int main(int argc, char **argv)
 //    scene->nb_samples() = sqrt(std::stoi(argv[2]));
 //    scene->output_path() = std::string(argv[3]);
 
-    Renderer *renderer { scene->mode() == "rt" ?
-        (Renderer*) new Raytracer(scene) : (Renderer*) new Pathtracer(scene) };
+    Renderer *renderer {
+        scene->mode() == "rt" ?
+                    (Renderer*) new Raytracer(scene)  :
+        scene->mode() == "mcpt" ?
+                    (Renderer*) new Pathtracer(scene) :
+        scene->mode() == "spectral_mcpt" ?
+                    (Renderer*) new SpectralPathtracer(scene) : nullptr
+    };
+
+    if (!renderer)
+    {
+        std::cerr << "error: the renderer is not valid : "
+                  << scene->mode() << std::endl;
+        return 1;
+    }
 
     // Display scene settings
     std::cout << "{o}----------------------------------------->\\" << std::endl;

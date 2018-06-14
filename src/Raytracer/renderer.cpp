@@ -8,6 +8,8 @@
 #include "Object/Camera/camera.hpp"
 #include "Utils/sampler.hpp"
 
+#include "spectral_pathtracer.hpp"
+
 Renderer::Renderer(Scene *scene) : _scene(scene) {}
 
 Renderer::~Renderer() {}
@@ -26,12 +28,13 @@ void Renderer::render_scene()
 
     Uniform<std::uniform_real_distribution, double> sampler(0.0, range);
 
-    #pragma omp parallel for private(norm_i, norm_j, towards_pixel, uniform_sampler_double, sampler) schedule(dynamic)
+    //#pragma omp parallel for private(norm_i, norm_j, towards_pixel, uniform_sampler_double, sampler) schedule(dynamic)
     for (unsigned j = 0; j < img->height(); ++j)
     {
         for (unsigned i = 0; i < img->width(); ++i)
         {
             Color avg_color { Colors::BLACK };
+            Spectrum<SPECTRAL_SAMPLES> spectral_radiance;
 
             for (double xsp = 0; xsp < 1.0; xsp += range)
             {
@@ -53,8 +56,8 @@ void Renderer::render_scene()
                 }
             }
 
-            (*img)[i][j] =
-                    Colors::average(avg_color, nb_samples*nb_samples).clamp();
+            (*img)[i][j] = Colors::average(
+                                avg_color, nb_samples*nb_samples).clamp();
         }
     }
 }

@@ -1,6 +1,6 @@
 #include <algorithm>
 
-#include "pathtracer.hpp"
+#include "spectral_pathtracer.hpp"
 #include "ray.hpp"
 
 #include "Image/color.hpp"
@@ -14,56 +14,68 @@
 #include "Material/metal.hpp"
 #include "Material/brdf.hpp"
 
-Pathtracer::Pathtracer(Scene *scene) : Renderer(scene),
-    _russian_roulette_coeff(1.0f) {}
+SpectralPathtracer::SpectralPathtracer(Scene *scene) : Pathtracer(scene) {}
 
-/* https://computergraphics.stackexchange.com/questions/2316/is-russian-roulette-really-the-answer
- * see the above link for a nice explanation on how russian roulettes works and
- * why it is mathematically unbiased */
-bool Pathtracer::depth_recursion_over(Ray &ray)
+Color SpectralPathtracer::compute_color(Ray &ray)
 {
-    unsigned curr_depth { ray.bounces() };
+    Spectrum<SPECTRAL_SAMPLES> spectral_radiance;
 
-    _russian_roulette_coeff = 1.0;
-
-    if (curr_depth > _scene->max_depth())
+    // Integration over the wavelengths
+    for (unsigned l {0}; l < SPECTRAL_SAMPLES; ++l)
     {
-        double u                { uniform_sampler_double.sample() };
-        double rr_stop_proba    { 0.1 };
+        unsigned lambda { l * SPECTRAL_RES + MIN_WAVELENGTH };
 
-        if (u < rr_stop_proba)
-            _russian_roulette_coeff = 1.0 / (1.0 - rr_stop_proba);
+        ray.wavelength()        = lambda;
+        spectral_radiance[l]    = radiance(ray);
     }
 
-    return curr_depth > _scene->max_depth() && _russian_roulette_coeff != 1.0;
+    return spectral_radiance.to_RGB();
 }
 
-Color Pathtracer::compute_color(Ray &ray)
+float SpectralPathtracer::radiance(Ray &ray)
 {
-    Intersection &i         { ray.intersection()    };
-    const Shape *s          { i.shape()             };
-    const MaterialPBR *m    { s->materialPBR()      };
+    Intersection &i         { ray.intersection()                };
+    const Shape *s          { i.shape()                         };
 
     // We stop the path when we hit a light source
     if (s->emits())
-        return s->color();
+        return 0.0f; /* As the emission is added through Next Event Estimation
+                      * no need to return s->emission(lambda) */
 
-    Color return_color { color_global_illumination(ray) };
+    const MaterialPBR *m    { s->materialPBR()                  };
+    float radiance          { radiance_global_illumination(ray) };
 
     // If the material is not matte we do not explicitly sample the light
     if (dynamic_cast<const Matte*>(m) == nullptr)
-        return _russian_roulette_coeff * return_color;
+        return radiance * _russian_roulette_coeff;
 
-    return_color += color_direct_illumination(ray);
+    radiance += radiance_direct_illumination(ray);
 
-    return _russian_roulette_coeff * return_color;
+    return _russian_roulette_coeff * radiance;
 }
 
-Color Pathtracer::color_global_illumination(Ray &ray)
+float SpectralPathtracer::radiance_along_path(Ray &ray)
+{
+    bool collides { false };
+
+    if (depth_recursion_over(ray))
+        return 0.0f;
+
+    for (auto itr = shapes().begin(); itr < shapes().end(); itr++)
+        collides = (*itr)->intersect(ray) || collides;
+
+    if (!collides)
+        return 0.0f;
+
+    return radiance(ray);
+}
+
+float SpectralPathtracer::radiance_global_illumination(Ray &ray)
 {
     Intersection &i         { ray.intersection()    };
     const Shape *s          { i.shape()             };
     const MaterialPBR *m    { s->materialPBR()      };
+    unsigned lambda         { ray.wavelength()      };
     Vec3d rdir              { ray.direction()       };
 
     float cos_att { float(rdir.dot(i.normal())) };
@@ -79,27 +91,30 @@ Color Pathtracer::color_global_illumination(Ray &ray)
     if (u > m->roughness())
         recursive_dir = m->wi(rdir, i.normal()).normalized();
     else
-        return color_direct_illumination(ray); // Diffuse reflection
+        return radiance_direct_illumination(ray); // Diffuse reflection
 
-    Ray recursive_ray(i.position() + EPSILON * recursive_dir, recursive_dir);
+    Ray recursive_ray(i.position() + EPSILON * recursive_dir, recursive_dir,
+                      lambda);
+
     recursive_ray.bounces() = ray.bounces() + 1;
 
-    float reflectance   { m->reflectance(recursive_dir, rdir, i)            };
-    Color global        { reflectance * launch(recursive_ray) * cos_att     };
-    global /= m->brdf()->pdf(recursive_dir, rdir, i);
+    float reflectance   { m->reflectance(recursive_dir, rdir, i, lambda)    };
+    float glob_radiance { reflectance * radiance_along_path(recursive_ray)  };
+    glob_radiance /= m->brdf()->pdf(recursive_dir, rdir, i);
 
-    return global;
+    return glob_radiance;
 }
 
 // Next event estimation - Here we perform "Explicit Light Sampling"
-Color Pathtracer::color_direct_illumination(Ray &ray)
+float SpectralPathtracer::radiance_direct_illumination(Ray &ray)
 {
     Intersection &i     { ray.intersection()    };
     const Shape *s      { i.shape()             };
-    Color direct        { Colors::BLACK         };
-    Color obj_col       { s->color()            };
-    const auto &shapes  { _scene->shapes()      };
+    unsigned lambda     { ray.wavelength()      };
+    Vec3d rdir          { ray.direction()       };
+    float dir_radiance  { 0.0f                  };
 
+    const auto &shapes  { _scene->shapes()      };
     /* We sample all the light sources. An alternative would be to sample one
      * randomly chosen light source and multiply the result by the number of
      * light sources in the scene. Monte Carlo integration ensures that it will
@@ -139,14 +154,16 @@ Color Pathtracer::color_direct_illumination(Ray &ray)
 
                     if (!in_shadow)
                     {
-                        direct += (*source_intersection)->emission() *
-                                (*source_intersection)->color() * obj_col
-                                * cosine_norm_light;
+                        float reflectance   {
+                            s->materialPBR()->reflectance(cone_sample, rdir, i, lambda) };
+
+                        dir_radiance += (*source_intersection)->emission(lambda)
+                                * reflectance * cosine_norm_light;
                     }
                 }
             }
         }
     }
 
-    return direct;
+    return dir_radiance;
 }

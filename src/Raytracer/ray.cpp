@@ -7,9 +7,9 @@
 unsigned long long int Ray::_number = 0;
 unsigned long long int Ray::_over_number = 0;
 
-Ray::Ray(const Vec3d& ori, const Vec3d& dir) :
+Ray::Ray(const Vec3d& ori, const Vec3d& dir, unsigned wavelength) :
     _origin(ori), _direction(dir), _dist_max(10000), _bounces(0),
-    _wavelength(wavelength_sampler.sample())
+    _wavelength(wavelength)
 {
     if (_number < std::numeric_limits<unsigned long long>::max())
         _number++;
@@ -81,4 +81,9 @@ unsigned& Ray::bounces()
 Intersection& Ray::intersection()
 {
     return _intersection;
+}
+
+unsigned& Ray::wavelength()
+{
+    return _wavelength;
 }

@@ -21,13 +21,17 @@ public:
 
     float power_at(const unsigned wavelength) const;
 
+    const float* samples() const;
+    unsigned n_samples() const;
+
     virtual void to_XYZ();
     virtual Color to_RGB();
 
 protected:
-    float _samples[nb_samples];     // Spectral Power Distribution
-    Vec3f _xyz;
-    Color _rgb;
+    float       _samples[nb_samples];     // Spectral Power Distribution
+    unsigned    _nb_samples;
+    Vec3f       _xyz[nb_samples];
+    Color       _rgb;
 };
 
 template <unsigned nb_samples = SPECTRAL_SAMPLES>
@@ -57,7 +61,7 @@ class NormalSPD : public Spectrum<nb_samples>
 {
 public:
     NormalSPD(unsigned peak = (MAX_WAVELENGTH - MIN_WAVELENGTH)/2,
-              float sigma = 0.7f);
+              float sigma = 1.0f);
 
 private:
     // The wavelength (nm) on which the distribution is centered (μ)

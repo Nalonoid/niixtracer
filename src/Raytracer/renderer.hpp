@@ -17,10 +17,6 @@ public:
     virtual ~Renderer();
 
     void  render_scene();
-    Color launch(Ray &ray);
-
-    virtual bool depth_recursion_over(Ray &ray) = 0;
-    virtual Color compute_color(Ray &ray) = 0;
 
     const std::vector<Shape*>&  shapes()  const;
     const std::vector<Light*>&  lights()  const;
@@ -31,6 +27,10 @@ public:
     Camera& camera(unsigned i) const;
 
 protected:
+    Color           launch(Ray &ray);
+    virtual bool    depth_recursion_over(Ray &ray) = 0;
+    virtual Color   compute_color(Ray &ray) = 0;
+
     const Scene* _scene;
 
 };

@@ -13,5 +13,10 @@ float Metal::roughness() const
 
 Vec3d Metal::wi(const Vec3d &wo, Vec3d &normal) const
 {   
-    return wo.reflect(normal);
+    float u { uniform_sampler_float.sample() };
+
+    if (u > _roughness)
+        return wo.reflect(normal);
+    else
+        return Vec3d(rnd_dir_hemisphere(normal).normalized());
 }

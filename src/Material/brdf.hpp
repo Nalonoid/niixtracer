@@ -11,7 +11,7 @@ class BRDF
 {
 public:
     BRDF();
-    BRDF(Spectrum<SPECTRAL_SAMPLES> *spectrum);
+    BRDF(const Spectrum<SPECTRAL_SAMPLES> *spectrum);
 
     virtual double evaluate(const Vec3d &wi, const Vec3d &wo,
                                 const Intersection &i,
@@ -22,17 +22,17 @@ public:
                       const Intersection &i) const = 0;
 
     // Reflectance / Refractance spectrum of the Shape
-    Spectrum<SPECTRAL_SAMPLES> *_spectrum;
+    const Spectrum<SPECTRAL_SAMPLES> *_spectrum;
 };
 
 class LambertianModel : public BRDF
 {
 public:
-    LambertianModel(ConstantSPD<> *spectrum = new ConstantSPD<>(0.6));
+    LambertianModel(const Spectrum<> *spectrum = new ConstantSPD<>());
 
     double evaluate(const Vec3d &wi, const Vec3d &wo,
-                        const Intersection &i,
-                        const unsigned wavelength) const override;
+                    const Intersection &i,
+                    const unsigned wavelength) const override;
 
     float pdf(const Vec3d &wi, const Vec3d &wo,
               const Intersection &i) const override;
@@ -41,7 +41,7 @@ public:
 class IdealRefraction : public BRDF
 {
 public:
-    IdealRefraction(ConstantSPD<> *spectrum = new ConstantSPD<>(0.6));
+    IdealRefraction(ConstantSPD<> *spectrum = new ConstantSPD<>());
 
     double evaluate(const Vec3d &wi, const Vec3d &wo,
                         const Intersection &i,
@@ -54,7 +54,7 @@ public:
 class IdealSpecular : public BRDF
 {
 public:
-    IdealSpecular(ConstantSPD<> *spectrum = new ConstantSPD<>(0.6));
+    IdealSpecular(ConstantSPD<> *spectrum = new ConstantSPD<>());
 
     double evaluate(const Vec3d &wi, const Vec3d &wo,
                         const Intersection &i,

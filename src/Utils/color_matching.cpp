@@ -6,19 +6,19 @@ ColorMatching::ColorMatching() {}
 
 float ColorMatching::x_function(unsigned wavelength)
 {
-    unsigned index { (wavelength - MIN_WAVELENGTH) / COLOR_MATCHING_FCTS_RES };
+    unsigned index { (wavelength - MIN_WAVELENGTH) / SPECTRAL_RES };
     return _color_matching_fcts[index].x;
 }
 
 float ColorMatching::y_function(unsigned wavelength)
 {
-    unsigned index { (wavelength - MIN_WAVELENGTH) / COLOR_MATCHING_FCTS_RES };
+    unsigned index { (wavelength - MIN_WAVELENGTH) / SPECTRAL_RES };
     return _color_matching_fcts[index].y;
 }
 
 float ColorMatching::z_function(unsigned wavelength)
 {
-    unsigned index { (wavelength - MIN_WAVELENGTH) / COLOR_MATCHING_FCTS_RES };
+    unsigned index { (wavelength - MIN_WAVELENGTH) / SPECTRAL_RES };
     return _color_matching_fcts[index].z;
 }
 
@@ -32,7 +32,7 @@ const Vec3f& ColorMatching::operator[](int index) const
     return _color_matching_fcts[index];
 }
 
-Vec3f ColorMatching::_color_matching_fcts[SPECTRAL_SAMPLES] =
+Vec3f ColorMatching::_color_matching_fcts[471] =
 {
     Vec3f(0.0001299f, 3.917e-06f, 0.0006061f),
     Vec3f(0.000145847f, 4.393581e-06f, 0.0006808792f),

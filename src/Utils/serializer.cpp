@@ -300,7 +300,7 @@ void Serializer::add_sphere(QDomElement &sphere_elem)
         const MaterialPBR *material_pbr {
             MaterialsPBR::material(mat_elem.text().toStdString()) };
 
-        if (emission_spctr)
+        if (emission_spctr != nullptr)
             _scene->add(new Sphere(center, radius, color, material_pbr,
                                    emission_spctr));
         else

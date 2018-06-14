@@ -45,7 +45,7 @@ public:
     const Color& color() const;
     Color& color();
 
-    double emission(unsigned wavelength = 0) const;
+    double emission(unsigned wavelength = AVG_WAVELENGTH) const;
 
     bool emits() const;
 

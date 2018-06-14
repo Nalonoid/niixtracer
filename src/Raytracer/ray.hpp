@@ -9,7 +9,8 @@ class Ray
 
 public:
     Ray(const Vec3d& ori = Vec3d(0, 0, 0),
-        const Vec3d& dir = Space::ZAXIS);
+        const Vec3d& dir = Space::ZAXIS,
+        unsigned wavelength = MIN_WAVELENGTH);
 
     // Getters
     static unsigned long long int number();
@@ -29,17 +30,18 @@ public:
     double& dist_max();
     unsigned& bounces();
     Intersection& intersection();
+    unsigned& wavelength();
 
 private:
     static unsigned long long int _number;
     static unsigned long long int _over_number;
 
-    Vec3d         _origin;
-    Vec3d         _direction;
-    double        _dist_max;
-    unsigned      _bounces;
-    Intersection  _intersection;
-    int      _wavelength;
+    Vec3d           _origin;
+    Vec3d           _direction;
+    double          _dist_max;
+    unsigned        _bounces;
+    Intersection    _intersection;
+    unsigned        _wavelength;
 };
 
 #endif

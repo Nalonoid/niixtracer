@@ -17,7 +17,7 @@ public:
     const Vec3f& operator[](int index) const;
 
 private:
-    static Vec3f _color_matching_fcts[SPECTRAL_SAMPLES];
+    static Vec3f _color_matching_fcts[471];
 };
 
 // CIE 1931 Color Matching Functions

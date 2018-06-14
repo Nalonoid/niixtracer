@@ -33,15 +33,7 @@ Vec3d Dielectric::wi(const Vec3d &wo, Vec3d &normal) const
         // Refraction
         return Vec3d(n * wo + (n * cos_R - sqrt(1.0 - sin2_T)) * normal);
     else
-    {
-        float v { uniform_sampler_float.sample() };
-
-        if (v > _roughness)
-            return wo.reflect(normal);
-        else
-            return Vec3d(rnd_dir_hemisphere(normal).normalized());
-
-    }
+        return wo.reflect(normal);
 }
 
 float Dielectric::roughness() const
