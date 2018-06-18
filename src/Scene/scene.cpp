@@ -97,6 +97,16 @@ unsigned& Scene::nb_samples()
     return _nb_samples;
 }
 
+const Spectrum<>** Scene::base_illuminant_SPD_p()
+{
+    return &_base_illuminant_SPD;
+}
+
+const Spectrum<>* Scene::base_illuminant_SPD()
+{
+    return _base_illuminant_SPD;
+}
+
 // Methods
 void Scene::add(Object* o)
 {

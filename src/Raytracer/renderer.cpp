@@ -28,7 +28,7 @@ void Renderer::render_scene()
 
     Uniform<std::uniform_real_distribution, double> sampler(0.0, range);
 
-    //#pragma omp parallel for private(norm_i, norm_j, towards_pixel, uniform_sampler_double, sampler) schedule(dynamic)
+    #pragma omp parallel for private(norm_i, norm_j, towards_pixel, uniform_sampler_double, sampler) schedule(dynamic)
     for (unsigned j = 0; j < img->height(); ++j)
     {
         for (unsigned i = 0; i < img->width(); ++i)

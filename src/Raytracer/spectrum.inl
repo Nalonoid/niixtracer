@@ -6,16 +6,12 @@
 
 template <unsigned nb_samples>
 Spectrum<nb_samples>::Spectrum(float sample_value) :
-    _nb_samples(nb_samples), _rgb (Colors::BLACK)
+    _nb_samples(nb_samples)
 {
     for (unsigned i {0}; i < nb_samples/3; ++i)
-    {
         _samples[i] = sample_value;
-        _xyz[i]     = Vec3f(0.0f, 0.0f, 0.0f);
-    }
 
-    // to_RGB() initializes _xyz and _rgb
-    to_RGB();
+    _xyz = Vec3f(0.0f, 0.0f, 0.0f);
 }
 
 template <unsigned nb_samples>
@@ -90,31 +86,32 @@ unsigned Spectrum<nb_samples>::n_samples() const
 }
 
 template <unsigned nb_samples>
-void Spectrum<nb_samples>::to_XYZ()
+void Spectrum<nb_samples>::to_XYZ(const Spectrum<nb_samples> *illuminant_SPD)
 {
     float luminance { 0.0f };
 
     for (unsigned i {0}; i < nb_samples; ++i)
     {
-        _xyz[i]     = (*this)[i] * CIE_cm_fcts[i*SPECTRAL_RES];
-        luminance   += CIE_cm_fcts[i*SPECTRAL_RES].y;
+        _xyz += (*this)[i] * CIE_cm_fcts[i*SPECTRAL_RES];
+        luminance += (*illuminant_SPD)[i] * CIE_cm_fcts[i*SPECTRAL_RES].y;
     }
+
+    _xyz /= luminance;
 }
 
 // From PBRT - Second Edition by Matt Pharr & Greg Humphreys
 template <unsigned nb_samples>
-Color Spectrum<nb_samples>::to_RGB()
+Color Spectrum<nb_samples>::to_RGB(const Spectrum<nb_samples> *illuminant_SPD)
 {
-    to_XYZ();
+    to_XYZ(illuminant_SPD);
 
-    for (unsigned i {0}; i < nb_samples; ++i)
-    {
-        _rgb.r() += 3.240479f   * _xyz[i].x - 1.537150f * _xyz[i].y - 0.498535f * _xyz[i].z;
-        _rgb.g() += -0.969256f  * _xyz[i].x + 1.875991f * _xyz[i].y + 0.041556f * _xyz[i].z;
-        _rgb.b() += 0.055648f   * _xyz[i].x - 0.204043f * _xyz[i].y + 1.057311f * _xyz[i].z;
-    }
+    Color rgb;
 
-    return Colors::average(_rgb, nb_samples);
+    rgb.r() += 3.240479f   * _xyz.x - 1.537150f * _xyz.y - 0.498535f * _xyz.z;
+    rgb.g() += -0.969256f  * _xyz.x + 1.875991f * _xyz.y + 0.041556f * _xyz.z;
+    rgb.b() += 0.055648f   * _xyz.x - 0.204043f * _xyz.y + 1.057311f * _xyz.z;
+
+    return rgb;
 }
 
 // Black body emission Spectral Power Distribution
@@ -122,7 +119,7 @@ template <unsigned nb_samples>
 BlackBodySPD<nb_samples>::BlackBodySPD(float T) :
     _temperature (T)
 {
-    unsigned res    { SPECTRAL_RES           };
+    unsigned res { SPECTRAL_RES };
 
     for (unsigned i {0}; i < nb_samples; ++i)
     {
@@ -171,5 +168,5 @@ NormalSPD<nb_samples>::NormalSPD(unsigned peak, float sigma) :
     }
 
     for (unsigned i {0}; i < nb_samples; ++i)
-        this->_samples[i] /= float(10.0f);
+        this->_samples[i] /= experiments;
 }

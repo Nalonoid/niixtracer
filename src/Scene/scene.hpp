@@ -6,6 +6,7 @@
 
 #include "Math/math.hpp"
 #include "Object/object.hpp"
+#include "Raytracer/spectrum.hpp"
 
 class Shape;
 class Light;
@@ -31,6 +32,7 @@ public:
     std::string output_path() const;
     unsigned max_depth() const;
     unsigned nb_samples() const;
+    std::string mode() const;
 
     Shape&  shape(unsigned i) const;
     Light&  light(unsigned i) const;
@@ -39,7 +41,8 @@ public:
     std::string& output_path();
     unsigned& max_depth();
     unsigned& nb_samples();
-    std::string mode() const;
+    const Spectrum<>** base_illuminant_SPD_p();
+    const Spectrum<>* base_illuminant_SPD();
 
     // Methods
     template<typename... Args>
@@ -60,12 +63,13 @@ private:
     std::vector<Camera*> _cameras;
 
     // Scene configuration infornation
-    std::string _output_img_path;
-    std::string _mode;
-    unsigned    _max_depth;
-    unsigned    _nb_samples;
-    double      _russian_roulette_coeff;
-    Image*      _output_img;
+    std::string         _output_img_path;
+    std::string         _mode;
+    unsigned            _max_depth;
+    unsigned            _nb_samples;
+    double              _russian_roulette_coeff;
+    Image*              _output_img;
+    const Spectrum<>*  _base_illuminant_SPD;
 };
 
 // Templated methods implementation must be in the .hpp file in order to compile

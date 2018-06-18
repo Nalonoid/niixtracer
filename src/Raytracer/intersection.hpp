@@ -8,7 +8,6 @@
 
 class Intersection : public Object
 {
-
 public:
     Intersection();
 

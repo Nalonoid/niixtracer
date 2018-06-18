@@ -1,11 +1,6 @@
 #include "color.hpp"
 #include "Utils/utils.hpp"
 
-double Color::brightness() const
-{
-    return (r() + g() + b())/3;
-}
-
 const Color& Color::scale(float p)
 {
     r() = p * r();

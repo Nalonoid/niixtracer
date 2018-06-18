@@ -24,14 +24,13 @@ public:
     const float* samples() const;
     unsigned n_samples() const;
 
-    virtual void to_XYZ();
-    virtual Color to_RGB();
+    virtual void to_XYZ(const Spectrum<nb_samples> *illuminant_SPD);
+    virtual Color to_RGB(const Spectrum<nb_samples> *illuminant_SPD);
 
 protected:
     float       _samples[nb_samples];     // Spectral Power Distribution
     unsigned    _nb_samples;
-    Vec3f       _xyz[nb_samples];
-    Color       _rgb;
+    Vec3f       _xyz;
 };
 
 template <unsigned nb_samples = SPECTRAL_SAMPLES>

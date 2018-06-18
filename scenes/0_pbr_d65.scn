@@ -1,11 +1,12 @@
 <scene>
  <settings>
-  <xres>1200</xres>
-  <yres>675</yres>
-  <path>0_pbr_mcpt_nee_d65_64sp.bmp</path>
-  <mode>mcpt</mode>
+  <xres>400</xres>
+  <yres>225</yres>
+  <path>0_pbr_mcpt_nee_d65_16sp.bmp</path>
+  <mode>spectral_mcpt</mode>
   <depth>10</depth>
-  <sampl>64</sampl>
+  <sampl>16</sampl>
+  <illum>bbd65</illum>
  </settings>
  <camera>
   <position>0.000000, 3.000000, -10.000000</position>

@@ -31,7 +31,7 @@ protected:
     virtual bool    depth_recursion_over(Ray &ray) = 0;
     virtual Color   compute_color(Ray &ray) = 0;
 
-    const Scene* _scene;
+    Scene* _scene;
 
 };
 

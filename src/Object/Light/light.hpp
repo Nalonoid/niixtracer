@@ -17,11 +17,11 @@ class Light : public Object
 {
 public:
     Light(double emission, const Vec3d &p = Space::ORIGIN,
-          const Color &c = Colors::WHITE);
+          const Color &c = Colors::WHITE, double brightness = 1.0);
 
     Light(const Spectrum<> *s = Spectra::BLACK_BODY_D65,
-          const Vec3d &p = Space::ORIGIN,
-          const Color& c = Colors::WHITE);
+          const Vec3d &p = Space::ORIGIN, const Color& c = Colors::WHITE,
+          double brightness = 1.0);
 
     // Getters
     unsigned index() const override;
@@ -33,6 +33,7 @@ private:
     static unsigned _index;
     Color _color;
     const Spectrum<> *_emission_spectrum;
+    double _brightness;
 };
 
 #endif

@@ -29,7 +29,7 @@ Color SpectralPathtracer::compute_color(Ray &ray)
         spectral_radiance[l]    = radiance(ray);
     }
 
-    return spectral_radiance.to_RGB();
+    return spectral_radiance.to_RGB(_scene->base_illuminant_SPD());
 }
 
 float SpectralPathtracer::radiance(Ray &ray)

@@ -74,9 +74,11 @@ Vector<T> Vector<T>::operator+=(const Vector<T> &v)
 template <typename T>
 Vector<T> Vector<T>::operator/=(double s)
 {
-    this->x /= s;
-    this->y /= s;
-    this->z /= s;
+    double q { 1.0 / s };
+
+    this->x *= q;
+    this->y *= q;
+    this->z *= q;
     return *this;
 }
 
@@ -106,9 +108,10 @@ Vector<T> operator*(const Vector<T> &v1, const Vector<T> &v2)
 
 
 template <typename T>
-Vector<T> operator/(const Vector<T> &v,const double scalar)
+Vector<T> operator/(const Vector<T> &v, const double scalar)
 {
-    return Vector<T>(v.x / scalar, v.y / scalar, v.z / scalar);
+    double q { 1.0 / scalar };
+    return Vector<T>(q * v.x, q * v.y, q * v.z);
 }
 
 template <typename T>

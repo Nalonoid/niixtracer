@@ -1,11 +1,11 @@
 <scene>
  <settings>
-  <xres>1200</xres>
-  <yres>675</yres>
-  <path>0_pbr_mcpt_nee_4096sp.bmp</path>
+  <xres>400</xres>
+  <yres>225</yres>
+  <path>0_pbr_mcpt_nee_1024sp.bmp</path>
   <mode>mcpt</mode>
   <depth>10</depth>
-  <sampl>4096</sampl>
+  <sampl>1024</sampl>
  </settings>
  <camera>
   <position>0.000000, 3.000000, -10.000000</position>
@@ -77,7 +77,7 @@
   <radius>1</radius>
   <color>1.000000, 1.000000, 1.000000, 1.000000</color>
   <material>matte</material>
-  <emission>22.0</emission>
+  <emission>4</emission>
  </sphere>
 </scene>
 

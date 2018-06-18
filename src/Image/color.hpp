@@ -36,7 +36,6 @@ struct Color
     // Methods
     const Color& scale(float p);
     const Color& clamp();
-    double       brightness() const;
 
     // Operators
     Color operator+=(const Color &c);

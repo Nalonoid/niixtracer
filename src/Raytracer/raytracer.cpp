@@ -110,8 +110,9 @@ const Color Raytracer::compute_refl_refractive(Ray &ray)
     Color refractive { Colors::BLACK };
     Color reflective { Colors::BLACK };
 
-    Intersection i { ray.intersection() };
-    const Shape *s { i.shape()          };
+    Intersection i  { ray.intersection()    };
+    Vec3d &normal   { i.normal()            };
+    const Shape *s  { i.shape()             };
 
     double R { 0 }, T { 0 };
 
@@ -130,9 +131,21 @@ const Color Raytracer::compute_refl_refractive(Ray &ray)
          * e.g. Intersection::through_material and Intersection::end_material */
 
         double n1       { 1.0                               };
-        double n2       { s->material()->refraction()        };
-        double cos_R    { -ray.direction().dot(i.normal())  };
-        double sin2_T   { (n1/n2)*(n1/n2)*(1 - cos_R*cos_R) };
+        double n2       { s->material()->refraction()       };
+        double cos_R    { ray.direction().dot(normal)       };
+
+        if (cos_R > 0.0)    // The ray is inside the medium, going outside
+        {
+            cos_R = -cos_R;
+            normal = normal.negative();
+
+            // We need to swap n1 & n2
+            n1 = n1 + n2;
+            n2 = n1 - n2;
+            n1 = n1 - n2;
+        }
+
+        double sin2_T { (n1/n2)*(n1/n2)*(1 - cos_R*cos_R) };
 
         R = schlick_approx(n1, n2, cos_R, sin2_T);
         T = 1 - R;
@@ -141,7 +154,7 @@ const Color Raytracer::compute_refl_refractive(Ray &ray)
         {
             double n { n1/n2 };
             Vec3d refract_vect { n * ray.direction() +
-                        (n * cos_R - sqrt(1 - sin2_T))*i.normal() };
+                        (n * cos_R - sqrt(1 - sin2_T))*normal };
             Ray refract_ray(i.position() + EPSILON*refract_vect, refract_vect);
 
             refract_ray.bounces() = ray.bounces() + 1;
@@ -152,7 +165,7 @@ const Color Raytracer::compute_refl_refractive(Ray &ray)
 
     if (R > 0.0)
     {
-        Vec3d reflect_vect { ray.direction().reflect(i.normal()) };
+        Vec3d reflect_vect { ray.direction().reflect(normal) };
         Ray reflect_ray(i.position() + EPSILON*reflect_vect, reflect_vect);
 
         reflect_ray.bounces() = ray.bounces() + 1;
