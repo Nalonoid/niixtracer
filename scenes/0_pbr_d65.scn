@@ -1,82 +1,76 @@
 <scene>
  <settings>
-  <xres>400</xres>
-  <yres>225</yres>
-  <path>0_pbr_mcpt_nee_d65_16sp.bmp</path>
+  <xres>1200</xres>
+  <yres>675</yres>
+  <path>0_pbr_mcpt_nee_d65_64sp.bmp</path>
   <mode>spectral_mcpt</mode>
   <depth>10</depth>
-  <sampl>16</sampl>
+  <sampl>64</sampl>
   <illum>bbd65</illum>
  </settings>
  <camera>
-  <position>0.000000, 3.000000, -10.000000</position>
-  <look_at>0.000000, 0.000000, 0.000000</look_at>
+  <position>-3.000000, 5.000000, -8.000000</position>
+  <look_at>-1.000000, 1.5000000, 2.000000</look_at>
  </camera>
  <plane>
   <normal>0.000000, 0.000000, -1.000000</normal>
-  <distance>-10</distance>
-  <color>0.000000, 0.000000, 1.000000, 1.000000</color>
+  <distance>-7</distance>
   <material>matte</material>
+  <reflectance>blue</reflectance>
+  <emission>0.0</emission>
  </plane>
  <plane>
   <normal>0.000000, 1.000000, 0.000000</normal>
   <distance>0</distance>
-  <color>0.500000, 0.250000, 0.250000, 1.000000</color>
   <material>metal</material>
+  <reflectance>green</reflectance>
+  <emission>0.0</emission>
  </plane>
  <sphere>
-  <center>2.000000, 1.000000, -1.250000</center>
+  <center>1.800000, 1.000000, 0.00000</center>
   <radius>1</radius>
-  <color>0.500000, 0.000000, 1.000000, 1.000000</color>
   <material>metal</material>
+  <reflectance>const</reflectance>
   <emission>0.0</emission>
  </sphere>
  <sphere>
-  <center>0.000000, 2.000000, 1.000000</center>
+  <center>0.000000, 2.000000, 2.000000</center>
   <radius>2</radius>
-  <color>1.000000, 1.000000, 0.000000, 1.000000</color>
   <material>metal</material>
+  <reflectance>yellow</reflectance>
   <emission>0.0</emission>
  </sphere>
  <sphere>
-  <center>2.900000, 0.600000, -2.400000</center>
+  <center>2.700000, 0.600000, -1.200000</center>
   <radius>0.6</radius>
-  <color>1.000000, 1.000000, 1.000000, 1.000000</color>
   <material>metal</material>
+  <reflectance>const</reflectance>
   <emission>0.0</emission>
  </sphere>
  <sphere>
-  <center>4.000000, 3.000000, 4.000000</center>
+  <center>4.000000, 3.000000, 5.000000</center>
   <radius>3</radius>
-  <color>1.000000, 0.000000, 0.000000, 1.000000</color>
   <material>matte</material>
+  <reflectance>red</reflectance>
   <emission>0.0</emission>
  </sphere>
  <sphere>
-  <center>-2.400000, 1.000000, -4.500000</center>
+  <center>0.000000, 1.000000, -1.500000</center>
   <radius>1</radius>
-  <color>1.000000, 1.000000, 1.000000, 1.000000</color>
-  <material>translucent</material>
-  <emission>0.0</emission>
- </sphere>
- <sphere>
-  <center>-1.000000, 3.000000, -1.500000</center>
-  <radius>1</radius>
-  <color>1.000000, 1.000000, 1.000000, 1.000000</color>
   <material>diamond</material>
+  <reflectance>const</reflectance>
   <emission>0.0</emission>
  </sphere>
  <sphere>
-  <center>-5.000000, 2.000000, -1.250000</center>
+  <center>-5.000000, 2.000000, -0.250000</center>
   <radius>2</radius>
-  <color>0.000000, 1.000000, 0.000000, 1.000000</color>
   <material>matte</material>
+  <reflectance>orange</reflectance>
   <emission>0.0</emission>
  </sphere>
  <sphere>
-  <center>6.000000, 5.000000, -6.000000</center>
+  <center>6.000000, 5.000000, -5.000000</center>
   <radius>1</radius>
-  <color>1.000000, 1.000000, 1.000000, 1.000000</color>
   <material>matte</material>
   <emission>bbd65</emission>
  </sphere>

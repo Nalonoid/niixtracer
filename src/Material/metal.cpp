@@ -1,9 +1,8 @@
 #include "metal.hpp"
-#include "brdf.hpp"
 #include "Utils/sampler.hpp"
 
-Metal::Metal(float roughness, std::string name) :
-    MaterialPBR(&BRDFs::IDEAL_SPECULAR, name),
+Metal::Metal(float roughness, std::string name, const Spectrum<> *reflectance) :
+    MaterialPBR(reflectance, name),
     _roughness (roughness) {}
 
 float Metal::roughness() const
@@ -18,5 +17,13 @@ Vec3d Metal::wi(const Vec3d &wo, Vec3d &normal) const
     if (u > _roughness)
         return wo.reflect(normal);
     else
-        return Vec3d(rnd_dir_hemisphere(normal).normalized());
+        return Vec3d(rnd_dir_hemisphere(normal));
 }
+
+float Metal::pdf(const Vec3d&, const Vec3d&,
+                           const Intersection&) const
+{
+    // Only one possible direction for wi, hence the probability density function = 1
+    return 1.0f;
+}
+

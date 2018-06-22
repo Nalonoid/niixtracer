@@ -49,10 +49,6 @@ class ConstantSPD : public Spectrum<nb_samples>
 {
 public:
     ConstantSPD(float sample_value = 1.0);
-
-private:
-    // Normalized power value of the constant distribution
-    float _constant;
 };
 
 template <unsigned nb_samples = SPECTRAL_SAMPLES>
@@ -60,7 +56,7 @@ class NormalSPD : public Spectrum<nb_samples>
 {
 public:
     NormalSPD(unsigned peak = (MAX_WAVELENGTH - MIN_WAVELENGTH)/2,
-              float sigma = 1.0f);
+              float sigma = 0.1f);
 
 private:
     // The wavelength (nm) on which the distribution is centered (μ)

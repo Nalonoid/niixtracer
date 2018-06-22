@@ -7,11 +7,13 @@ class Dielectric : public MaterialPBR
 {
 public:
     Dielectric(float ior = 1.5f, float roughness = 0.0f,
-               std::string name = "dielectric");
-
-    Vec3d wi(const Vec3d &wo, Vec3d &normal) const override;
+               std::string name = "dielectric",
+               const Spectrum<> *reflectance = new ConstantSPD<>());
 
     float roughness() const override;
+    Vec3d wi(const Vec3d &wo, Vec3d &normal) const override;
+    float pdf(const Vec3d &wi, const Vec3d &wo,
+              const Intersection &i) const override;
 
 private:
     float _ior;         // Index of Refraction of the medium

@@ -2,6 +2,7 @@
 #define __UTILS_HPP__
 
 #include "Math/math.hpp"
+#include "Image/color.hpp"
 
 namespace
 {
@@ -60,6 +61,32 @@ inline double schlick_approx(double n1, double n2, double cos_R, double sin2_T)
     }
 
     return R;
+}
+
+
+// Applies the sRGB gamma correction to the component
+inline static Color correct_gamma(Color c)
+{
+    double r { c.r() };
+    double g { c.g() };
+    double b { c.b() };
+
+    if (r <= 0.0031308f)
+        r = 12.92f * r;
+    else
+        r = 1.055f * pow(r, 1.0f / 2.4f) - 0.055f;
+
+    if (g <= 0.0031308f)
+        g = 12.92f * g;
+    else
+        g = 1.055f * pow(g, 1.0f / 2.4f) - 0.055f;
+
+    if (b <= 0.0031308f)
+        b = 12.92f * b;
+    else
+        b = 1.055f * pow(b, 1.0f / 2.4f) - 0.055f;
+
+    return Color(r, g, b);
 }
 
 #endif

@@ -1,66 +1,55 @@
 #include "material_pbr.hpp"
 #include "dielectric.hpp"
 #include "metal.hpp"
-#include "brdf.hpp"
 #include "Utils/sampler.hpp"
 
-MaterialPBR::MaterialPBR(const BRDF *brdf, std::string name) :
-    _brdf(brdf), _name(name) {}
+MaterialPBR::MaterialPBR(const Spectrum<> *reflectance, std::string name) :
+    _reflectance(reflectance), _name(name) {}
 
 const std::string& MaterialPBR::name() const
 {
     return _name;
 }
 
-const BRDF* MaterialPBR::brdf() const
-{
-    return _brdf;
-}
-
-float MaterialPBR::reflectance(const Vec3d &wi, const Vec3d &wo,
-                                const Intersection &i,
+float MaterialPBR::reflectance(const Vec3d&, const Vec3d&,
+                                const Intersection&,
                                 const unsigned wavelength) const
 {
-    return _brdf->evaluate(wi, wo, i, wavelength);
+    return max(0.0, _reflectance->power_at(wavelength));
+}
+
+void MaterialPBR::set_reflectance(const Spectrum<> *reflectance_spctr)
+{
+    _reflectance = reflectance_spctr;
 }
 
 namespace MaterialsPBR
 {
 
-const MaterialPBR *MATTE    { new Matte() };
-
-// Index of Refraction / Roughness / Name
-const MaterialPBR *DIAMOND      { new Dielectric(2.418f, 0.0f, "diamond")     };
-const MaterialPBR *GLASS        { new Dielectric(1.500f, 0.0f, "glass")       };
-const MaterialPBR *TRANSLUCENT  { new Dielectric(1.020f, 0.0f, "translucent") };
-
-// Index of Refraction / Name
-const MaterialPBR *METAL    { new Metal(0.3f)               };
-const MaterialPBR *MIRROR   { new Metal(0.0f, "mirror")     };
-const MaterialPBR *PLASTIC  { new Metal(0.7f, "plastic")    };
-
-const MaterialPBR* material(std::string name)
+MaterialPBR* material(std::string name)
 {
+    if (name == "matte")
+        return new Matte();
+
+        // Index of Refraction / Roughness / Name
     if (name == "diamond")
-        return MaterialsPBR::DIAMOND;
+        return new Dielectric(2.418f, 0.0f, "diamond");
 
     if (name == "glass")
-        return MaterialsPBR::GLASS;
-
-    if (name == "matte")
-        return MaterialsPBR::MATTE;
-
-    if (name == "metal")
-        return MaterialsPBR::METAL;
-
-    if (name == "mirror")
-        return MaterialsPBR::MIRROR;
-
-    if (name == "plastic")
-        return MaterialsPBR::PLASTIC;
+        return new Dielectric(1.500f, 0.0f, "glass");
 
     if (name == "translucent")
-        return MaterialsPBR::TRANSLUCENT;
+        return new Dielectric(1.020f, 0.0f, "translucent");
+
+        // Roughness / Name
+    if (name == "metal")
+        return new Metal(0.3f, "metal");
+
+    if (name == "mirror")
+        return new Metal(0.0f, "mirror");
+
+    if (name == "plastic")
+        return new Metal(0.7f, "plastic");
 
     std::cerr << "error: invalid material name - nullptr returned" << std::endl;
     return nullptr;
@@ -69,12 +58,22 @@ const MaterialPBR* material(std::string name)
 }
 
 // Matte class
-Matte::Matte() : MaterialPBR(&BRDFs::LAMBERT, "matte") {}
+Matte::Matte() : MaterialPBR(new ConstantSPD<>(), "matte") {}
 
 Vec3d Matte::wi(const Vec3d&, Vec3d &normal) const
 {
     // Uniform hemisphere sampling
     return Vec3d(rnd_dir_hemisphere(normal).normalized());
+}
+
+float Matte::pdf(const Vec3d&, const Vec3d&,
+                           const Intersection&) const
+{
+    // Uniform hemisphere sampling PDF
+    return 1/(2*PI);
+
+    // Cosine weighted PDF
+    //return std::abs(wi.dot(i.normal())) / PI;
 }
 
 float Matte::roughness() const

@@ -18,23 +18,24 @@ public:
           double emission           = 0.0);
 
     Shape(const Vec3d &position         = Space::ORIGIN,
-          const MaterialPBR *material   = MaterialsPBR::MATTE,
+          const MaterialPBR *material   = MaterialsPBR::material("matte"),
+          double emission               = 0.0);
+
+    Shape(const Vec3d &position         = Space::ORIGIN,
+          const MaterialPBR *material   = MaterialsPBR::material("matte"),
           const Color &color            = Colors::WHITE,
           double emission               = 0.0);
 
     Shape(const Vec3d &position             = Space::ORIGIN,
-          const MaterialPBR *material       = MaterialsPBR::MATTE,
-          const Color &color                = Colors::WHITE,
+          const MaterialPBR *material       = MaterialsPBR::material("matte"),
           const Spectrum<> *emission_spctr  = nullptr);
 
     Shape(const Material *material, const Color &color = Colors::WHITE,
           double emission = 0.0);
 
-    Shape(const MaterialPBR *material, const Color &color = Colors::WHITE,
-          double emission = 0.0);
+    Shape(const MaterialPBR *material, double emission = 0.0);
 
-    Shape(const MaterialPBR *material, const Color &color = Colors::WHITE,
-          const Spectrum<> *emission_spctr = nullptr);
+    Shape(const MaterialPBR *material, const Spectrum<> *emission_spctr = nullptr);
 
     // Getters
     unsigned index() const override;

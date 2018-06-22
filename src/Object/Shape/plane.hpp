@@ -11,11 +11,11 @@ public:
     Plane(const Vec3d &normal, double distance, const Color &color,
           const Material *mat, double emission = 0.0);
 
-    Plane(const Vec3d &normal, double distance, const Color &color,
-          const MaterialPBR *mat, double emission = 0.0);
+    Plane(const Vec3d &normal, double distance, const MaterialPBR *mat,
+          double emission = 0.0);
 
-    Plane(const Vec3d &normal, double distance, const Color &color,
-          const MaterialPBR *mat, const Spectrum<> *emission_spctr);
+    Plane(const Vec3d &normal, double distance, const MaterialPBR *mat,
+          const Spectrum<> *emission_spctr);
 
     // Getters
     const Vec3d normal(const Vec3d& point = Space::ORIGIN) const override;

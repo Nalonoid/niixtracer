@@ -31,8 +31,7 @@ private:
 
     void add_camera(QDomElement &cam_elem);
     void add_light(QDomElement &light_elem);
-    void add_plane(QDomElement &plane_elem);
-    void add_sphere(QDomElement &sphere_elem);
+    void add_shape(QDomElement &shape_elem, bool sphere);
 
     Scene *_scene;
 };

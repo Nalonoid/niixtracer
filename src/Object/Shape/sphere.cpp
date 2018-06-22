@@ -6,12 +6,16 @@ Sphere::Sphere(const Vec3d &position, double radius, const Color &color,
     Shape(position, mat, color, emission), _radius(radius) {}
 
 Sphere::Sphere(const Vec3d &position, double radius, const Color &color,
-       const MaterialPBR *mat, double emission) :
+               const MaterialPBR *mat, double emission) :
     Shape(position, mat, color, emission), _radius(radius) {}
 
-Sphere::Sphere(const Vec3d &position, double radius, const Color &color,
-       const MaterialPBR *mat, const Spectrum<> *emission_spctr) :
-    Shape(position, mat, color, emission_spctr), _radius(radius) {}
+Sphere::Sphere(const Vec3d &position, double radius, const MaterialPBR *mat,
+               double emission) :
+    Shape(position, mat, emission), _radius(radius) {}
+
+Sphere::Sphere(const Vec3d &position, double radius, const MaterialPBR *mat,
+               const Spectrum<> *emission_spctr) :
+    Shape(position, mat, emission_spctr), _radius(radius) {}
 
 // Getters
 double Sphere::radius() const

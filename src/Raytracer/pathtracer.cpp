@@ -12,7 +12,6 @@
 
 #include "Material/dielectric.hpp"
 #include "Material/metal.hpp"
-#include "Material/brdf.hpp"
 
 Pathtracer::Pathtracer(Scene *scene) : Renderer(scene),
     _russian_roulette_coeff(1.0f) {}
@@ -86,7 +85,7 @@ Color Pathtracer::color_global_illumination(Ray &ray)
 
     float reflectance   { m->reflectance(recursive_dir, rdir, i)            };
     Color global        { reflectance * launch(recursive_ray) * cos_att     };
-    global /= m->brdf()->pdf(recursive_dir, rdir, i);
+    global /= m->pdf(recursive_dir, rdir, i);
 
     return global;
 }

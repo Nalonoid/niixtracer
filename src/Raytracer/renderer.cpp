@@ -34,7 +34,6 @@ void Renderer::render_scene()
         for (unsigned i = 0; i < img->width(); ++i)
         {
             Color avg_color { Colors::BLACK };
-            Spectrum<SPECTRAL_SAMPLES> spectral_radiance;
 
             for (double xsp = 0; xsp < 1.0; xsp += range)
             {
@@ -56,8 +55,10 @@ void Renderer::render_scene()
                 }
             }
 
-            (*img)[i][j] = Colors::average(
-                                avg_color, nb_samples*nb_samples).clamp();
+            avg_color = Colors::average(
+                        avg_color, nb_samples*nb_samples).clamp();
+
+            (*img)[i][j] = avg_color;
         }
     }
 }

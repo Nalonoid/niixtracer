@@ -8,7 +8,7 @@ template <unsigned nb_samples>
 Spectrum<nb_samples>::Spectrum(float sample_value) :
     _nb_samples(nb_samples)
 {
-    for (unsigned i {0}; i < nb_samples/3; ++i)
+    for (unsigned i {0}; i < nb_samples; ++i)
         _samples[i] = sample_value;
 
     _xyz = Vec3f(0.0f, 0.0f, 0.0f);
@@ -63,7 +63,7 @@ template <unsigned nb_samples>
 float Spectrum<nb_samples>::power_at(const unsigned wavelength) const
 {
     int index { static_cast<int>(wavelength - MIN_WAVELENGTH) /
-                static_cast<int>(nb_samples) };
+                static_cast<int>(SPECTRAL_RES) };
 
     assert(index >= 0);
 
@@ -124,17 +124,21 @@ BlackBodySPD<nb_samples>::BlackBodySPD(float T) :
     for (unsigned i {0}; i < nb_samples; ++i)
     {
         // Planck's law
-        double h         { 6.626070040e-34   }; // Planck's constant
-        double c         { 299792458.0       }; // speed of light in m.s-1
-        double k         { 1.38064852e-23    }; // Boltzmann's constant
+        double h        { 6.626070040e-34   }; // Planck's constant
+        double c        { 299792458.0       }; // speed of light in m.s-1
+        double k        { 1.38064852e-23    }; // Boltzmann's constant
 
-        double lambda    { (MIN_WAVELENGTH + i * res) * 1.0e-9  }; // wavelength in m
-        double hc        { h * c                                };
+        double lambda   { (MIN_WAVELENGTH + i * res) * 1.0e-9   }; // wavelength in m
+        //double hc       { h * c                                 };
+        double v        { c / lambda                            }; // frequency
 
-        double energy   { (2.0 * hc * c) * pow(lambda, -3.0)    };
-        energy /= exp(hc/(lambda*k*T)) - 1.0;
+        double energy   { 2.0 * h * v * v * v };
+        energy /= c * c * (exp(h*v/(k*T)) - 1.0);
 
-        this->_samples[i] = energy;   // TODO remove Magic constants...
+//        double energy   { 2.0 * hc * c * pow(lambda, -5.0) };
+//        energy /= (exp(hc/(lambda*k*T)) - 1.0);
+
+        this->_samples[i] = energy;
     }
 }
 
@@ -151,8 +155,8 @@ NormalSPD<nb_samples>::NormalSPD(unsigned peak, float sigma) :
     std::default_random_engine generator;
     std::normal_distribution<float> ndf(float(peak), sigma*nb_samples);
 
-    unsigned range          { MAX_WAVELENGTH - MIN_WAVELENGTH   };
-    unsigned experiments    { 100000                            };
+    unsigned range          { MAX_WAVELENGTH - MIN_WAVELENGTH       };
+    unsigned experiments    { 100000                                };
 
     for (unsigned i {0}; i < experiments; ++i)
     {
@@ -167,6 +171,14 @@ NormalSPD<nb_samples>::NormalSPD(unsigned peak, float sigma) :
         }
     }
 
+    unsigned peak_index { (peak - MIN_WAVELENGTH)/SPECTRAL_RES      };
+    float peak_energy   { this->_samples[peak_index]/experiments    };
+
     for (unsigned i {0}; i < nb_samples; ++i)
+    {
         this->_samples[i] /= experiments;
+        this->_samples[i] /= peak_energy;
+    }
+
+
 }

@@ -5,12 +5,12 @@ namespace Spectra
 
 const ConstantSPD<>     *CONSTANT_SPD   { new ConstantSPD<>()  };
 
-const NormalSPD<>       *NORMAL_RED     { new NormalSPD<>(685) };
-const NormalSPD<>       *NORMAL_ORANGE  { new NormalSPD<>(595) };
-const NormalSPD<>       *NORMAL_YELLOW  { new NormalSPD<>(580) };
-const NormalSPD<>       *NORMAL_GREEN   { new NormalSPD<>(535) };
-const NormalSPD<>       *NORMAL_BLUE    { new NormalSPD<>(475) };
-const NormalSPD<>       *NORMAL_PURPLE  { new NormalSPD<>(415) };
+const NormalSPD<>       *NORMAL_RED     { new NormalSPD<>(680) };
+const NormalSPD<>       *NORMAL_ORANGE  { new NormalSPD<>(620) };
+const NormalSPD<>       *NORMAL_YELLOW  { new NormalSPD<>(590) };
+const NormalSPD<>       *NORMAL_GREEN   { new NormalSPD<>(540) };
+const NormalSPD<>       *NORMAL_BLUE    { new NormalSPD<>(490) };
+const NormalSPD<>       *NORMAL_PURPLE  { new NormalSPD<>(430) };
 
 const BlackBodySPD<>    *BLACK_BODY_A   { new BlackBodySPD<>(2856) }; // Incandescent / Tungstene
 const BlackBodySPD<>    *BLACK_BODY_D50 { new BlackBodySPD<>(5003) }; // Horizon daylight

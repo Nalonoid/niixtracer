@@ -12,7 +12,6 @@
 
 #include "Material/dielectric.hpp"
 #include "Material/metal.hpp"
-#include "Material/brdf.hpp"
 
 SpectralPathtracer::SpectralPathtracer(Scene *scene) : Pathtracer(scene) {}
 
@@ -29,18 +28,18 @@ Color SpectralPathtracer::compute_color(Ray &ray)
         spectral_radiance[l]    = radiance(ray);
     }
 
-    return spectral_radiance.to_RGB(_scene->base_illuminant_SPD());
+    return correct_gamma(spectral_radiance.to_RGB(_scene->base_illuminant_SPD()));
 }
 
 float SpectralPathtracer::radiance(Ray &ray)
 {
-    Intersection &i         { ray.intersection()                };
-    const Shape *s          { i.shape()                         };
+    Intersection &i { ray.intersection() };
+    const Shape *s  { i.shape()          };
+    unsigned lambda { ray.wavelength()   };
 
     // We stop the path when we hit a light source
     if (s->emits())
-        return 0.0f; /* As the emission is added through Next Event Estimation
-                      * no need to return s->emission(lambda) */
+        return s->emission(lambda);
 
     const MaterialPBR *m    { s->materialPBR()                  };
     float radiance          { radiance_global_illumination(ray) };
@@ -100,7 +99,7 @@ float SpectralPathtracer::radiance_global_illumination(Ray &ray)
 
     float reflectance   { m->reflectance(recursive_dir, rdir, i, lambda)    };
     float glob_radiance { reflectance * radiance_along_path(recursive_ray)  };
-    glob_radiance /= m->brdf()->pdf(recursive_dir, rdir, i);
+    glob_radiance /= m->pdf(recursive_dir, rdir, i);
 
     return glob_radiance;
 }
@@ -158,7 +157,7 @@ float SpectralPathtracer::radiance_direct_illumination(Ray &ray)
                             s->materialPBR()->reflectance(cone_sample, rdir, i, lambda) };
 
                         dir_radiance += (*source_intersection)->emission(lambda)
-                                * reflectance * cosine_norm_light;
+                                * reflectance * cosine_norm_light * 5.0;
                     }
                 }
             }

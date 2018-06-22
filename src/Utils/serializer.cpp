@@ -130,8 +130,6 @@ void Serializer::write_to_XML(const std::string &output_path)
                   << output_path << std::endl;
         exit(1);
     }
-
-
 }
 
 Scene* Serializer::read_from_XML(const std::string &input_path)
@@ -186,10 +184,10 @@ void Serializer::populate_scene_from_XML(const QDomElement &scene_elem)
                 add_light(obj_elem);
             else
                 if (obj_elem.tagName() == "plane")
-                    add_plane(obj_elem);
+                    add_shape(obj_elem, false);
                 else
                     if (obj_elem.tagName() == "sphere")
-                        add_sphere(obj_elem);
+                        add_shape(obj_elem, true);
 
         obj_elem = obj_elem.nextSiblingElement();
     }
@@ -232,47 +230,26 @@ void Serializer::add_light(QDomElement &light_elem)
     _scene->add(new Light(20, pos, color));
 }
 
-void Serializer::add_plane(QDomElement &plane_elem)
+void Serializer::add_shape(QDomElement &shape_elem, bool sphere)
 {
-    QDomElement pos_elem    { plane_elem.firstChildElement("normal")    };
-    QDomElement dist_elem   { plane_elem.firstChildElement("distance")  };
-    QDomElement color_elem  { plane_elem.firstChildElement("color")     };
-    QDomElement mat_elem    { plane_elem.firstChildElement("material")  };
+    QDomElement center_elem;
+    QDomElement radius_elem;
 
-    QStringList normal_str { pos_elem.text().split(", ") };
-    Vec3d normal(normal_str[0].toDouble(),
-                 normal_str[1].toDouble(),
-                 normal_str[2].toDouble());
-
-    double dist { dist_elem.text().toDouble() };
-
-    QStringList color_str { color_elem.text().split(", ") };
-    Color color(color_str[0].toDouble(),
-                color_str[1].toDouble(),
-                color_str[2].toDouble(),
-                color_str[3].toDouble());
-
-    if (_scene->mode() == "rt") // Ray tracing
+    if (sphere)
     {
-        const Material *material {
-            Materials::material(mat_elem.text().toStdString()) };
-        _scene->add(new Plane(normal, dist, color, material));
+        center_elem = shape_elem.firstChildElement("center");
+        radius_elem = shape_elem.firstChildElement("radius");
     }
-    else // PBR : Monte Carlo Path Tracing
+    else
     {
-        const MaterialPBR *material {
-            MaterialsPBR::material(mat_elem.text().toStdString()) };
-        _scene->add(new Plane(normal, dist, color, material));
+        center_elem = shape_elem.firstChildElement("normal");
+        radius_elem = shape_elem.firstChildElement("distance");
     }
-}
 
-void Serializer::add_sphere(QDomElement &sphere_elem)
-{
-    QDomElement center_elem     { sphere_elem.firstChildElement("center")   };
-    QDomElement radius_elem     { sphere_elem.firstChildElement("radius")   };
-    QDomElement color_elem      { sphere_elem.firstChildElement("color")    };
-    QDomElement mat_elem        { sphere_elem.firstChildElement("material") };
-    QDomElement emission_elem   { sphere_elem.firstChildElement("emission") };
+    QDomElement color_elem      { shape_elem.firstChildElement("color")       };
+    QDomElement mat_elem        { shape_elem.firstChildElement("material")    };
+    QDomElement refl_elem       { shape_elem.firstChildElement("reflectance") };
+    QDomElement emission_elem   { shape_elem.firstChildElement("emission")    };
 
     QStringList center_str { center_elem.text().split(", ") };
     Vec3d center(center_str[0].toDouble(),
@@ -281,36 +258,72 @@ void Serializer::add_sphere(QDomElement &sphere_elem)
 
     double radius { radius_elem.text().toDouble() };
 
-    QStringList color_str { color_elem.text().split(", ") };
-    Color color(color_str[0].toDouble(),
-                color_str[1].toDouble(),
-                color_str[2].toDouble(),
-                color_str[3].toDouble());
 
     if (_scene->mode() == "rt") // Ray tracing
     {
+        QStringList color_str { color_elem.text().split(", ") };
+        Color color(color_str[0].toDouble(),
+                    color_str[1].toDouble(),
+                    color_str[2].toDouble(),
+                    color_str[3].toDouble());
+
         double emission { emission_elem.text().toDouble() };
 
         const Material *material {
             Materials::material(mat_elem.text().toStdString()) };
-        _scene->add(new Sphere(center, radius, color, material, emission));
+
+        if (sphere)
+            _scene->add(new Sphere(center, radius, color, material, emission));
+        else
+            _scene->add(new Plane(center, radius, color, material, emission));
     }
     else    // Monte Carlo Path Tracing
     {
-        const Spectrum<> * emission_spctr {
+        const Spectrum<> *emission_spctr {
             Spectra::spectrum(emission_elem.text().toStdString()) };
 
-        const MaterialPBR *material_pbr {
+        const Spectrum<> *refl_spctr {
+            Spectra::spectrum(refl_elem.text().toStdString()) };
+
+        MaterialPBR *material_pbr {
             MaterialsPBR::material(mat_elem.text().toStdString()) };
 
+        if (refl_spctr != nullptr)
+            material_pbr->set_reflectance(refl_spctr);
+
         if (emission_spctr != nullptr)
-            _scene->add(new Sphere(center, radius, color, material_pbr,
-                                   emission_spctr));
+        {
+            if (sphere)
+                _scene->add(new Sphere(center, radius,
+                                       material_pbr, emission_spctr));
+            else
+                _scene->add(new Plane(center, radius, material_pbr,
+                                      emission_spctr));
+        }
         else
         {
             double emission { emission_elem.text().toDouble() };
-            _scene->add(new Sphere(center, radius, color, material_pbr,
-                                   emission));
+
+            if (_scene->mode() == "mcpt") // Ray tracing
+            {
+                QStringList color_str { color_elem.text().split(", ") };
+                Color color(color_str[0].toDouble(),
+                            color_str[1].toDouble(),
+                            color_str[2].toDouble(),
+                            color_str[3].toDouble());
+
+                if (sphere)
+                    _scene->add(new Sphere(center, radius, material_pbr, emission));
+                else
+                    _scene->add(new Plane(center, radius, material_pbr, emission));
+            }
+            else
+            {
+                if (sphere)
+                    _scene->add(new Sphere(center, radius, material_pbr, emission));
+                else
+                    _scene->add(new Plane(center, radius, material_pbr, emission));
+            }
         }
     }
 }
