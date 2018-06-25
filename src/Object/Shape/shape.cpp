@@ -50,6 +50,15 @@ Shape::Shape(const Material *material, const Color &color, double emission) :
                               nullptr;
 }
 
+Shape::Shape(const MaterialPBR *material, const Color &color, double emission) :
+    Object(Space::ORIGIN), _material(nullptr), _material_pbr(material),
+    _color(color)
+{
+    _index++;
+    _light = emission > 0.0 ? new Light(emission, Space::ORIGIN, color) :
+                              nullptr;
+}
+
 Shape::Shape(const MaterialPBR *material, double emission) :
     Object(Space::ORIGIN), _material(nullptr), _material_pbr(material)
 {
@@ -66,7 +75,6 @@ Shape::Shape(const MaterialPBR *material, const Spectrum<> *emission_spctr) :
                 new Light(emission_spctr, Space::ORIGIN) :
                 nullptr;
 }
-
 
 // Getters
 unsigned Shape::index() const

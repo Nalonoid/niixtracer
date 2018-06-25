@@ -33,6 +33,9 @@ public:
     Shape(const Material *material, const Color &color = Colors::WHITE,
           double emission = 0.0);
 
+    Shape(const MaterialPBR *material, const Color &color = Colors::WHITE,
+          double emission = 0.0);
+
     Shape(const MaterialPBR *material, double emission = 0.0);
 
     Shape(const MaterialPBR *material, const Spectrum<> *emission_spctr = nullptr);

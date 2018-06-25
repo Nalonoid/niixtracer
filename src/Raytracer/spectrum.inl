@@ -129,14 +129,14 @@ BlackBodySPD<nb_samples>::BlackBodySPD(float T) :
         double k        { 1.38064852e-23    }; // Boltzmann's constant
 
         double lambda   { (MIN_WAVELENGTH + i * res) * 1.0e-9   }; // wavelength in m
-        //double hc       { h * c                                 };
-        double v        { c / lambda                            }; // frequency
+        double hc       { h * c                                 };
+//        double v        { c / lambda                            }; // frequency
 
-        double energy   { 2.0 * h * v * v * v };
-        energy /= c * c * (exp(h*v/(k*T)) - 1.0);
+//        double energy   { 2.0 * h * v * v * v };
+//        energy /= c * c * (exp(h*v/(k*T)) - 1.0);
 
-//        double energy   { 2.0 * hc * c * pow(lambda, -5.0) };
-//        energy /= (exp(hc/(lambda*k*T)) - 1.0);
+        double energy   { 2.0 * hc * c * pow(lambda, -5.0) };
+        energy /= (exp(hc/(lambda*k*T)) - 1.0);
 
         this->_samples[i] = energy;
     }
@@ -177,8 +177,6 @@ NormalSPD<nb_samples>::NormalSPD(unsigned peak, float sigma) :
     for (unsigned i {0}; i < nb_samples; ++i)
     {
         this->_samples[i] /= experiments;
-        this->_samples[i] /= peak_energy;
+        this->_samples[i] /= peak_energy*4;
     }
-
-
 }

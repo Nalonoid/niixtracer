@@ -28,7 +28,8 @@ Color SpectralPathtracer::compute_color(Ray &ray)
         spectral_radiance[l]    = radiance(ray);
     }
 
-    return correct_gamma(spectral_radiance.to_RGB(_scene->base_illuminant_SPD()));
+    return correct_gamma(
+                spectral_radiance.to_RGB(_scene->base_illuminant_SPD()));
 }
 
 float SpectralPathtracer::radiance(Ray &ray)
@@ -88,7 +89,7 @@ float SpectralPathtracer::radiance_global_illumination(Ray &ray)
     float u { uniform_sampler_float.sample() };
 
     if (u > m->roughness())
-        recursive_dir = m->wi(rdir, i.normal()).normalized();
+        recursive_dir = m->wi(rdir, i.normal());
     else
         return radiance_direct_illumination(ray); // Diffuse reflection
 
@@ -143,8 +144,7 @@ float SpectralPathtracer::radiance_direct_illumination(Ray &ray)
                     std::find_if(shapes.begin(), shapes.end(), [&](Shape *shp)
                     {
                         return shp->intersect(shadow_ray)
-                               && shadow_ray.dist_max() < source_distance
-                               && shp != s;
+                               && shadow_ray.dist_max() < source_distance;
                     });
 
                 if (source_intersection != shapes.end())
@@ -157,7 +157,8 @@ float SpectralPathtracer::radiance_direct_illumination(Ray &ray)
                             s->materialPBR()->reflectance(cone_sample, rdir, i, lambda) };
 
                         dir_radiance += (*source_intersection)->emission(lambda)
-                                * reflectance * cosine_norm_light * 5.0;
+                                * (reflectance * cosine_norm_light /
+                                   s->materialPBR()->pdf(cone_sample, rdir, i));
                     }
                 }
             }

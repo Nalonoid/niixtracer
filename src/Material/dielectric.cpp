@@ -22,7 +22,7 @@ Vec3d Dielectric::wi(const Vec3d &wo, Vec3d &normal) const
     }
 
     float  n        { n1 / n2                               };
-    double cos_R    { -wo.dot(normal)                       };
+    double cos_R    { wo.negative().dot(normal)             };
     double sin2_T   { n*n*(1 - cos_R*cos_R)                 };
     double R        { schlick_approx(n1, n2, cos_R, sin2_T) };
     double u        { uniform_sampler_double.sample()       };

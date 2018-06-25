@@ -5,16 +5,6 @@ MATERIAL_TYPE Material::type() const
     return _type;
 }
 
-const Color& Material::color() const
-{
-    return _color;
-}
-
-Color& Material::color()
-{
-    return _color;
-}
-
 double Material::shininess() const
 {
     return _shininess;
@@ -64,6 +54,7 @@ const Material* material(std::string name)
     if (name == "mirror")
         return &Materials::MIRROR;
 
+    std::cerr << "Wrong material name" << std::endl;
     return nullptr;
 }
 

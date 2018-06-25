@@ -63,6 +63,7 @@ void Renderer::render_scene()
     }
 }
 
+#include "Object/Shape/sphere.hpp"
 Color Renderer::launch(Ray &ray)
 {
     bool collides { false };

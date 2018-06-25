@@ -12,7 +12,7 @@ float const PI      { 3.141592653589 };
 
 unsigned const MIN_WAVELENGTH { 380 };
 unsigned const MAX_WAVELENGTH { 780 };
-unsigned const AVG_WAVELENGTH { (MIN_WAVELENGTH + MAX_WAVELENGTH) / 2};
+unsigned const AVG_WAVELENGTH { (MIN_WAVELENGTH + MAX_WAVELENGTH) / 2 };
 
 unsigned const SPECTRAL_RES     { 5 };
 unsigned const SPECTRAL_SAMPLES { 1 + (MAX_WAVELENGTH - MIN_WAVELENGTH) /

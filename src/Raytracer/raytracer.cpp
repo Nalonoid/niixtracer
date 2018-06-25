@@ -19,7 +19,7 @@ Color Raytracer::compute_color(Ray &ray)
 {
     double ambient_light   { 0.1 };
 
-    Color obj_color        { ray.intersection().shape()->material()->color() };
+    Color obj_color        { ray.intersection().shape()->color() };
     Color ambient_color    { obj_color * ambient_light                       };
     Color diffuse_specular { compute_blinn_phong(ray, obj_color)             };
     Color reflect_color    { compute_refl_refractive(ray)                    };
@@ -130,13 +130,12 @@ const Color Raytracer::compute_refl_refractive(Ray &ray)
          * TO-DO: modify Intersection to handle rays passing from one media to another
          * e.g. Intersection::through_material and Intersection::end_material */
 
-        double n1       { 1.0                               };
-        double n2       { s->material()->refraction()       };
-        double cos_R    { ray.direction().dot(normal)       };
+        double n1       { 1.0                                       };
+        double n2       { s->material()->refraction()               };
+        double cos_R    { ray.direction().negative().dot(normal)    };
 
         if (cos_R > 0.0)    // The ray is inside the medium, going outside
         {
-            cos_R = -cos_R;
             normal = normal.negative();
 
             // We need to swap n1 & n2
@@ -156,7 +155,6 @@ const Color Raytracer::compute_refl_refractive(Ray &ray)
             Vec3d refract_vect { n * ray.direction() +
                         (n * cos_R - sqrt(1 - sin2_T))*normal };
             Ray refract_ray(i.position() + EPSILON*refract_vect, refract_vect);
-
             refract_ray.bounces() = ray.bounces() + 1;
 
             refractive = T * launch(refract_ray);

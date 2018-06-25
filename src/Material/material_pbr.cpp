@@ -31,7 +31,7 @@ MaterialPBR* material(std::string name)
     if (name == "matte")
         return new Matte();
 
-        // Index of Refraction / Roughness / Name
+    // Index of Refraction / Roughness / Name
     if (name == "diamond")
         return new Dielectric(2.418f, 0.0f, "diamond");
 
@@ -41,7 +41,7 @@ MaterialPBR* material(std::string name)
     if (name == "translucent")
         return new Dielectric(1.020f, 0.0f, "translucent");
 
-        // Roughness / Name
+    // Roughness / Name
     if (name == "metal")
         return new Metal(0.3f, "metal");
 
@@ -63,7 +63,7 @@ Matte::Matte() : MaterialPBR(new ConstantSPD<>(), "matte") {}
 Vec3d Matte::wi(const Vec3d&, Vec3d &normal) const
 {
     // Uniform hemisphere sampling
-    return Vec3d(rnd_dir_hemisphere(normal).normalized());
+    return Vec3d(rnd_dir_hemisphere(normal));
 }
 
 float Matte::pdf(const Vec3d&, const Vec3d&,

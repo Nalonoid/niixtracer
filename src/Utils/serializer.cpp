@@ -307,15 +307,15 @@ void Serializer::add_shape(QDomElement &shape_elem, bool sphere)
             if (_scene->mode() == "mcpt") // Ray tracing
             {
                 QStringList color_str { color_elem.text().split(", ") };
-                Color color(color_str[0].toDouble(),
-                            color_str[1].toDouble(),
-                            color_str[2].toDouble(),
-                            color_str[3].toDouble());
+                const Color color(color_str[0].toDouble(),
+                        color_str[1].toDouble(),
+                        color_str[2].toDouble(),
+                        color_str[3].toDouble());
 
                 if (sphere)
-                    _scene->add(new Sphere(center, radius, material_pbr, emission));
+                    _scene->add(new Sphere(center, radius, color, material_pbr, emission));
                 else
-                    _scene->add(new Plane(center, radius, material_pbr, emission));
+                    _scene->add(new Plane(center, radius, color, material_pbr, emission));
             }
             else
             {

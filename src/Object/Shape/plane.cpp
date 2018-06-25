@@ -5,10 +5,13 @@ Plane::Plane(const Vec3d &normal, double distance, const Color &color,
       const Material *mat, double emission) :
     Shape(mat, color, emission), _normal(normal), _distance(distance) {}
 
+Plane::Plane(const Vec3d &normal, double distance, const Color &color,
+               const MaterialPBR *mat, double emission) :
+    Shape(mat, color, emission), _normal(normal), _distance(distance) {}
+
 Plane::Plane(const Vec3d &normal, double distance, const MaterialPBR *mat,
              double emission) :
-    Shape(mat, emission), _normal(normal), _distance(distance)
-{}
+    Shape(mat, emission), _normal(normal), _distance(distance) {}
 
 Plane::Plane(const Vec3d &normal, double distance, const MaterialPBR *mat,
              const Spectrum<> *emission_spctr) :
