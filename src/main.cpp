@@ -1,5 +1,5 @@
 #include <iostream>
-#include <chrono>
+#include <iomanip>
 
 #include "Image/image.hpp"
 #include "Scene/scene.hpp"
@@ -64,40 +64,29 @@ int main(int argc, char **argv)
     // Display scene settings
     std::cout << "{o}----------------------------------------->\\" << std::endl;
     std::cout << "{o}---{-C-U-S-T-O-M---R-A-Y-T-R-A-C-E-R-}--->/"  << std::endl;
-    std::cout << "{o}----------------------------------------->|"  << std::endl
-              << std::endl;
+    std::cout << "{o}----------------------------------------->|"  << std::endl;
 
-    std::cout << "- Output file:\t" << scene->output_path() << std::endl;
-    std::cout << "- Input scene:\t" << scene_path << std::endl;
-    std::cout << "- Resolution:\t" << img->width()
-              << "x" << img->height() << std::endl;
+    std::cout << std::endl << std::left << std::setw(20) << "- Output file:"
+              << scene->output_path();
+    std::cout << std::endl << std::left << std::setw(20) << "- Input scene:"
+              << scene_path;
+    std::cout << std::endl << std::left << std::setw(20) << "- Resolution:"
+              << img->width() << "x" << img->height();
 
-    std::cout << "- Aspect ratio:\t" << img->aspect_ratio() << std::endl;
-    std::cout << "- Rendering mode:\t" << scene->mode() << std::endl;
-    std::cout << "- Max ray bounces:\t" << scene->max_depth() << std::endl;
-    std::cout << "- Sampling:\t" << scene->nb_samples()*scene->nb_samples()
-              << "x" << std::endl;
+    std::cout << std::endl << std::left << std::setw(20) << "- Aspect ratio:"
+              << img->aspect_ratio();
+    std::cout << std::endl << std::left << std::setw(20) << "- Rendering mode:"
+              << scene->mode();
+    std::cout << std::endl << std::left << std::setw(20) << "- Max ray bounces:"
+              << scene->max_depth();
+    std::cout << std::endl << std::left << std::setw(20) << "- Sampling:"
+              << scene->nb_samples()*scene->nb_samples() << "x";
 
-    std::cout << std::endl
+    std::cout << std::endl << std::endl
               << "{o}------------R-E-N-D-E-R-I-N-G------------>|" << std::endl;
-
-    // Start the chrono!
-    std::chrono::high_resolution_clock::time_point chrono_start =
-            std::chrono::high_resolution_clock::now();
-
-    std::time_t start { std::chrono::system_clock::to_time_t(chrono_start) };
-    std::cout << std::endl << "- Rendering start:\t" << std::ctime(&start)
-              << std::flush;
 
     // Render the scene
     renderer->render_scene();
-
-    // Stop the chrono!
-    std::chrono::high_resolution_clock::time_point chrono_stop =
-            std::chrono::high_resolution_clock::now();
-
-    auto duration = std::chrono::duration_cast<std::chrono::microseconds>
-            (chrono_stop - chrono_start).count();
 
     // Save the image to the specified output file
     save2bmp(scene->output_path().data(), img, 72);
@@ -107,12 +96,8 @@ int main(int argc, char **argv)
 
     // Display some information about the rendering
 
-    std::time_t end { std::chrono::system_clock::to_time_t(chrono_stop) };
-    std::cout << "- Rendering end:\t" << std::ctime(&end);
-
-    std::cout << "- Elapsed time:\t" << duration/1000000.0 << "s" << std::endl
-              << "- Rays count:\t" << Ray::number() << "+" << Ray::over_number()
-              << std::endl;
+    std::cout << std::endl << std::left << std::setw(20) << "- Rays count:"
+              << Ray::number() << "+" << Ray::over_number() << std::endl;
 
     std::cout << std::endl
               << "{o}----------------------------------------->|"  << std::endl;

@@ -9,6 +9,7 @@ class Light;
 class Camera;
 
 #include <vector>
+#include <chrono>
 
 class Renderer
 {
