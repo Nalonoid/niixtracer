@@ -17,7 +17,7 @@ public:
 
 private:
     float _ior;         // Index of Refraction of the medium
-    float _roughness;         // Roughness of the material
+    float _roughness;   // Roughness of the material
 };
 
 #endif
