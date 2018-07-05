@@ -33,6 +33,7 @@ struct Vector
     // Operators
     Vector<T> operator+=(const Vector<T> &v2);
     Vector<T> operator/=(double s);
+    Vector<T> operator*=(double s);
 };
 
 // Using...

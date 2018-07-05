@@ -63,7 +63,6 @@ inline double schlick_approx(double n1, double n2, double cos_R, double sin2_T)
     return R;
 }
 
-
 // Applies the sRGB gamma correction to the component
 inline static Color correct_gamma(Color c)
 {

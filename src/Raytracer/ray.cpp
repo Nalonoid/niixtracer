@@ -7,10 +7,15 @@
 unsigned long long int Ray::_number = 0;
 unsigned long long int Ray::_over_number = 0;
 
-Ray::Ray(const Vec3d& ori, const Vec3d& dir, unsigned wavelength) :
-    _origin(ori), _direction(dir), _dist_max(10000), _bounces(0),
+Ray::Ray(const Vec3d& ori, const Vec3d& dir, const unsigned bnc,
+         unsigned wavelength) : _origin(ori), _dist_max(10000), _bounces(bnc),
     _wavelength(wavelength)
 {
+    if (dir.magnitude() <= 1.0 - EPSILON || dir.magnitude() >= 1.0 + EPSILON)
+        _direction = dir.normalized();
+    else
+        _direction = dir;
+
     if (_number < std::numeric_limits<unsigned long long>::max())
         _number++;
     else

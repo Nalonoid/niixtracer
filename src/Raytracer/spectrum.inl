@@ -96,7 +96,7 @@ void Spectrum<nb_samples>::to_XYZ(const Spectrum<nb_samples> *illuminant_SPD)
         luminance += (*illuminant_SPD)[i] * CIE_cm_fcts[i*SPECTRAL_RES].y;
     }
 
-    _xyz /= luminance;
+    _xyz *= (MAX_WAVELENGTH - MIN_WAVELENGTH) / luminance;
 }
 
 // From PBRT - Second Edition by Matt Pharr & Greg Humphreys
@@ -177,6 +177,6 @@ NormalSPD<nb_samples>::NormalSPD(unsigned peak, float sigma) :
     for (unsigned i {0}; i < nb_samples; ++i)
     {
         this->_samples[i] /= experiments;
-        this->_samples[i] /= peak_energy*4;
+        this->_samples[i] /= peak_energy;
     }
 }

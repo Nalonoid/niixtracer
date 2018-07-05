@@ -39,11 +39,12 @@ long int update_timer(
     long int duration = std::chrono::duration_cast<std::chrono::microseconds>
             (current_time - start_time).count();
 
+    float percentage { rendered_pixels * 100.0f/total_pixels };
     std::cout << std::left << std::setw(21) << std::setfill(' ')
               << "\r- Elapsed time:"
-              << std::left << std::setw(20) << std::setfill(' ')
-              << duration/1000000.0
-              << "| " << rendered_pixels*100/total_pixels << "%" << std::flush;
+              << std::left << duration/1000000.0 << " / "
+              << duration/(percentage*10000.0)
+              << " | " << (unsigned) percentage << "%" << std::flush;
 
     return duration;
 }
@@ -98,7 +99,7 @@ void Renderer::render_scene()
                     towards_pixel = (norm_i * c.left()) + (norm_j * c.up())
                             + c.direction();
 
-                    Ray ray(c.position(), towards_pixel.normalized());
+                    Ray ray(c.position(), towards_pixel);
                     avg_color += launch(ray);
                 }
             }

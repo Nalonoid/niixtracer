@@ -23,13 +23,11 @@ Color SpectralPathtracer::compute_color(Ray &ray)
     for (unsigned l {0}; l < SPECTRAL_SAMPLES; ++l)
     {
         unsigned lambda { l * SPECTRAL_RES + MIN_WAVELENGTH };
-
         ray.wavelength()        = lambda;
         spectral_radiance[l]    = radiance(ray);
     }
 
-    return correct_gamma(
-                spectral_radiance.to_RGB(_scene->base_illuminant_SPD()));
+    return spectral_radiance.to_RGB(_scene->base_illuminant_SPD());
 }
 
 float SpectralPathtracer::radiance(Ray &ray)
@@ -45,7 +43,7 @@ float SpectralPathtracer::radiance(Ray &ray)
     return _russian_roulette_coeff * radiance_global_illumination(ray);
 }
 
-float SpectralPathtracer::radiance_along_path(Ray &ray)
+float SpectralPathtracer::launch(Ray &ray)
 {
     bool collides { false };
 
@@ -76,15 +74,13 @@ float SpectralPathtracer::radiance_global_illumination(Ray &ray)
     else
         cos_att = -cos_att;
 
-    Vec3d recursive_dir { m->wi(rdir, i.normal()) };
-    Ray recursive_ray(i.position() + EPSILON * recursive_dir, recursive_dir,
-                      lambda);
+    Vec3d recurs_dir { m->wi(rdir, i.normal()) };
+    Ray recursive_ray(i.position() + EPSILON * recurs_dir, recurs_dir,
+                      ray.bounces() + 1, lambda);
 
-    recursive_ray.bounces() = ray.bounces() + 1;
-
-    float reflectance   { m->reflectance(recursive_dir, rdir, i, lambda)    };
-    float glob_radiance { reflectance * radiance_along_path(recursive_ray)  };
-    glob_radiance /= m->pdf(recursive_dir, rdir, i);
+    float reflectance   { m->reflectance(recurs_dir, rdir, i, lambda)       };
+    float glob_radiance { reflectance * launch(recursive_ray) * cos_att     };
+    glob_radiance /= m->pdf(recurs_dir, rdir, i);
 
     return s->emission(lambda) + glob_radiance;
 }

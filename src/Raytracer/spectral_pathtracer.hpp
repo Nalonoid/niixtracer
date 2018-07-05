@@ -7,14 +7,14 @@ class SpectralPathtracer : public Pathtracer
 {
 public:
     SpectralPathtracer(Scene *scene);
-    float   radiance_along_path(Ray &ray);
 
 protected:
     Color   compute_color(Ray &ray) override;
 
+    float   launch(Ray &ray);
     float   radiance(Ray &ray);
     float   radiance_global_illumination(Ray &ray);
-    float   radiance_direct_illumination(Ray &ray);
+    //float   radiance_direct_illumination(Ray &ray);
 };
 
 #endif

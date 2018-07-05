@@ -55,6 +55,7 @@ Color operator/(const Color &c, double scalar);
 
 namespace Colors
 {
+
 const struct Color BLACK    { 0.0 , 0.0 , 0.0 , 1. };
 const struct Color WHITE    { 1.0 , 1.0 , 1.0 , 1. };
 const struct Color GRAY     { 0.5 , 0.5 , 0.5 , 1. };

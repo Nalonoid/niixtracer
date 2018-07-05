@@ -63,9 +63,9 @@ Color Pathtracer::color_global_illumination(Ray &ray)
     else
         cos_att = -cos_att;
 
-    Vec3d recursive_dir { m->wi(rdir, i.normal()).normalized() };
-    Ray recursive_ray(i.position() + EPSILON * recursive_dir, recursive_dir);
-    recursive_ray.bounces() = ray.bounces() + 1;
+    Vec3d recursive_dir { m->wi(rdir, i.normal()) };
+    Ray recursive_ray(i.position() + EPSILON * recursive_dir, recursive_dir,
+                      ray.bounces() + 1);
 
     float reflectance   { m->reflectance(recursive_dir, rdir, i)            };
     Color global        { reflectance * launch(recursive_ray) * cos_att     };

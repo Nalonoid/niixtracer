@@ -83,6 +83,15 @@ Vector<T> Vector<T>::operator/=(double s)
 }
 
 template <typename T>
+Vector<T> Vector<T>::operator*=(double s)
+{
+    this->x *= s;
+    this->y *= s;
+    this->z *= s;
+    return *this;
+}
+
+template <typename T>
 Vector<T> operator-(const Vector<T> &v1, const Vector<T> &v2)
 {
     return v1.add(v2.negative());

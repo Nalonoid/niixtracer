@@ -23,9 +23,10 @@ private:
     Vec3d absorption;       // Absorption coefficient (How many photons are absorbed by the media)
     Vec3d attenuation;      // Attenuation coefficient : att = absorb + scattr (aka. Extinction coefficient)
 
-    /* The g parameter of the H-G phase function that ranges from backward
-     * to forward scattering, through isotropic scattering. -1 <= g <= 1 */
-    Vec3d henyey_greenstein;
+    /* The asymmetry parameter of the H-G phase function that ranges from
+     * backward to forward scattering, through isotropic scattering.
+     * -1 <= g <= 1 */
+    Vec3d g;
 };
 
 #endif

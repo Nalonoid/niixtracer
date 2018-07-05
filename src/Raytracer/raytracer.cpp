@@ -152,10 +152,10 @@ const Color Raytracer::compute_refl_refractive(Ray &ray)
         if (T > 0.0)
         {
             double n { n1/n2 };
-            Vec3d refract_vect { n * ray.direction() +
-                        (n * cos_R - sqrt(1 - sin2_T))*normal };
-            Ray refract_ray(i.position() + EPSILON*refract_vect, refract_vect);
-            refract_ray.bounces() = ray.bounces() + 1;
+            Vec3d refrct_dir { n * ray.direction() +
+                        (n * cos_R - sqrt(1 - sin2_T)) * normal };
+            Ray refract_ray(i.position() + EPSILON * refrct_dir, refrct_dir,
+                            ray.bounces() + 1);
 
             refractive = T * launch(refract_ray);
         }
@@ -164,9 +164,8 @@ const Color Raytracer::compute_refl_refractive(Ray &ray)
     if (R > 0.0)
     {
         Vec3d reflect_vect { ray.direction().reflect(normal) };
-        Ray reflect_ray(i.position() + EPSILON*reflect_vect, reflect_vect);
-
-        reflect_ray.bounces() = ray.bounces() + 1;
+        Ray reflect_ray(i.position() + EPSILON*reflect_vect, reflect_vect,
+                        ray.bounces() + 1);
 
         reflective = R * launch(reflect_ray);
     }
