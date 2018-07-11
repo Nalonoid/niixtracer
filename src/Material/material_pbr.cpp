@@ -1,10 +1,12 @@
 #include "material_pbr.hpp"
 #include "dielectric.hpp"
 #include "metal.hpp"
+#include "fluorescence.hpp"
 #include "Utils/sampler.hpp"
 
-MaterialPBR::MaterialPBR(const Spectrum<> *reflectance, std::string name) :
-    _reflectance(reflectance), _name(name) {}
+MaterialPBR::MaterialPBR(const Spectrum<> *reflectance, std::string name,
+                         const Fluorescence *fluorescence) :
+    _reflectance(reflectance), _name(name), _fluorescence(fluorescence) {}
 
 const std::string& MaterialPBR::name() const
 {
@@ -21,6 +23,21 @@ float MaterialPBR::reflectance(const Vec3d&, const Vec3d&,
 void MaterialPBR::set_reflectance(const Spectrum<> *reflectance_spctr)
 {
     _reflectance = reflectance_spctr;
+}
+
+void MaterialPBR::set_fluorescence(const Fluorescence *fluo)
+{
+    _fluorescence = fluo;
+}
+
+bool MaterialPBR::fluorescent() const
+{
+    return _fluorescence != nullptr;
+}
+
+const Fluorescence* MaterialPBR::fluorescence() const
+{
+    return _fluorescence;
 }
 
 namespace MaterialsPBR

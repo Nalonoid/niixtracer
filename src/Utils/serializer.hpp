@@ -9,6 +9,7 @@ class QDomElement;
 class Shape;
 class Sphere;
 class Plane;
+class Fluorescence;
 
 class Serializer
 {
@@ -28,6 +29,8 @@ private:
     void serialize(QDomDocument &scene_doc, QDomElement &scene_elem, Plane* p);
 
     void populate_scene_from_XML(const QDomElement &scene_element);
+
+    const Fluorescence* read_fluorescence_component(QDomElement &fluo_elem);
 
     void add_camera(QDomElement &cam_elem);
     void add_light(QDomElement &light_elem);

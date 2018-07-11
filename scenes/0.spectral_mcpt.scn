@@ -2,7 +2,7 @@
  <settings>
   <xres>800</xres>
   <yres>450</yres>
-  <path>0_pbr_mcpt_nee_d65_1024sp.bmp</path>
+  <path>0_pbr_mcpt_nee_d65_fluo_1024sp.bmp</path>
   <mode>spectral_mcpt</mode>
   <depth>10</depth>
   <sampl>1024</sampl>
@@ -64,9 +64,13 @@
  <sphere>
   <center>-5.000000, 2.000000, -0.250000</center>
   <radius>2</radius>
-  <material>plastic</material>
-  <reflectance>orange</reflectance>
+  <material>metal</material>
+  <reflectance>yellow</reflectance>
   <emission>0.0</emission>
+  <fluorescence>
+    <absorption>uv</absorption>
+    <stokes>80</stokes>
+  </fluorescence>
  </sphere>
  <sphere>
   <center>6.000000, 5.000000, -5.000000</center>

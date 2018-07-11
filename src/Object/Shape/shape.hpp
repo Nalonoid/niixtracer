@@ -52,6 +52,7 @@ public:
     double emission(unsigned wavelength = AVG_WAVELENGTH) const;
 
     bool emits() const;
+    bool fluorescent() const;
 
     // Methods
     virtual bool intersect(Ray &r) = 0;

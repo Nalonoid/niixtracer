@@ -1,6 +1,7 @@
 #include "shape.hpp"
 #include "Raytracer/ray.hpp"
 #include "Raytracer/intersection.hpp"
+#include "Material/fluorescence.hpp"
 
 unsigned Shape::_index = 0;
 
@@ -104,7 +105,7 @@ Color &Shape::color()
 
 double Shape::emission(unsigned wavelength) const
 {
-    return (_light != nullptr) ? _light->emission(wavelength) : 0.0;
+    return _light != nullptr ? _light->emission(wavelength) : 0.0;
 }
 
 bool Shape::emits() const
@@ -112,9 +113,14 @@ bool Shape::emits() const
     return _light != nullptr;
 }
 
+bool Shape::fluorescent() const
+{
+    return _material_pbr != nullptr && _material_pbr->fluorescent();
+}
+
 // Methods
 bool Shape::intersect(Ray &r, double t)
-{   
+{
     if (t > 0 && t < r.dist_max())
     {
         r.dist_max() = t;

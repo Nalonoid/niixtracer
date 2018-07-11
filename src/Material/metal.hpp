@@ -7,7 +7,8 @@ class Metal : public MaterialPBR
 {
 public:
     Metal(float roughness = 0.3f, std::string name = "metal",
-          const Spectrum<> *brdf = new ConstantSPD<>());
+          const Spectrum<> *brdf = new ConstantSPD<>(),
+          const Fluorescence *fluorescence = nullptr);
 
     float roughness() const override;
     Vec3d wi(const Vec3d &wo, Vec3d &normal) const override;

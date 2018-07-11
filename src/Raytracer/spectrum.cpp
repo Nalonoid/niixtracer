@@ -11,6 +11,7 @@ const NormalSPD<>       *NORMAL_YELLOW  { new NormalSPD<>(590) };
 const NormalSPD<>       *NORMAL_GREEN   { new NormalSPD<>(540) };
 const NormalSPD<>       *NORMAL_BLUE    { new NormalSPD<>(460) };
 const NormalSPD<>       *NORMAL_PURPLE  { new NormalSPD<>(420) };
+const NormalSPD<>       *NORMAL_UV      { new NormalSPD<>(380) };
 
 const BlackBodySPD<>    *BLACK_BODY_A   { new BlackBodySPD<>(2856) }; // Incandescent / Tungstene
 const BlackBodySPD<>    *BLACK_BODY_D50 { new BlackBodySPD<>(5003) }; // Horizon daylight
@@ -20,8 +21,17 @@ const BlackBodySPD<>    *BLACK_BODY_D75 { new BlackBodySPD<>(7504) }; // North s
 
 const BlackBodySPD<>    *BLACK_BODY_E   { new BlackBodySPD<>(5454) }; // Equal energy
 
+const CauchySkewed<>    *ABSORP_RED     { new CauchySkewed<>(680, .5f, -5.f) };
+const CauchySkewed<>    *ABSORP_ORANGE  { new CauchySkewed<>(620, .5f, -5.f) };
+const CauchySkewed<>    *ABSORP_YELLOW  { new CauchySkewed<>(590, .5f, -5.f) };
+const CauchySkewed<>    *ABSORP_GREEN   { new CauchySkewed<>(540, .5f, -5.f) };
+const CauchySkewed<>    *ABSORP_BLUE    { new CauchySkewed<>(460, .5f, -5.f) };
+const CauchySkewed<>    *ABSORP_PURPLE  { new CauchySkewed<>(420, .5f, -5.f) };
+const CauchySkewed<>    *ABSORP_UV      { new CauchySkewed<>(380, .5f, -5.f) };
+
 const Spectrum<>* spectrum(std::string name)
 {
+    // Normal Spectra
     if (name == "red")
         return Spectra::NORMAL_RED;
 
@@ -40,6 +50,32 @@ const Spectrum<>* spectrum(std::string name)
     if (name == "purple")
         return Spectra::NORMAL_PURPLE;
 
+    if (name == "uv")
+        return Spectra::NORMAL_UV;
+
+    // Absorption Spectra
+    if (name == "ared")
+        return Spectra::ABSORP_RED;
+
+    if (name == "aorange")
+        return Spectra::ABSORP_ORANGE;
+
+    if (name == "ayellow")
+        return Spectra::ABSORP_YELLOW;
+
+    if (name == "agreen")
+        return Spectra::ABSORP_GREEN;
+
+    if (name == "ablue")
+        return Spectra::ABSORP_BLUE;
+
+    if (name == "apurple")
+        return Spectra::ABSORP_PURPLE;
+
+    if (name == "auv")
+        return Spectra::ABSORP_UV;
+
+    // Emission Spectra (Black Body)
     if (name == "bba")
         return Spectra::BLACK_BODY_A;
 
@@ -55,8 +91,12 @@ const Spectrum<>* spectrum(std::string name)
     if (name == "bbd75")
         return Spectra::BLACK_BODY_D75;
 
+    // Constant Spectra, all samples at 1.0f
     if (name == "const")
         return Spectra::CONSTANT_SPD;
+
+    if (name == "null")
+        return new ConstantSPD<>(0.0f);
 
     /* If we arrive at this point, maybe the emission spectrum passed in was
      * just a scalar emission term (i.e. a constant SPD) */

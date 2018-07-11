@@ -12,6 +12,7 @@
 
 #include "Material/dielectric.hpp"
 #include "Material/metal.hpp"
+#include "Material/fluorescence.hpp"
 
 SpectralPathtracer::SpectralPathtracer(Scene *scene) : Pathtracer(scene) {}
 
@@ -22,7 +23,7 @@ Color SpectralPathtracer::compute_color(Ray &ray)
     // Integration over the wavelengths
     for (unsigned l {0}; l < SPECTRAL_SAMPLES; ++l)
     {
-        unsigned lambda { l * SPECTRAL_RES + MIN_WAVELENGTH };
+        unsigned lambda         { l * SPECTRAL_RES + MIN_WAVELENGTH };
         ray.wavelength()        = lambda;
         spectral_radiance[l]    = radiance(ray);
     }
@@ -38,7 +39,7 @@ float SpectralPathtracer::radiance(Ray &ray)
 
     // We stop the path when we hit a light source
     if (s->emits())
-        return s->emission(lambda);
+        return _russian_roulette_coeff * s->emission(lambda);
 
     return _russian_roulette_coeff * radiance_global_illumination(ray);
 }
@@ -79,8 +80,12 @@ float SpectralPathtracer::radiance_global_illumination(Ray &ray)
                       ray.bounces() + 1, lambda);
 
     float reflectance   { m->reflectance(recurs_dir, rdir, i, lambda)       };
+
+    if (s->fluorescent())
+        reflectance += m->fluorescence()->emission(lambda);
+
     float glob_radiance { reflectance * launch(recursive_ray) * cos_att     };
     glob_radiance /= m->pdf(recurs_dir, rdir, i);
 
-    return s->emission(lambda) + glob_radiance;
+    return glob_radiance;
 }

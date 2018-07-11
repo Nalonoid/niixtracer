@@ -6,14 +6,18 @@
 
 class Intersection;
 class BRDF;
+class Fluorescence;
 
 class MaterialPBR
 {
 public:
-    MaterialPBR(const Spectrum<> *reflectance, std::string name);
+    MaterialPBR(const Spectrum<> *reflectance, std::string name,
+                const Fluorescence *fluorescence = nullptr);
 
     // Getters
     const std::string& name() const;
+    bool fluorescent() const;
+    const Fluorescence* fluorescence() const;
     virtual float roughness() const = 0;
 
     // Methods
@@ -27,10 +31,12 @@ public:
                       const unsigned wavelength = AVG_WAVELENGTH) const;
 
     void set_reflectance(const Spectrum<> *reflectance_spctr);
+    void set_fluorescence(const Fluorescence *fluo);
 
 private:
     const Spectrum<> *_reflectance;
     std::string _name;
+    const Fluorescence *_fluorescence;
 };
 
 class Matte : public MaterialPBR

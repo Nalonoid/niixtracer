@@ -1,8 +1,9 @@
 #include "metal.hpp"
 #include "Utils/sampler.hpp"
 
-Metal::Metal(float roughness, std::string name, const Spectrum<> *reflectance) :
-    MaterialPBR(reflectance, name),
+Metal::Metal(float roughness, std::string name, const Spectrum<> *reflectance,
+             const Fluorescence *fluorescence) :
+    MaterialPBR(reflectance, name, fluorescence),
     _roughness (roughness) {}
 
 float Metal::roughness() const

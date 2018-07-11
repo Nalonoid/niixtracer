@@ -1,15 +1,16 @@
+#include <QtXml/QDomDocument>
+#include <QtXml/QDomElement>
+#include <QFile>
+#include <QTextStream>
+
 #include "serializer.hpp"
 #include "Object/Shape/sphere.hpp"
 #include "Object/Shape/plane.hpp"
 #include "Image/image.hpp"
 #include "Object/Camera/camera.hpp"
 #include "Object/Light/light.hpp"
-
-#include <QtXml/QDomDocument>
-#include <QtXml/QDomElement>
-#include <QFile>
-#include <QTextStream>
 #include "Scene/scene.hpp"
+#include "Material/fluorescence.hpp"
 
 Serializer::Serializer() : _scene(nullptr) {}
 
@@ -250,6 +251,7 @@ void Serializer::add_shape(QDomElement &shape_elem, bool sphere)
     QDomElement mat_elem        { shape_elem.firstChildElement("material")    };
     QDomElement refl_elem       { shape_elem.firstChildElement("reflectance") };
     QDomElement emission_elem   { shape_elem.firstChildElement("emission")    };
+    QDomElement fluo_elem       { shape_elem.firstChildElement("fluorescence")};
 
     QStringList center_str { center_elem.text().split(", ") };
     Vec3d center(center_str[0].toDouble(),
@@ -257,7 +259,6 @@ void Serializer::add_shape(QDomElement &shape_elem, bool sphere)
                  center_str[2].toDouble());
 
     double radius { radius_elem.text().toDouble() };
-
 
     if (_scene->mode() == "rt") // Ray tracing
     {
@@ -279,6 +280,9 @@ void Serializer::add_shape(QDomElement &shape_elem, bool sphere)
     }
     else    // Monte Carlo Path Tracing
     {
+        const Fluorescence *fluo { fluo_elem.isNull() ?
+                        nullptr : read_fluorescence_component(fluo_elem) };
+
         const Spectrum<> *emission_spctr {
             Spectra::spectrum(emission_elem.text().toStdString()) };
 
@@ -288,8 +292,15 @@ void Serializer::add_shape(QDomElement &shape_elem, bool sphere)
         MaterialPBR *material_pbr {
             MaterialsPBR::material(mat_elem.text().toStdString()) };
 
+        material_pbr->set_fluorescence(fluo);
+
         if (refl_spctr != nullptr)
             material_pbr->set_reflectance(refl_spctr);
+        else
+        {
+            double emission { refl_elem.text().toDouble() };
+            material_pbr->set_reflectance(new ConstantSPD<>(emission));
+        }
 
         if (emission_spctr != nullptr)
         {
@@ -326,6 +337,34 @@ void Serializer::add_shape(QDomElement &shape_elem, bool sphere)
             }
         }
     }
+}
+
+const Fluorescence* Serializer::read_fluorescence_component(QDomElement &fluo_elem)
+{
+    QDomElement absorption_elem { fluo_elem.firstChildElement("absorption") };
+    QDomElement stokes_elem     { fluo_elem.firstChildElement("stokes")     };
+
+    if (absorption_elem.isNull())
+    {
+        std::cerr << "error: fluorescent shape has no absorption spectrum"
+                  << std::endl;
+        return nullptr;
+    }
+
+    if (stokes_elem.isNull())
+    {
+        std::cerr << "error: fluorescent shape has no stokes shift field"
+                  << std::endl;
+        return nullptr;
+    }
+
+    std::cout << "BLBLBLBLBL :: " << "a" + absorption_elem.text().toStdString()
+              << std::endl;
+
+    const Spectrum<> *absorption_spectrum {
+        Spectra::spectrum("a" + absorption_elem.text().toStdString()) };
+
+    return new Fluorescence(absorption_spectrum, stokes_elem.text().toUInt());
 }
 
 void Serializer::serialize(QDomDocument &scene_doc,

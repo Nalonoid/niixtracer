@@ -61,16 +61,45 @@ float Spectrum<nb_samples>::operator[](int index) const
 
 template <unsigned nb_samples>
 float Spectrum<nb_samples>::power_at(const unsigned wavelength) const
-{
+{   
     int index { static_cast<int>(wavelength - MIN_WAVELENGTH) /
                 static_cast<int>(SPECTRAL_RES) };
 
-    assert(index >= 0);
-
-    if (belongs_to_visible_spectrum(wavelength) && index < (int) nb_samples)
+    if (belongs_to_visible_spectrum(wavelength) &&
+            index >= 0 && index < (int) nb_samples)
         return _samples[index];
     else
         return 0.0f;
+}
+
+template <unsigned nb_samples>
+unsigned Spectrum<nb_samples>::peak() const
+{
+    unsigned index  { 0     };
+    float max       { 0.0f  };
+
+    for (unsigned i {0}; i < nb_samples; ++i)
+    {
+        if (_samples[i] > max)
+        {
+            max = _samples[i];
+            index = i;
+        }
+    }
+
+    return index * SPECTRAL_RES;
+}
+
+template <unsigned nb_samples>
+float Spectrum<nb_samples>::width() const
+{
+    return 0.0f;
+}
+
+template <unsigned nb_samples>
+float Spectrum<nb_samples>::skewness() const
+{
+    return 0.0f;
 }
 
 template <unsigned nb_samples>
@@ -179,4 +208,52 @@ NormalSPD<nb_samples>::NormalSPD(unsigned peak, float sigma) :
         this->_samples[i] /= experiments;
         this->_samples[i] /= peak_energy;
     }
+}
+
+template <unsigned nb_samples>
+unsigned NormalSPD<nb_samples>::peak() const
+{
+    return _peak;
+}
+
+template <unsigned nb_samples>
+CauchySkewed<nb_samples>::CauchySkewed(unsigned x0, float w, float s) :
+    _peak(x0), _width(w), _skewness(s)
+{
+    for (unsigned i {0}; i < nb_samples; ++i)
+    {
+        unsigned x { MIN_WAVELENGTH + i * SPECTRAL_RES };   // wavelength in nm
+
+        float x_min_x0      { float(x - x0)                         };
+        float first_deno    { PI * (w * w + x_min_x0 * x_min_x0)    };
+        float first_term    { w / first_deno                        };
+        float secnd_term    { std::atan(s * x_min_x0 / w)           };
+        secnd_term = 1.0f/PI * secnd_term + 0.5f;
+
+        this->_samples[i] = first_term * secnd_term;
+    }
+
+    unsigned peak_index { (x0 - MIN_WAVELENGTH)/SPECTRAL_RES    };
+    float peak_energy   { this->_samples[peak_index]            };
+
+    for (unsigned i {0}; i < nb_samples; ++i)
+        this->_samples[i] /= peak_energy;
+}
+
+template <unsigned nb_samples>
+unsigned CauchySkewed<nb_samples>::peak() const
+{
+    return _peak;
+}
+
+template <unsigned nb_samples>
+float CauchySkewed<nb_samples>::width() const
+{
+    return _width;
+}
+
+template <unsigned nb_samples>
+float CauchySkewed<nb_samples>::skewness() const
+{
+    return _skewness;
 }

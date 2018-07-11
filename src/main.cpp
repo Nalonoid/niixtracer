@@ -10,8 +10,6 @@
 #include "Utils/save.hpp"
 #include "Utils/serializer.hpp"
 
-#include "Raytracer/spectrum.hpp"
-
 int main(int argc, char **argv)
 {
     // Checking input arguments
