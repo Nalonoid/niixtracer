@@ -14,8 +14,11 @@ Fluorescence::Fluorescence(const Spectrum<> *absorption, unsigned stokes_shift)
 
 float Fluorescence::emission(unsigned wavelength) const
 {
-    float emission { _absoprtion->power_at(wavelength - _stokes_shift) != 0.0f ?
-                        _emission.power_at(wavelength) : 0.0f };
+    float emission = 0.0f;
+
+    if (belongs_to_visible_spectrum(wavelength))
+        emission = _absoprtion->power_at(wavelength - _stokes_shift) != 0.0f ?
+                    _emission.power_at(wavelength) : 0.0f;
 
     return emission;
 }

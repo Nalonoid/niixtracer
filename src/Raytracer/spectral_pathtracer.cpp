@@ -18,10 +18,10 @@ SpectralPathtracer::SpectralPathtracer(Scene *scene) : Pathtracer(scene) {}
 
 Color SpectralPathtracer::compute_color(Ray &ray)
 {
-    Spectrum<SPECTRAL_SAMPLES> spectral_radiance;
+    Spectrum<SPECTRAL_VISIBLE_SAMPLES> spectral_radiance;
 
     // Integration over the wavelengths
-    for (unsigned l {0}; l < SPECTRAL_SAMPLES; ++l)
+    for (unsigned l {0}; l < SPECTRAL_VISIBLE_SAMPLES; ++l)
     {
         unsigned lambda         { l * SPECTRAL_RES + MIN_WAVELENGTH };
         ray.wavelength()        = lambda;
@@ -79,7 +79,7 @@ float SpectralPathtracer::radiance_global_illumination(Ray &ray)
     Ray recursive_ray(i.position() + EPSILON * recurs_dir, recurs_dir,
                       ray.bounces() + 1, lambda);
 
-    float reflectance   { m->reflectance(recurs_dir, rdir, i, lambda)       };
+    float reflectance { m->reflectance(recurs_dir, rdir, i, lambda) };
 
     if (s->fluorescent())
         reflectance += m->fluorescence()->emission(lambda);

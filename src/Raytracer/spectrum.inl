@@ -65,8 +65,7 @@ float Spectrum<nb_samples>::power_at(const unsigned wavelength) const
     int index { static_cast<int>(wavelength - MIN_WAVELENGTH) /
                 static_cast<int>(SPECTRAL_RES) };
 
-    if (belongs_to_visible_spectrum(wavelength) &&
-            index >= 0 && index < (int) nb_samples)
+    if (index >= 0 && index < (int) nb_samples)
         return _samples[index];
     else
         return 0.0f;
@@ -115,7 +114,8 @@ unsigned Spectrum<nb_samples>::n_samples() const
 }
 
 template <unsigned nb_samples>
-void Spectrum<nb_samples>::to_XYZ(const Spectrum<nb_samples> *illuminant_SPD)
+template <unsigned nbs>
+void Spectrum<nb_samples>::to_XYZ(const Spectrum<nbs> *illuminant_SPD)
 {
     float luminance { 0.0f };
 
@@ -125,12 +125,13 @@ void Spectrum<nb_samples>::to_XYZ(const Spectrum<nb_samples> *illuminant_SPD)
         luminance += (*illuminant_SPD)[i] * CIE_cm_fcts[i*SPECTRAL_RES].y;
     }
 
-    _xyz *= (MAX_WAVELENGTH - MIN_WAVELENGTH) / luminance;
+    _xyz *= (MAX_VISIBLE_WAVELENGTH - MIN_VISIBLE_WAVELENGTH) / luminance;
 }
 
 // From PBRT - Second Edition by Matt Pharr & Greg Humphreys
 template <unsigned nb_samples>
-Color Spectrum<nb_samples>::to_RGB(const Spectrum<nb_samples> *illuminant_SPD)
+template <unsigned nbs>
+Color Spectrum<nb_samples>::to_RGB(const Spectrum<nbs> *illuminant_SPD)
 {
     to_XYZ(illuminant_SPD);
 

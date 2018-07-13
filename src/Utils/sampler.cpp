@@ -7,7 +7,6 @@
 Uniform<std::uniform_real_distribution, double> uniform_sampler_double;
 Uniform<std::uniform_real_distribution, float>  uniform_sampler_float;
 Uniform<std::uniform_real_distribution, double> longitude_sampler(0, 2*PI);
-Uniform<std::uniform_int_distribution, int>     wavelength_sampler(MIN_WAVELENGTH, MAX_WAVELENGTH);
 
 template <template<class> class T, class U>
 Uniform<T, U>::Uniform(U min, U max) :

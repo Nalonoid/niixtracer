@@ -28,8 +28,11 @@ public:
     const float* samples() const;
     unsigned n_samples() const;
 
-    virtual void to_XYZ(const Spectrum<nb_samples> *illuminant_SPD);
-    virtual Color to_RGB(const Spectrum<nb_samples> *illuminant_SPD);
+    template <unsigned nbs>
+    void to_XYZ(const Spectrum<nbs> *illuminant_SPD);
+
+    template <unsigned nbs>
+    Color to_RGB(const Spectrum<nbs> *illuminant_SPD);
 
 protected:
     float       _samples[nb_samples];     // Spectral Power Distribution

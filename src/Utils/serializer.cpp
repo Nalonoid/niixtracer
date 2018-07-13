@@ -358,9 +358,6 @@ const Fluorescence* Serializer::read_fluorescence_component(QDomElement &fluo_el
         return nullptr;
     }
 
-    std::cout << "BLBLBLBLBL :: " << "a" + absorption_elem.text().toStdString()
-              << std::endl;
-
     const Spectrum<> *absorption_spectrum {
         Spectra::spectrum("a" + absorption_elem.text().toStdString()) };
 

@@ -10,13 +10,20 @@ namespace
 float const EPSILON { 0.000000000001 };
 float const PI      { 3.141592653589 };
 
-unsigned const MIN_WAVELENGTH { 380 };
+unsigned const MIN_WAVELENGTH { 370 };
 unsigned const MAX_WAVELENGTH { 780 };
+
+unsigned const MIN_VISIBLE_WAVELENGTH { 400 };
+unsigned const MAX_VISIBLE_WAVELENGTH { 740 };
+
 unsigned const AVG_WAVELENGTH { (MIN_WAVELENGTH + MAX_WAVELENGTH) / 2 };
 
 unsigned const SPECTRAL_RES     { 5 };
 unsigned const SPECTRAL_SAMPLES { 1 + (MAX_WAVELENGTH - MIN_WAVELENGTH) /
             SPECTRAL_RES };
+
+unsigned const SPECTRAL_VISIBLE_SAMPLES
+{ 1 + (MAX_VISIBLE_WAVELENGTH - MIN_VISIBLE_WAVELENGTH) / SPECTRAL_RES };
 
 }
 
@@ -39,7 +46,8 @@ inline double min(double a, double b)
 
 inline bool belongs_to_visible_spectrum(unsigned wavelength)
 {
-    return wavelength >= MIN_WAVELENGTH && wavelength <= MAX_WAVELENGTH;
+    return wavelength >= MIN_VISIBLE_WAVELENGTH
+            && wavelength <= MAX_VISIBLE_WAVELENGTH;
 }
 
 inline double schlick_approx(double n1, double n2, double cos_R, double sin2_T)
