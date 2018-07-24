@@ -62,7 +62,7 @@ template <unsigned nb_samples = SPECTRAL_SAMPLES>
 class NormalSPD : public Spectrum<nb_samples>
 {
 public:
-    NormalSPD(unsigned peak = (MAX_WAVELENGTH - MIN_WAVELENGTH)/2,
+    NormalSPD(unsigned peak = AVG_WAVELENGTH,
               float sigma = 0.4f);
 
     unsigned peak() const override;
@@ -82,7 +82,7 @@ template <unsigned nb_samples = SPECTRAL_SAMPLES>
 class CauchySkewed : public Spectrum<nb_samples>
 {
 public:
-    CauchySkewed(unsigned peak = (MAX_WAVELENGTH - MIN_WAVELENGTH)/2,
+    CauchySkewed(unsigned peak = AVG_WAVELENGTH,
                  float width = 0.5f, float skewness = 0.0f);
 
     unsigned    peak()      const override;

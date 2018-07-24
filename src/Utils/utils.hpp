@@ -10,7 +10,7 @@ namespace
 float const EPSILON { 0.000000000001 };
 float const PI      { 3.141592653589 };
 
-unsigned const MIN_WAVELENGTH { 370 };
+unsigned const MIN_WAVELENGTH { 360 };
 unsigned const MAX_WAVELENGTH { 780 };
 
 unsigned const MIN_VISIBLE_WAVELENGTH { 400 };
@@ -78,22 +78,24 @@ inline static Color correct_gamma(Color c)
     double g { c.g() };
     double b { c.b() };
 
+    float ratio { 1.0f / 2.4f };
+
     if (r <= 0.0031308f)
         r = 12.92f * r;
     else
-        r = 1.055f * pow(r, 1.0f / 2.4f) - 0.055f;
+        r = 1.055f * pow(r, ratio) - 0.055f;
 
     if (g <= 0.0031308f)
         g = 12.92f * g;
     else
-        g = 1.055f * pow(g, 1.0f / 2.4f) - 0.055f;
+        g = 1.055f * pow(g, ratio) - 0.055f;
 
     if (b <= 0.0031308f)
         b = 12.92f * b;
     else
-        b = 1.055f * pow(b, 1.0f / 2.4f) - 0.055f;
+        b = 1.055f * pow(b, ratio) - 0.055f;
 
-    return Color(r, g, b);
+    return Color(r, g, b).clamp();
 }
 
 #endif

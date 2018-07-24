@@ -11,7 +11,7 @@ public:
     Ray(const Vec3d& ori = Vec3d(0, 0, 0),
         const Vec3d& dir = Space::ZAXIS,
         const unsigned bnc = 0,
-        unsigned wavelength = MIN_WAVELENGTH);
+        unsigned wavelength = AVG_WAVELENGTH);
 
     // Getters
     static unsigned long long int number();

@@ -62,8 +62,16 @@ float Spectrum<nb_samples>::operator[](int index) const
 template <unsigned nb_samples>
 float Spectrum<nb_samples>::power_at(const unsigned wavelength) const
 {   
-    int index { static_cast<int>(wavelength - MIN_WAVELENGTH) /
-                static_cast<int>(SPECTRAL_RES) };
+    bool visible { nb_samples == SPECTRAL_VISIBLE_SAMPLES };
+
+    int index;
+
+    if (visible)
+        index = static_cast<int>(wavelength - MIN_VISIBLE_WAVELENGTH) /
+                static_cast<int>(SPECTRAL_RES);
+    else
+        index = static_cast<int>(wavelength - MIN_WAVELENGTH) /
+                static_cast<int>(SPECTRAL_RES);
 
     if (index >= 0 && index < (int) nb_samples)
         return _samples[index];
@@ -86,7 +94,10 @@ unsigned Spectrum<nb_samples>::peak() const
         }
     }
 
-    return index * SPECTRAL_RES;
+    unsigned min_wavelength = (nb_samples == SPECTRAL_SAMPLES ?
+                                   MIN_WAVELENGTH : MIN_VISIBLE_WAVELENGTH);
+
+    return index * SPECTRAL_RES + min_wavelength;
 }
 
 template <unsigned nb_samples>
@@ -119,10 +130,15 @@ void Spectrum<nb_samples>::to_XYZ(const Spectrum<nbs> *illuminant_SPD)
 {
     float luminance { 0.0f };
 
+    unsigned visible_shift {
+        (MIN_VISIBLE_WAVELENGTH - MIN_WAVELENGTH) / SPECTRAL_RES };
+
     for (unsigned i {0}; i < nb_samples; ++i)
     {
-        _xyz += (*this)[i] * CIE_cm_fcts[i*SPECTRAL_RES];
-        luminance += (*illuminant_SPD)[i] * CIE_cm_fcts[i*SPECTRAL_RES].y;
+        unsigned index { (i + visible_shift)*SPECTRAL_RES };
+        _xyz += (*this)[i] * CIE_cm_fcts[index];
+        luminance += (*illuminant_SPD)[i + visible_shift]
+                * CIE_cm_fcts[index].y;
     }
 
     _xyz *= (MAX_VISIBLE_WAVELENGTH - MIN_VISIBLE_WAVELENGTH) / luminance;

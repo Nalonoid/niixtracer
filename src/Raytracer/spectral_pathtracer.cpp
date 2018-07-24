@@ -23,12 +23,13 @@ Color SpectralPathtracer::compute_color(Ray &ray)
     // Integration over the wavelengths
     for (unsigned l {0}; l < SPECTRAL_VISIBLE_SAMPLES; ++l)
     {
-        unsigned lambda         { l * SPECTRAL_RES + MIN_WAVELENGTH };
+        unsigned lambda         { l * SPECTRAL_RES + MIN_VISIBLE_WAVELENGTH };
         ray.wavelength()        = lambda;
         spectral_radiance[l]    = radiance(ray);
     }
 
-    return spectral_radiance.to_RGB(_scene->base_illuminant_SPD());
+    return correct_gamma(
+                spectral_radiance.to_RGB(_scene->base_illuminant_SPD()));
 }
 
 float SpectralPathtracer::radiance(Ray &ray)

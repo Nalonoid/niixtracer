@@ -7,11 +7,11 @@ const ConstantSPD<>     *CONSTANT_SPD   { new ConstantSPD<>()  };
 
 const NormalSPD<>       *NORMAL_RED     { new NormalSPD<>(680) };
 const NormalSPD<>       *NORMAL_ORANGE  { new NormalSPD<>(620) };
-const NormalSPD<>       *NORMAL_YELLOW  { new NormalSPD<>(590) };
-const NormalSPD<>       *NORMAL_GREEN   { new NormalSPD<>(540) };
+const NormalSPD<>       *NORMAL_YELLOW  { new NormalSPD<>(600) };
+const NormalSPD<>       *NORMAL_GREEN   { new NormalSPD<>(560) };
 const NormalSPD<>       *NORMAL_BLUE    { new NormalSPD<>(460) };
 const NormalSPD<>       *NORMAL_PURPLE  { new NormalSPD<>(420) };
-const NormalSPD<>       *NORMAL_UV      { new NormalSPD<>(380) };
+const NormalSPD<>       *NORMAL_UV      { new NormalSPD<>(360) };
 
 const BlackBodySPD<>    *BLACK_BODY_A   { new BlackBodySPD<>(2856) }; // Incandescent / Tungstene
 const BlackBodySPD<>    *BLACK_BODY_D50 { new BlackBodySPD<>(5003) }; // Horizon daylight
@@ -23,11 +23,11 @@ const BlackBodySPD<>    *BLACK_BODY_E   { new BlackBodySPD<>(5454) }; // Equal e
 
 const CauchySkewed<>    *ABSORP_RED     { new CauchySkewed<>(680, .5f, -5.f) };
 const CauchySkewed<>    *ABSORP_ORANGE  { new CauchySkewed<>(620, .5f, -5.f) };
-const CauchySkewed<>    *ABSORP_YELLOW  { new CauchySkewed<>(590, .5f, -5.f) };
-const CauchySkewed<>    *ABSORP_GREEN   { new CauchySkewed<>(540, .5f, -5.f) };
+const CauchySkewed<>    *ABSORP_YELLOW  { new CauchySkewed<>(600, .5f, -5.f) };
+const CauchySkewed<>    *ABSORP_GREEN   { new CauchySkewed<>(560, .5f, -5.f) };
 const CauchySkewed<>    *ABSORP_BLUE    { new CauchySkewed<>(460, .5f, -5.f) };
 const CauchySkewed<>    *ABSORP_PURPLE  { new CauchySkewed<>(420, .5f, -5.f) };
-const CauchySkewed<>    *ABSORP_UV      { new CauchySkewed<>(380, .5f, -5.f) };
+const CauchySkewed<>    *ABSORP_UV      { new CauchySkewed<>(360, .5f, -5.f) };
 
 const Spectrum<>* spectrum(std::string name)
 {
