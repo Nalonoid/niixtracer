@@ -100,14 +100,16 @@ void Renderer::render_scene()
                             + c.direction();
 
                     Ray ray(c.position(), towards_pixel);
-                    avg_color += launch(ray);
+
+                    if (_scene->mode() == "spectral_mcpt")
+                        avg_color += correct_gamma(launch(ray)).clamp();
+                    else
+                        avg_color += correct_gamma(launch(ray));
                 }
             }
 
-            avg_color = Colors::average(
-                        avg_color, nb_samples*nb_samples).clamp();
-
-            (*img)[i][j] = avg_color;
+            (*img)[i][j] =
+                    Colors::average(avg_color, nb_samples*nb_samples).clamp();
 
             #pragma omp critical
             update_timer(timer, ++rendered_pixels, img->height()*img->width());

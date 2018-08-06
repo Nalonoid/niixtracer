@@ -1,0 +1,65 @@
+<scene>
+ <settings>
+  <xres>400</xres>
+  <yres>225</yres>
+  <path>test_pbr_mcpt_nee_a_fluo_1sp.bmp</path>
+  <mode>spectral_mcpt</mode>
+  <depth>10</depth>
+  <sampl>1</sampl>
+  <illum>bba</illum>
+ </settings>
+ <camera>
+  <position>0.000000, 5.000000, -6.000000</position>
+  <look_at>0.000000, 2.0000000, 2.000000</look_at>
+ </camera>
+ <plane>
+  <normal>0.000000, 0.000000, -1.000000</normal>
+  <distance>-10</distance>
+  <material>matte</material>
+  <reflectance>blue</reflectance>
+  <emission>0.0</emission>
+ </plane>
+ <plane>
+  <normal>0.000000, 1.000000, 0.000000</normal>
+  <distance>0</distance>
+  <material>matte</material>
+  <reflectance>const</reflectance>
+  <emission>0.0</emission>
+ </plane>
+ <sphere>
+  <center>0.000000, 1.500000, 1.000000</center>
+  <radius>1.5</radius>
+  <material>diamond</material>
+  <reflectance>const</reflectance>
+  <emission>0.0</emission>
+ </sphere>
+ <sphere>
+  <center>4.000000, 1.800000, 3.500000</center>
+  <radius>1.8</radius>
+  <material>metal</material>
+  <reflectance>red</reflectance>
+  <emission>0.0</emission>
+  <fluorescence>
+    <absorption>blue</absorption>
+    <stokes>100</stokes>
+  </fluorescence>
+ </sphere>
+ <sphere>
+  <center>-2.500000, 2.500000, 4.000000</center>
+  <radius>2.5</radius>
+  <material>metal</material>
+  <reflectance>yellow</reflectance>
+  <emission>0.0</emission>
+  <fluorescence>
+    <absorption>uv</absorption>
+    <stokes>100</stokes>
+  </fluorescence>
+ </sphere>
+ <sphere>
+  <center>5.500000, 7.500000, 4.500000</center>
+  <radius>2.0</radius>
+  <material>matte</material>
+  <emission>bba</emission>
+ </sphere>
+</scene>
+

@@ -95,7 +95,7 @@ inline static Color correct_gamma(Color c)
     else
         b = 1.055f * pow(b, ratio) - 0.055f;
 
-    return Color(r, g, b).clamp();
+    return Color(r, g, b);
 }
 
 #endif

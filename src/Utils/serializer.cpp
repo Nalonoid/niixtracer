@@ -297,10 +297,7 @@ void Serializer::add_shape(QDomElement &shape_elem, bool sphere)
         if (refl_spctr != nullptr)
             material_pbr->set_reflectance(refl_spctr);
         else
-        {
-            double emission { refl_elem.text().toDouble() };
-            material_pbr->set_reflectance(new ConstantSPD<>(emission));
-        }
+            material_pbr->set_reflectance(Spectra::CONSTANT_SPD);
 
         if (emission_spctr != nullptr)
         {
@@ -315,7 +312,7 @@ void Serializer::add_shape(QDomElement &shape_elem, bool sphere)
         {
             double emission { emission_elem.text().toDouble() };
 
-            if (_scene->mode() == "mcpt") // Ray tracing
+            if (_scene->mode() == "mcpt")
             {
                 QStringList color_str { color_elem.text().split(", ") };
                 const Color color(color_str[0].toDouble(),
