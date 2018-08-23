@@ -134,9 +134,10 @@ const Color Raytracer::compute_refl_refractive(Ray &ray)
         double n2       { s->material()->refraction()               };
         double cos_R    { ray.direction().negative().dot(normal)    };
 
-        if (cos_R > 0.0)    // The ray is inside the medium, going outside
+        if (cos_R < 0.0)    // The ray is inside the medium, going outside
         {
-            normal = normal.negative();
+            normal  = normal.negative();
+            cos_R   = -cos_R;
 
             // We need to swap n1 & n2
             n1 = n1 + n2;

@@ -28,7 +28,7 @@ bool Pathtracer::depth_recursion_over(Ray &ray)
     if (curr_depth > _scene->max_depth())
     {
         double u                { uniform_sampler_double.sample() };
-        double rr_stop_proba    { 0.1 };
+        double rr_stop_proba    { uniform_sampler_double.sample() };
 
         if (u < rr_stop_proba)
             _russian_roulette_coeff = 1.0 / (1.0 - rr_stop_proba);
@@ -44,9 +44,9 @@ Color Pathtracer::compute_color(Ray &ray)
 
     // We stop the path when we hit a light source
     if (s->emits())
-        return s->color()*s->emission();
+        return _russian_roulette_coeff * s->emission() * s->color();
 
-    return _russian_roulette_coeff * color_global_illumination(ray);
+    return color_global_illumination(ray) * s->color();
 }
 
 Color Pathtracer::color_global_illumination(Ray &ray)
@@ -63,13 +63,13 @@ Color Pathtracer::color_global_illumination(Ray &ray)
     else
         cos_att = -cos_att;
 
-    Vec3d recursive_dir { m->wi(rdir, i.normal()) };
-    Ray recursive_ray(i.position() + EPSILON * recursive_dir, recursive_dir,
+    Vec3d recurs_dir { m->wi(rdir, i.normal()) };
+    Ray recursive_ray(i.position() + EPSILON * recurs_dir, recurs_dir,
                       ray.bounces() + 1);
 
-    float reflectance   { m->reflectance(recursive_dir, rdir, i)            };
+    float reflectance   { m->reflectance(recurs_dir, rdir, i)               };
     Color global        { reflectance * launch(recursive_ray) * cos_att     };
-    global /= m->pdf(recursive_dir, rdir, i);
+    global /= m->pdf(recurs_dir, rdir, i);
 
-    return s->emission() + global * s->color();
+    return global;
 }

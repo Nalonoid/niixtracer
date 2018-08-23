@@ -10,7 +10,7 @@ void save2bmp(const char *path, Image *img, unsigned dpi)
 {
     unsigned width      { img->width()        };
     unsigned height     { img->height()       };
-    unsigned data_size  { 4 * width * height };
+    unsigned data_size  { 3 * width * height };
     unsigned file_size  { 54 + data_size     };
 
     double factor { 39.375                        };

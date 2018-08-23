@@ -13,7 +13,7 @@
 int main(int argc, char **argv)
 {
     // Checking input arguments
-    if (argc != 4)  // != 4 if you're using render.sh 2 otherwise
+    if (argc != 2)  // != 4 if you're using render.sh 2 otherwise
     {
         std::cerr << "usage: "
                   << argv[0] << " XML_scene_file_path" << std::endl;
@@ -40,8 +40,8 @@ int main(int argc, char **argv)
 
     /* To be used with render.sh if you want to render the same scene at
      * different number of samples */
-    scene->nb_samples() = sqrt(std::stoi(argv[2]));
-    scene->output_path() = std::string(argv[3]);
+    //scene->nb_samples() = sqrt(std::stoi(argv[2]));
+    //scene->output_path() = std::string(argv[3]);
 
     Renderer *renderer {
         scene->mode() == "rt" ?

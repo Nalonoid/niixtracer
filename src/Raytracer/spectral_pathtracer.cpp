@@ -41,7 +41,7 @@ float SpectralPathtracer::radiance(Ray &ray)
     if (s->emits())
         return _russian_roulette_coeff * s->emission(lambda);
 
-    return _russian_roulette_coeff * radiance_global_illumination(ray);
+    return radiance_global_illumination(ray);
 }
 
 float SpectralPathtracer::launch(Ray &ray)

@@ -1,0 +1,41 @@
+<scene>
+ <settings>
+  <xres>400</xres>
+  <yres>225</yres>
+  <path>glass.mcpt.16384sp.bmp</path>
+  <mode>mcpt</mode>
+  <depth>10</depth>
+  <sampl>16384</sampl>
+ </settings>
+ <camera>
+  <position>0.000000, 3.000000, -10.000000</position>
+  <look_at>0.000000, 2.000000, 0.000000</look_at>
+ </camera>
+ <plane>
+  <normal>0.000000, 1.000000, 0.000000</normal>
+  <distance>0</distance>
+  <color>0.300000, 0.300000, 0.300000, 1.000000</color>
+  <material>matte</material>
+ </plane>
+ <plane>
+  <normal>0.000000, 0.000000, -1.000000</normal>
+  <distance>-10</distance>
+  <color>0.300000, 0.300000, 0.300000, 1.000000</color>
+  <material>matte</material>
+ </plane>
+ <sphere>
+  <center>0.000000, 2.000000, 0.000000</center>
+  <radius>2</radius>
+  <color>1.000000, 1.000000, 1.000000, 1.000000</color>
+  <material>glass</material>
+  <emission>0.0</emission>
+ </sphere>
+ <sphere>
+  <center>12.000000, 18.000000, 0.000000</center>
+  <radius>6</radius>
+  <color>1.000000, 1.000000, 1.000000, 1.000000</color>
+  <material>matte</material>
+  <emission>400</emission>
+ </sphere>
+</scene>
+

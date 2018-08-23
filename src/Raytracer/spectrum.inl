@@ -141,7 +141,8 @@ void Spectrum<nb_samples>::to_XYZ(const Spectrum<nbs> *illuminant_SPD)
                 * CIE_cm_fcts[index].y;
     }
 
-    _xyz *= (MAX_VISIBLE_WAVELENGTH - MIN_VISIBLE_WAVELENGTH) / luminance;
+    // Tone mapping. See Photographic Tone Reproduction for Digital Images paper.
+    _xyz *= (MAX_VISIBLE_WAVELENGTH - MIN_VISIBLE_WAVELENGTH) / (1 + luminance);
 }
 
 // From PBRT - Second Edition by Matt Pharr & Greg Humphreys

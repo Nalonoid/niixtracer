@@ -2,10 +2,10 @@
  <settings>
   <xres>1200</xres>
   <yres>675</yres>
-  <path>0_10_mcpt_test_256sp.bmp</path>
+  <path>rt_res.bmp</path>
   <mode>rt</mode>
   <depth>10</depth>
-  <sampl>256</sampl>
+  <sampl>1</sampl>
  </settings>
  <camera>
   <position>0.000000, 3.000000, -10.000000</position>
@@ -19,7 +19,7 @@
   <normal>0.000000, 0.000000, -1.000000</normal>
   <distance>-10</distance>
   <color>0.000000, 0.000000, 1.000000, 1.000000</color>
-  <material>plastic</material>
+  <material>diffuse</material>
  </plane>
  <plane>
   <normal>0.000000, 1.000000, 0.000000</normal>
@@ -77,4 +77,3 @@
   <emission>0.0</emission>
  </sphere>
 </scene>
-

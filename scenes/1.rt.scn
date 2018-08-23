@@ -2,10 +2,10 @@
  <settings>
   <xres>1600</xres>
   <yres>900</yres>
-  <path>rtrenderer_refactor_scene1.bmp</path>
+  <path>rt_res1.bmp</path>
   <mode>rt</mode>
-  <depth>5</depth>
-  <sampl>4</sampl>
+  <depth>10</depth>
+  <sampl>16</sampl>
  </settings>
  <camera>
   <position>0.000000, 6.000000, -25.000000</position>
@@ -55,7 +55,7 @@
   <center>0.000000, 0.000000, 0.000000</center>
   <radius>12.0</radius>
   <color>1.000000, 1.000000, 1.000000, 1.000000</color>
-  <material>glossy</material>
+  <material>diamond</material>
  </sphere>
  <sphere>
   <center>-18.000000, 10.000000, 22.200000</center>

@@ -2,10 +2,10 @@
  <settings>
   <xres>800</xres>
   <yres>450</yres>
-  <path>0_pbr_mcpt_nee_d65_fluo_1024sp.bmp</path>
+  <path>0_pbr_mcpt_nee_d65_fluo_4sp.bmp</path>
   <mode>spectral_mcpt</mode>
   <depth>10</depth>
-  <sampl>1024</sampl>
+  <sampl>4</sampl>
   <illum>bbd65</illum>
  </settings>
  <camera>
@@ -15,7 +15,7 @@
  <plane>
   <normal>0.000000, 0.000000, -1.000000</normal>
   <distance>-10</distance>
-  <material>metal</material>
+  <material>matte</material>
   <reflectance>blue</reflectance>
   <emission>0.0</emission>
  </plane>
@@ -74,7 +74,7 @@
  </sphere>
  <sphere>
   <center>6.000000, 5.000000, -5.000000</center>
-  <radius>1</radius>
+  <radius>1.5</radius>
   <material>matte</material>
   <emission>bbd65</emission>
  </sphere>
