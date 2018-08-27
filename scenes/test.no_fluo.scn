@@ -2,11 +2,11 @@
  <settings>
   <xres>400</xres>
   <yres>225</yres>
-  <path>test_pbr_mcpt_nee_a_fluo_1sp.bmp</path>
+  <path>test_smcpt_d65_16sp.bmp</path>
   <mode>spectral_mcpt</mode>
   <depth>10</depth>
-  <sampl>1</sampl>
-  <illum>bba</illum>
+  <sampl>16</sampl>
+  <illum>bbd65</illum>
  </settings>
  <camera>
   <position>0.000000, 5.000000, -6.000000</position>
@@ -16,7 +16,7 @@
   <normal>0.000000, 0.000000, -1.000000</normal>
   <distance>-10</distance>
   <material>matte</material>
-  <reflectance>blue</reflectance>
+  <reflectance>purple</reflectance>
   <emission>0.0</emission>
  </plane>
  <plane>
@@ -37,21 +37,21 @@
   <center>4.000000, 1.800000, 3.500000</center>
   <radius>1.8</radius>
   <material>metal</material>
-  <reflectance>red</reflectance>
+  <reflectance>orange</reflectance>
   <emission>0.0</emission>
  </sphere>
  <sphere>
   <center>-2.500000, 2.500000, 4.000000</center>
   <radius>2.5</radius>
   <material>metal</material>
-  <reflectance>yellow</reflectance>
+  <reflectance>blue</reflectance>
   <emission>0.0</emission>
  </sphere>
  <sphere>
-  <center>5.500000, 7.500000, 4.500000</center>
-  <radius>2.0</radius>
+  <center>11.000000, 11.000000, 6.500000</center>
+  <radius>6</radius>
   <material>matte</material>
-  <emission>bba</emission>
+  <emission>bbd65</emission>
  </sphere>
 </scene>
 

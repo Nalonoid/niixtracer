@@ -81,8 +81,12 @@ float SpectralPathtracer::radiance_global_illumination(Ray &ray)
 
     float reflectance { m->reflectance(recurs_dir, rdir, i, lambda) };
 
-    if (s->fluorescent())
+    if (s->fluorescent() && recurs_dir != rdir.reflect(i.normal()))
+    {
+        reflectance -= m->fluorescence()->absorption(lambda);
         reflectance += m->fluorescence()->emission(lambda);
+        reflectance = max(0.0, reflectance);
+    }
 
     float glob_radiance { reflectance * launch(recursive_ray) * cos_att     };
     glob_radiance /= m->pdf(recurs_dir, rdir, i);

@@ -48,6 +48,16 @@ Spectrum<nb_samples> Spectrum<nb_samples>::operator*(const Spectrum &s)
 }
 
 template <unsigned nb_samples>
+Spectrum<nb_samples> Spectrum<nb_samples>::operator*(float s)
+{
+    for (unsigned i {0}; i < nb_samples; ++i)
+        (*this)[i] *= s;
+
+    return *this;
+}
+
+
+template <unsigned nb_samples>
 float& Spectrum<nb_samples>::operator[](int index)
 {
     return _samples[index];
@@ -173,7 +183,7 @@ BlackBodySPD<nb_samples>::BlackBodySPD(float T) :
         // Planck's law
         double h        { 6.626070040e-34   }; // Planck's constant
         double c        { 299792458.0       }; // speed of light in m.s-1
-        double k        { 1.38064852e-23    }; // Boltzmann's constant
+        double k        { 1.38064852e-23    }; // Boltzmann's constant in J.K-1
 
         double lambda   { (MIN_WAVELENGTH + i * res) * 1.0e-9   }; // wavelength in m
         double hc       { h * c                                 };
@@ -251,11 +261,16 @@ CauchySkewed<nb_samples>::CauchySkewed(unsigned x0, float w, float s) :
         this->_samples[i] = first_term * secnd_term;
     }
 
-    unsigned peak_index { (x0 - MIN_WAVELENGTH)/SPECTRAL_RES    };
-    float peak_energy   { this->_samples[peak_index]            };
+    float peak_energy { 0.0f                };
+    float min_energy  { 1000000000000000.0f };
+    for (unsigned i {0}; i < nb_samples; ++i)
+    {
+        peak_energy = peak_energy > (*this)[i] ? peak_energy : (*this)[i];
+        min_energy  = min_energy < (*this)[i] ? min_energy : (*this)[i];
+    }
 
     for (unsigned i {0}; i < nb_samples; ++i)
-        this->_samples[i] /= peak_energy;
+        (*this)[i] = ((*this)[i] - min_energy) / (peak_energy - min_energy);
 }
 
 template <unsigned nb_samples>
@@ -274,4 +289,23 @@ template <unsigned nb_samples>
 float CauchySkewed<nb_samples>::skewness() const
 {
     return _skewness;
+}
+
+// Black light source emission Spectral Power Distribution
+template <unsigned nb_samples>
+BlackLight<nb_samples>::BlackLight(unsigned x0, float w, float s) :
+    CauchySkewed<nb_samples>(x0, w, s)
+{
+    Spectrum<nb_samples> *purple_peak =
+            new CauchySkewed<nb_samples>(400, 20.f, 8.f);
+
+    *purple_peak = (*purple_peak) * 0.1;
+
+    for (unsigned i {0}; i < nb_samples; ++i)
+        (*this)[i] = (*this)[i] + (*purple_peak)[i];
+
+    unsigned purple_index { (400 - MIN_WAVELENGTH) / SPECTRAL_RES };
+
+    for (unsigned i { purple_index + 4}; i < nb_samples; ++i)
+        (*this)[i] = 0.0;
 }

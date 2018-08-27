@@ -15,6 +15,7 @@ public:
     Spectrum operator+(const Spectrum &s);
     Spectrum operator-(const Spectrum &s);
     Spectrum operator*(const Spectrum &s);
+    Spectrum operator*(float s);
 
     float& operator[](int index);
     float  operator[](int index) const;
@@ -83,7 +84,7 @@ class CauchySkewed : public Spectrum<nb_samples>
 {
 public:
     CauchySkewed(unsigned peak = AVG_WAVELENGTH,
-                 float width = 0.5f, float skewness = 0.0f);
+                 float width = 70.0f, float skewness = 8.0f);
 
     unsigned    peak()      const override;
     float       width()     const override;
@@ -95,34 +96,46 @@ private:
     float _skewness;
 };
 
+template <unsigned nb_samples = SPECTRAL_SAMPLES>
+class BlackLight : public CauchySkewed<nb_samples>
+{
+public:
+    BlackLight(unsigned peak = 370,
+                 float width = 20.0f, float skewness = 8.0f);
+
+private:
+};
+
 namespace Spectra
 {
 
-extern const ConstantSPD<>     *CONSTANT_SPD;
+extern const ConstantSPD<>      *CONSTANT_SPD;
 
-extern const NormalSPD<>       *NORMAL_RED;
-extern const NormalSPD<>       *NORMAL_ORANGE;
-extern const NormalSPD<>       *NORMAL_YELLOW;
-extern const NormalSPD<>       *NORMAL_GREEN;
-extern const NormalSPD<>       *NORMAL_BLUE;
-extern const NormalSPD<>       *NORMAL_PURPLE;
-extern const NormalSPD<>       *NORMAL_UV;
+extern const NormalSPD<>        *NORMAL_RED;
+extern const NormalSPD<>        *NORMAL_ORANGE;
+extern const NormalSPD<>        *NORMAL_YELLOW;
+extern const NormalSPD<>        *NORMAL_GREEN;
+extern const NormalSPD<>        *NORMAL_BLUE;
+extern const NormalSPD<>        *NORMAL_PURPLE;
+extern const NormalSPD<>        *NORMAL_UV;
 
-extern const BlackBodySPD<>    *BLACK_BODY_A;
-extern const BlackBodySPD<>    *BLACK_BODY_D50;
-extern const BlackBodySPD<>    *BLACK_BODY_D55;
-extern const BlackBodySPD<>    *BLACK_BODY_D65;
-extern const BlackBodySPD<>    *BLACK_BODY_D75;
+extern const BlackBodySPD<>     *BLACK_BODY_A;
+extern const BlackBodySPD<>     *BLACK_BODY_D50;
+extern const BlackBodySPD<>     *BLACK_BODY_D55;
+extern const BlackBodySPD<>     *BLACK_BODY_D65;
+extern const BlackBodySPD<>     *BLACK_BODY_D75;
 
-extern const BlackBodySPD<>    *BLACK_BODY_E;
+extern const BlackBodySPD<>     *BLACK_BODY_E;
 
-extern const CauchySkewed<>    *ABSORP_RED;
-extern const CauchySkewed<>    *ABSORP_ORANGE;
-extern const CauchySkewed<>    *ABSORP_YELLOW;
-extern const CauchySkewed<>    *ABSORP_GREEN;
-extern const CauchySkewed<>    *ABSORP_BLUE;
-extern const CauchySkewed<>    *ABSORP_PURPLE;
-extern const CauchySkewed<>    *ABSORP_UV;
+extern const BlackLight<>       *BLACK_LIGHT;
+
+extern const CauchySkewed<>     *ABSORP_RED;
+extern const CauchySkewed<>     *ABSORP_ORANGE;
+extern const CauchySkewed<>     *ABSORP_YELLOW;
+extern const CauchySkewed<>     *ABSORP_GREEN;
+extern const CauchySkewed<>     *ABSORP_BLUE;
+extern const CauchySkewed<>     *ABSORP_PURPLE;
+extern const CauchySkewed<>     *ABSORP_UV;
 
 const Spectrum<>* spectrum(std::string name);
 

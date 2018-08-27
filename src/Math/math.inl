@@ -136,6 +136,12 @@ bool operator==(const Vector<T> &v1, const Vector<T> &v2)
 }
 
 template <typename T>
+bool operator!=(const Vector<T> &v1, const Vector<T> &v2)
+{
+    return !(v1 == v2);
+}
+
+template <typename T>
 std::string Vector<T>::to_string() const
 {
     return std::to_string(x) + ", " +

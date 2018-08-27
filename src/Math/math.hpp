@@ -70,6 +70,9 @@ std::ostream& operator<<(std::ostream &os, const Vector<T> &v);
 template <typename T>
 bool operator==(const Vector<T> &v1, const Vector<T> &v2);
 
+template <typename T>
+bool operator!=(const Vector<T> &v1, const Vector<T> &v2);
+
 // Space
 namespace Space
 {
