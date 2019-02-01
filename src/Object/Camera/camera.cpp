@@ -32,7 +32,6 @@ void Camera::compute_camera_basis()
     _left       = _up.cross(_direction).normalized();
 
     _up         = 1/_aspect_ratio * _up;
-    _direction  = 1/tanf(PI * 120.0/360.0) * _direction;
 }
 
 // Getters

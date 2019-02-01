@@ -121,7 +121,7 @@ bool Shape::fluorescent() const
 // Methods
 bool Shape::intersect(Ray &r, double t)
 {
-    if (t > 0 && t < r.dist_max())
+    if (t > EPSILON && t < r.dist_max())
     {
         r.dist_max() = t;
         r.intersection().position() = r.origin() + (t * r.direction());

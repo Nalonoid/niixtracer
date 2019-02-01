@@ -6,6 +6,7 @@
 #include "serializer.hpp"
 #include "Object/Shape/sphere.hpp"
 #include "Object/Shape/plane.hpp"
+#include "Object/Shape/triangle.hpp"
 #include "Image/image.hpp"
 #include "Object/Camera/camera.hpp"
 #include "Object/Light/light.hpp"
@@ -185,10 +186,13 @@ void Serializer::populate_scene_from_XML(const QDomElement &scene_elem)
                 add_light(obj_elem);
             else
                 if (obj_elem.tagName() == "plane")
-                    add_shape(obj_elem, false);
+                    add_shape(obj_elem, ShapeType::PLANE);
                 else
                     if (obj_elem.tagName() == "sphere")
-                        add_shape(obj_elem, true);
+                        add_shape(obj_elem, ShapeType::SPHERE);
+                    else
+                        if (obj_elem.tagName() == "triangle")
+                            add_shape(obj_elem, ShapeType::TRIANGLE);
 
         obj_elem = obj_elem.nextSiblingElement();
     }
@@ -231,20 +235,42 @@ void Serializer::add_light(QDomElement &light_elem)
     _scene->add(new Light(20, pos, color));
 }
 
-void Serializer::add_shape(QDomElement &shape_elem, bool sphere)
+void Serializer::add_shape(QDomElement &shape_elem, ShapeType shape)
 {
     QDomElement center_elem;
     QDomElement radius_elem;
+    QDomElement vertex2;
+    QDomElement vertex3;
+    Vec3d       vB, vC;
 
-    if (sphere)
+    if (shape == ShapeType::SPHERE)
     {
         center_elem = shape_elem.firstChildElement("center");
         radius_elem = shape_elem.firstChildElement("radius");
     }
     else
     {
-        center_elem = shape_elem.firstChildElement("normal");
-        radius_elem = shape_elem.firstChildElement("distance");
+        if (shape == ShapeType::PLANE)
+        {
+            center_elem = shape_elem.firstChildElement("normal");
+            radius_elem = shape_elem.firstChildElement("distance");
+        }
+        else
+        {
+            center_elem = shape_elem.firstChildElement("vA");
+            vertex2     = shape_elem.firstChildElement("vB");
+            vertex3     = shape_elem.firstChildElement("vC");
+
+            QStringList vertex2_str { vertex2.text().split(", ") };
+            vB = Vec3d(vertex2_str[0].toDouble(),
+                       vertex2_str[1].toDouble(),
+                       vertex2_str[2].toDouble());
+
+            QStringList vertex3_str { vertex3.text().split(", ") };
+            vC = Vec3d(vertex3_str[0].toDouble(),
+                       vertex3_str[1].toDouble(),
+                       vertex3_str[2].toDouble());
+        }
     }
 
     QDomElement color_elem      { shape_elem.firstChildElement("color")       };
@@ -273,10 +299,14 @@ void Serializer::add_shape(QDomElement &shape_elem, bool sphere)
         const Material *material {
             Materials::material(mat_elem.text().toStdString()) };
 
-        if (sphere)
+        if (shape == ShapeType::SPHERE)
             _scene->add(new Sphere(center, radius, color, material, emission));
         else
-            _scene->add(new Plane(center, radius, color, material, emission));
+            if (shape == ShapeType::PLANE)
+                _scene->add(new Plane(center, radius, color, material, emission));
+            else
+                _scene->add(new Triangle(center, vB, vC,
+                                         color, material, emission));
     }
     else    // Monte Carlo Path Tracing
     {
@@ -301,12 +331,16 @@ void Serializer::add_shape(QDomElement &shape_elem, bool sphere)
 
         if (emission_spctr != nullptr)
         {
-            if (sphere)
+            if (shape == ShapeType::SPHERE)
                 _scene->add(new Sphere(center, radius,
                                        material_pbr, emission_spctr));
             else
-                _scene->add(new Plane(center, radius, material_pbr,
-                                      emission_spctr));
+                if (shape == ShapeType::PLANE)
+                    _scene->add(new Plane(center, radius, material_pbr,
+                                          emission_spctr));
+                else
+                    _scene->add(new Triangle(center, vB, vC,
+                                             material_pbr, emission_spctr));
         }
         else
         {
@@ -320,17 +354,29 @@ void Serializer::add_shape(QDomElement &shape_elem, bool sphere)
                         color_str[2].toDouble(),
                         color_str[3].toDouble());
 
-                if (sphere)
-                    _scene->add(new Sphere(center, radius, color, material_pbr, emission));
+                if (shape == ShapeType::SPHERE)
+                    _scene->add(new Sphere(center, radius,
+                                           color, material_pbr, emission));
                 else
-                    _scene->add(new Plane(center, radius, color, material_pbr, emission));
+                    if (shape == ShapeType::PLANE)
+                        _scene->add(new Plane(center, radius,
+                                              color, material_pbr, emission));
+                    else
+                        _scene->add(new Triangle(center, vB, vC,
+                                              color, material_pbr, emission));
             }
             else
             {
-                if (sphere)
-                    _scene->add(new Sphere(center, radius, material_pbr, emission));
+                if (shape == ShapeType::SPHERE)
+                    _scene->add(new Sphere(center, radius,
+                                           material_pbr, emission));
                 else
-                    _scene->add(new Plane(center, radius, material_pbr, emission));
+                    if (shape == ShapeType::PLANE)
+                        _scene->add(new Plane(center, radius,
+                                              material_pbr, emission));
+                    else
+                        _scene->add(new Triangle(center, vB, vC,
+                                              material_pbr, emission));
             }
         }
     }

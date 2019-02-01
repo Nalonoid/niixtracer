@@ -71,6 +71,7 @@ void Renderer::render_scene()
     unsigned nb_samples     { _scene->nb_samples()      };
     unsigned total_samples  { nb_samples*nb_samples     };
     const double range      { 1.0/(double)nb_samples    };
+    const double fov        { tanf(PI * 50.0/360.0)     };
 
     Uniform<std::uniform_real_distribution, double> sampler(0.0, range);
 
@@ -94,8 +95,8 @@ void Renderer::render_scene()
                     double u { total_samples > 1 ? sampler.sample() : 0.5 };
                     double v { total_samples > 1 ? sampler.sample() : 0.5 };
 
-                    norm_i        = (i+xsp+u)/img->width()  - 0.5;
-                    norm_j        = (j+ysp+v)/img->height() - 0.5;
+                    norm_i        = ((i+xsp+u)/img->width()  - 0.5) * fov;
+                    norm_j        = ((j+ysp+v)/img->height() - 0.5) * fov;
                     towards_pixel = (norm_i * c.left()) + (norm_j * c.up())
                             + c.direction();
 
